@@ -353,11 +353,11 @@ const App: React.FC = () => {
 
   // Dynamic sizing for cells based on difficulty
   const getCellSizeClass = (size: number) => {
-    if (size <= 5) return "w-10 h-10 md:w-14 md:h-14";
-    if (size <= 10) return "w-6 h-6 md:w-10 md:h-10";
-    if (size <= 15) return "w-5 h-5 md:w-8 md:h-8";
-    if (size <= 20) return "w-4 h-4 md:w-6 md:h-6";
-    return "w-3 h-3 md:w-5 md:h-5"; // Expert 25x25
+    if (size <= 5) return "w-7 h-7 md:w-10 md:h-10";
+    if (size <= 10) return "w-4 h-4 md:w-7 md:h-7";
+    if (size <= 15) return "w-4 h-4 md:w-6 md:h-6";
+    if (size <= 20) return "w-3 h-3 md:w-4 md:h-4";
+    return "w-2 h-2 md:w-4 md:h-4"; // Expert ~18x18
   };
 
   // Stats calculation
@@ -388,18 +388,16 @@ const App: React.FC = () => {
         <h1 className="text-3xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 pb-2">
           Nonogram Puzzle
         </h1>
-        <div className="h-2"></div>
-        <p className="text-slate-400 text-sm md:text-base">Reveal the hidden pixel art pattern</p>
       </header>
 
-      <div className="w-full max-w-4xl bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 backdrop-blur-sm shadow-xl flex flex-col items-center">
+      <div className="w-full max-w-3xl bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 backdrop-blur-sm shadow-xl flex flex-col items-center">
         
         {/* Top Controls Area - Only shown during gameplay */}
         {(gameState.status === 'playing' || gameState.status === 'won') && (
-          <div className="flex flex-col items-center gap-6 w-full mb-6">
+          <div className="flex flex-col items-center gap-4 w-full mb-4">
               
               {/* Settings Row */}
-              <div className="flex flex-wrap gap-4 justify-center w-full">
+              <div className="flex flex-wrap gap-3 justify-center w-full">
                   {/* Size Selector */}
                   <select
                       value={selectedSize}
@@ -451,10 +449,12 @@ const App: React.FC = () => {
                           Density: <span className="font-bold text-indigo-400">{stats.percent}%</span> ({stats.count}/{puzzle.size * puzzle.size} cells)
                       </div>
                       
+
                       <div className="text-xs text-slate-500 font-mono" title="Available coins for boosters">
                         Coins: <span className="font-bold text-amber-400">{coins}</span> 💰
                       </div>
                       
+
                       <div className="flex gap-2">
                           <button 
                               onClick={handleDebugToggle}
@@ -463,6 +463,7 @@ const App: React.FC = () => {
                               {isDebugVisible ? 'Hide' : 'Show'} Solution
                           </button>
                           
+
                           <button 
                               onClick={handleCheckHintsToggle}
                               className="px-2 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded transition-colors"
@@ -470,6 +471,7 @@ const App: React.FC = () => {
                               {isCheckHintsActive ? 'Hide' : 'Check'} Hints
                           </button>
                           
+
                           <button 
                               onClick={handleCheatWin}
                               className="px-2 py-1 text-xs bg-amber-700 hover:bg-amber-600 text-amber-200 rounded transition-colors"
@@ -501,10 +503,10 @@ const App: React.FC = () => {
 
         {/* Mobile Tool Toggles */}
         {gameState.status === 'playing' && isMobile && (
-            <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-700 w-full max-w-sm justify-center gap-4 mt-2">
+            <div className="flex bg-slate-900 p-0.5 rounded-lg border border-slate-700 w-full max-w-sm justify-center gap-3 mt-1">
                 <button 
                     onClick={() => setActiveTool(ToolType.FILL)}
-                    className={`px-8 py-2 rounded-md text-sm font-bold transition-colors w-1/2 ${activeTool === ToolType.FILL ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white bg-slate-800'}`}
+                    className={`px-6 py-1.5 rounded-md text-sm font-bold transition-colors w-1/2 ${activeTool === ToolType.FILL ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white bg-slate-800'}`}
                 >
                     Fill
                 </button>
@@ -514,8 +516,8 @@ const App: React.FC = () => {
                 >
                     Cross (X)
                 </button>
-            </div>
-        )}
+            </div>)
+        }
 
         {gameState.status === 'error' && (
             <div className="text-rose-400 bg-rose-950/30 p-4 rounded-lg border border-rose-900 mb-4 text-center w-full">
@@ -526,14 +528,15 @@ const App: React.FC = () => {
         {/* The Grid Container - Responsive scrolling for very large grids on small screens if needed, though we try to fit */}
         {puzzle && (gameState.status === 'playing' || gameState.status === 'won') && (
           <div className="max-w-full overflow-auto p-1">
+
             <div 
-                className="grid gap-0 select-none bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-2xl touch-none mx-auto"
-                style={{
-                    // Auto for row headers, then N columns of flexible width but constrained by max-content to fit tight
-                    gridTemplateColumns: `auto repeat(${puzzle.size}, min-content)`,
-                }}
-                onContextMenu={(e) => e.preventDefault()}
+              className="grid gap-0 select-none bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-2xl touch-none mx-auto"
+              style={{
+                gridTemplateColumns: `auto repeat(${puzzle.size}, min-content)`,
+              }}
+              onContextMenu={(e) => e.preventDefault()}
             >
+
                 {/* Top-Left Corner */}
                 <div className="border-b border-r border-slate-800 bg-slate-900/50"></div>
 
@@ -769,9 +772,6 @@ const App: React.FC = () => {
 
       </div>
 
-      <footer className="text-xs text-slate-600 mt-auto py-4">
-         Built with React & Tailwind
-      </footer>
     </div>
   );
 };
