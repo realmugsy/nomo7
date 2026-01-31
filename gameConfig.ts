@@ -28,13 +28,13 @@ export const DIFFICULTY_CONFIG: Record<DifficultyLevel, DifficultySettings> = {
   }
 };
 
-export const GRID_SIZES = [4, 7, 11, 14, 18];
+export const GRID_SIZES = [5, 8, 10, 15, 20];
 
 // Meta layer settings
 export const META_LAYER_MAP_IMAGES_COUNT = 3; // Number of map images to stitch together
 
 // Duration of the win animation cycle (one way) in milliseconds
-export const WIN_ANIMATION_DURATION_MS = 1500;
+export const WIN_ANIMATION_DURATION_MS = 3000;
 
 // Border width for grid cells in pixels
 export const CELL_BORDER_WIDTH_PX = 2;

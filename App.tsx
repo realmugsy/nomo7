@@ -582,7 +582,7 @@ const App: React.FC = () => {
                         const dist = Math.sqrt(dx * dx + dy * dy);
 
                         // 30ms per unit distance for smoother animation
-                        delay = `${Math.round(dist * 30)}ms`;
+                        delay = `${Math.round(dist * 90)}ms`;
                       }
 
                       return (
@@ -600,6 +600,7 @@ const App: React.FC = () => {
                             animationDelay={delay}
                             animationDuration={`${WIN_ANIMATION_DURATION_MS}ms`}
                             isRevealing={revealingCells.has(`${r}-${c}`)}
+                            styleMode="sharp"
                           />
                         </div>
                       );
@@ -611,7 +612,7 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {gameState.status === 'won' && puzzle && (
+        {/* {gameState.status === 'won' && puzzle && (
           <div className="mt-8 text-center animate-bounce">
             <h2 className="text-3xl font-bold text-emerald-400 mb-2">Puzzle Solved!</h2>
             <p className="text-slate-300">It was: <span className="text-indigo-400 font-bold text-lg uppercase">{puzzle.title}</span></p>
@@ -622,7 +623,7 @@ const App: React.FC = () => {
               🎉 Play Another
             </button>
           </div>
-        )}
+        )} */}
 
         {/* Meta Layer with Image Markers */}
         {gameState.status === 'idle' && (

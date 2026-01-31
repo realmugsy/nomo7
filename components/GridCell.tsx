@@ -15,6 +15,7 @@ interface GridCellProps {
   animationDelay?: string;
   animationDuration?: string;
   isRevealing?: boolean;  // NEW: for blast reveal effect
+  styleMode?: 'smooth' | 'sharp'; // NEW: animation style
 }
 
 const GridCell: React.FC<GridCellProps> = ({
@@ -29,7 +30,8 @@ const GridCell: React.FC<GridCellProps> = ({
   borderBottomThick,
   animationDelay,
   animationDuration,
-  isRevealing
+  isRevealing,
+  styleMode = 'smooth'
 }) => {
 
   // Base classes
@@ -125,7 +127,7 @@ const GridCell: React.FC<GridCellProps> = ({
       {/* Show victory animation marker when in solution mode and cell is filled */}
       {isSolutionFilled && isRevealed && !isDebug && (
         <div
-          className="absolute bg-indigo-500 rounded-sm animate-win-pulse"
+          className={`absolute bg-indigo-500 rounded-sm ${styleMode === 'sharp' ? 'animate-win-step' : 'animate-win-pulse'}`}
           style={{
             top: `${FILLED_CELL_MARKER_REDUCTION_PX}px`,
             left: `${FILLED_CELL_MARKER_REDUCTION_PX}px`,

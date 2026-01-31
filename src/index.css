@@ -19,6 +19,24 @@
   animation-direction: alternate;
 }
 
+@keyframes win-step {
+  0% { background-color: #ef4444; border-color: #ef4444; }   /* Red */
+  14% { background-color: #f97316; border-color: #f97316; }  /* Orange */
+  28% { background-color: #eab308; border-color: #eab308; }  /* Yellow */
+  42% { background-color: #22c55e; border-color: #22c55e; }  /* Green */
+  57% { background-color: #06b6d4; border-color: #06b6d4; }  /* Cyan */
+  71% { background-color: #3b82f6; border-color: #3b82f6; }  /* Blue */
+  85% { background-color: #a855f7; border-color: #a855f7; } /* Violet */
+  100% { background-color: #ef4444; border-color: #ef4444; } /* Red Loop */
+}
+
+.animate-win-step {
+  animation-name: win-step;
+  animation-duration: 0.7s; /* Faster cycle for steps usually looks better */
+  animation-timing-function: steps(1, end); /* Sharp transitions */
+  animation-iteration-count: infinite;
+}
+
 @keyframes blast-reveal {
   0% {
     transform: scale(0.8);
