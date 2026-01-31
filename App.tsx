@@ -46,6 +46,8 @@ const App: React.FC = () => {
   const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null);
   const [revealingCells, setRevealingCells] = useState<Set<string>>(new Set());
   const [coins, setCoins] = useState(INITIAL_COINS); // Track available coins
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark'); // Theme state
+  const [winAnimationMode, setWinAnimationMode] = useState<'smooth' | 'sharp'>('smooth'); // Animation style toggle
 
   // Mouse drag scrolling state for map
   const [isMapDragging, setIsMapDragging] = useState(false);
@@ -79,6 +81,15 @@ const App: React.FC = () => {
   // Dragging State
   const isDragging = useRef<boolean>(false);
   const dragTargetState = useRef<CellState | null>(null);
+
+  // Apply theme class to html element
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   // Check viewport for mobile helper
   useEffect(() => {
@@ -380,8 +391,8 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-6 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-900 to-slate-900 -z-10"></div>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-6 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-200/50 via-slate-100 to-slate-100 dark:from-indigo-900/20 dark:via-slate-900 dark:to-slate-900 -z-10"></div>
 
       <header className="text-center space-y-2 mt-4">
         {/* Added pb-2 to prevent bg-clip-text from cutting off descenders */}
@@ -390,7 +401,7 @@ const App: React.FC = () => {
         </h1>
       </header>
 
-      <div className="w-full max-w-3xl bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 backdrop-blur-sm shadow-xl flex flex-col items-center">
+      <div className="w-full max-w-3xl bg-white/70 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm shadow-xl flex flex-col items-center">
 
         {/* Top Controls Area - Only shown during gameplay */}
         {(gameState.status === 'playing' || gameState.status === 'won') && (
@@ -402,7 +413,7 @@ const App: React.FC = () => {
               <select
                 value={selectedSize}
                 onChange={(e) => setSelectedSize(Number(e.target.value))}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-slate-200"
+                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-200"
               >
                 {GRID_SIZES.map(size => (
                   <option key={size} value={size}>Size: {size}x{size}</option>
@@ -413,7 +424,7 @@ const App: React.FC = () => {
               <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyLevel)}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-slate-200"
+                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-200"
               >
                 {(Object.keys(DIFFICULTY_CONFIG) as DifficultyLevel[]).map((key) => (
                   <option key={key} value={key}>{DIFFICULTY_CONFIG[key].label}</option>
@@ -423,7 +434,7 @@ const App: React.FC = () => {
               <input
                 type="text"
                 placeholder="Seed (Optional)"
-                className="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 w-32 text-center text-slate-200 placeholder-slate-500"
+                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 w-32 text-center text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
                 value={inputSeed}
                 onChange={(e) => setInputSeed(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && startNewGame(inputSeed)}
@@ -441,7 +452,7 @@ const App: React.FC = () => {
             {/* Seed Display & Debug */}
             {puzzle && (gameState.status === 'playing' || gameState.status === 'won') ? (
               <div className="flex flex-col items-center gap-1">
-                <div className="text-xs text-slate-500 font-mono select-all cursor-pointer hover:text-slate-400 transition-colors" title="Current Game Seed">
+                <div className="text-xs text-slate-500 dark:text-slate-500 font-mono select-all cursor-pointer hover:text-slate-400 transition-colors" title="Current Game Seed">
                   Seed: {puzzle.seed}
                 </div>
 
@@ -495,6 +506,14 @@ const App: React.FC = () => {
                   >
                     +10 💰
                   </button>
+
+                  <button
+                    onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+                    className="px-2 py-1 text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded transition-colors"
+                    title="Toggle Theme"
+                  >
+                    {theme === 'dark' ? '☀️' : '🌙'}
+                  </button>
                 </div>
               </div>
             ) : <div className="h-4"></div>}
@@ -530,7 +549,7 @@ const App: React.FC = () => {
           <div className="max-w-full overflow-auto p-1">
 
             <div
-              className="grid gap-0 select-none bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-2xl touch-none mx-auto"
+              className="grid gap-0 select-none bg-slate-300 dark:bg-slate-900 p-2 rounded-xl border border-slate-300 dark:border-slate-800 shadow-2xl touch-none mx-auto"
               style={{
                 gridTemplateColumns: `auto repeat(${puzzle.size}, min-content)`,
               }}
@@ -538,16 +557,16 @@ const App: React.FC = () => {
             >
 
               {/* Top-Left Corner */}
-              <div className="border-b border-r border-slate-800 bg-slate-900/50"></div>
+              <div className="border-b border-r border-slate-300 dark:border-slate-800 bg-slate-200/50 dark:bg-slate-900/50"></div>
 
               {/* Column Hints */}
               {colHints.map((col, i) => {
                 const isThickRight = (i + 1) % 5 === 0 && i !== puzzle.size - 1;
                 const isColCorrect = isCheckHintsActive && isColComplete(i);
 
-                let classes = "bg-slate-900/50 border-b border-slate-800 pb-1 flex flex-col justify-end";
-                if (isThickRight) classes += " border-r-2 border-r-slate-400";
-                else classes += " border-r border-slate-800";
+                let classes = "bg-slate-200/50 dark:bg-slate-900/50 border-b border-slate-300 dark:border-slate-800 pb-1 flex flex-col justify-end";
+                if (isThickRight) classes += " border-r-2 border-r-slate-400 dark:border-r-slate-400";
+                else classes += " border-r border-slate-300 dark:border-slate-800";
 
                 return (
                   <div key={`col-hint-${i}`} className={classes}>
@@ -561,10 +580,10 @@ const App: React.FC = () => {
                 const isThickBottom = (r + 1) % 5 === 0 && r !== puzzle.size - 1;
                 const isRowCorrect = isCheckHintsActive && isRowComplete(r);
 
-                let hintClasses = "border-r border-slate-800 pr-1 flex items-center justify-end bg-slate-900/50";
+                let hintClasses = "border-r border-slate-300 dark:border-slate-800 pr-1 flex items-center justify-end bg-slate-200/50 dark:bg-slate-900/50";
 
-                if (isThickBottom) hintClasses += " border-b-2 border-b-slate-400";
-                else hintClasses += " border-b border-slate-800";
+                if (isThickBottom) hintClasses += " border-b-2 border-b-slate-400 dark:border-b-slate-400";
+                else hintClasses += " border-b border-slate-300 dark:border-slate-800";
 
                 return (
                   <React.Fragment key={`row-${r}`}>
@@ -628,7 +647,7 @@ const App: React.FC = () => {
         {/* Meta Layer with Image Markers */}
         {gameState.status === 'idle' && (
           <div className="mt-4 w-full max-w-4xl">
-            <div className="relative bg-slate-800/50 rounded-2xl border border-slate-700/50 p-8 min-h-[500px] overflow-hidden"
+            <div className="relative bg-white/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-8 min-h-[500px] overflow-hidden"
               ref={mapContainerRef}
               onMouseMove={(e) => {
                 // Handle map dragging for scrolling

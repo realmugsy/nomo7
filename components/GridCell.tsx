@@ -35,11 +35,11 @@ const GridCell: React.FC<GridCellProps> = ({
 }) => {
 
   // Base classes
-  let classes = "w-full h-full border border-slate-700 transition-all duration-100 cursor-pointer flex items-center justify-center box-border select-none";
+  let classes = "w-full h-full border border-slate-300 dark:border-slate-700 transition-all duration-100 cursor-pointer flex items-center justify-center box-border select-none";
 
   // Thick borders for visual separation of 5x5 blocks
-  if (borderRightThick) classes += " border-r-2 border-r-slate-400";
-  if (borderBottomThick) classes += " border-b-2 border-b-slate-400";
+  if (borderRightThick) classes += " border-r-2 border-r-slate-400 dark:border-r-slate-400";
+  if (borderBottomThick) classes += " border-b-2 border-b-slate-400 dark:border-b-slate-400";
 
   // Determine if we should show the "Truth" (solution)
   // We show truth if game is won (isRevealed) OR if debug mode is active
@@ -72,7 +72,7 @@ const GridCell: React.FC<GridCellProps> = ({
       }
     } else {
       // Empty cell (Solution)
-      classes += " bg-slate-800";
+      classes += " bg-slate-200 dark:bg-slate-800";
 
       // Error highlight: Only show RED if it's the actual End Game reveal and the user made a mistake.
       // We do NOT show red in Debug/Peek mode.
@@ -84,13 +84,13 @@ const GridCell: React.FC<GridCellProps> = ({
     // Normal Playing State
     if (state === CellState.FILLED) {
       // Remove background color since we're using a separate marker
-      classes += " hover:bg-slate-700";
+      classes += " hover:bg-slate-300 dark:hover:bg-slate-700";
       // Add custom style for border
       style.border = `${FILLED_CELL_BORDER_WIDTH}px solid ${FILLED_CELL_BORDER_COLOR}`;
     } else if (state === CellState.CROSSED) {
-      classes += " bg-slate-800 text-slate-500";
+      classes += " bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500";
     } else {
-      classes += " bg-slate-800 hover:bg-slate-700";
+      classes += " bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700";
     }
   }
 
