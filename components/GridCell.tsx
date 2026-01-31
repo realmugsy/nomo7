@@ -17,12 +17,12 @@ interface GridCellProps {
   isRevealing?: boolean;  // NEW: for blast reveal effect
 }
 
-const GridCell: React.FC<GridCellProps> = ({ 
-  state, 
-  isRevealed, 
-  isDebug, 
-  isSolutionFilled, 
-  onMouseDown, 
+const GridCell: React.FC<GridCellProps> = ({
+  state,
+  isRevealed,
+  isDebug,
+  isSolutionFilled,
+  onMouseDown,
   onMouseEnter,
   isMobile,
   borderRightThick,
@@ -31,7 +31,7 @@ const GridCell: React.FC<GridCellProps> = ({
   animationDuration,
   isRevealing
 }) => {
-  
+
   // Base classes
   let classes = "w-full h-full border border-slate-700 transition-all duration-100 cursor-pointer flex items-center justify-center box-border select-none";
 
@@ -46,8 +46,8 @@ const GridCell: React.FC<GridCellProps> = ({
   // Custom style for animation
   const style: React.CSSProperties = {};
   if (isRevealed && isSolutionFilled) {
-      if (animationDelay) style.animationDelay = animationDelay;
-      if (animationDuration) style.animationDuration = animationDuration;
+    if (animationDelay) style.animationDelay = animationDelay;
+    if (animationDuration) style.animationDuration = animationDuration;
   }
   // Add relative positioning for absolute markers
   style.position = 'relative';
@@ -55,30 +55,28 @@ const GridCell: React.FC<GridCellProps> = ({
   // State styling
   if (showSolution) {
     if (isSolutionFilled) {
-       // Correctly filled cell (Solution)
-       
-       if (isRevealed && !isDebug) {
-         // Game Won Animation: 
-         // Remove background color since we're using a separate marker
-         classes += " animate-win-pulse";
-         // Add custom style for border
-         style.border = `${VICTORY_ANIMATION_BORDER_WIDTH}px solid ${VICTORY_ANIMATION_BORDER_COLOR}`;
-       } else if (isDebug) {
-         // Debug view or standard revealed state without animation requirements
-         classes += " bg-emerald-500 border-emerald-600";
-       } else {
-         // For other cases, keep the background
-         classes += " bg-indigo-500";
-       }
+      // Correctly filled cell (Solution)
+
+      if (isRevealed && !isDebug) {
+        // Game Won Animation:
+        // Keep background transparent, only animate the marker (inner div)
+        // No special classes for outer container needed
+      } else if (isDebug) {
+        // Debug view or standard revealed state without animation requirements
+        classes += " bg-emerald-500 border-emerald-600";
+      } else {
+        // For other cases, keep the background
+        classes += " bg-indigo-500";
+      }
     } else {
-       // Empty cell (Solution)
-       classes += " bg-slate-800";
-       
-       // Error highlight: Only show RED if it's the actual End Game reveal and the user made a mistake.
-       // We do NOT show red in Debug/Peek mode.
-       if (isRevealed && state === CellState.FILLED) {
-         classes += " bg-red-500/50"; 
-       }
+      // Empty cell (Solution)
+      classes += " bg-slate-800";
+
+      // Error highlight: Only show RED if it's the actual End Game reveal and the user made a mistake.
+      // We do NOT show red in Debug/Peek mode.
+      if (isRevealed && state === CellState.FILLED) {
+        classes += " bg-red-500/50";
+      }
     }
   } else {
     // Normal Playing State
@@ -102,7 +100,7 @@ const GridCell: React.FC<GridCellProps> = ({
   }
 
   return (
-    <div 
+    <div
       className={classes}
       style={style}
       onMouseDown={onMouseDown}
@@ -113,7 +111,7 @@ const GridCell: React.FC<GridCellProps> = ({
     >
       {/* Show filled cell marker when filled and not in solution mode */}
       {state === CellState.FILLED && !showSolution && (
-        <div 
+        <div
           className="absolute bg-indigo-500 rounded-sm"
           style={{
             top: `${FILLED_CELL_MARKER_REDUCTION_PX}px`,
@@ -123,10 +121,10 @@ const GridCell: React.FC<GridCellProps> = ({
           }}
         />
       )}
-      
+
       {/* Show victory animation marker when in solution mode and cell is filled */}
       {isSolutionFilled && isRevealed && !isDebug && (
-        <div 
+        <div
           className="absolute bg-indigo-500 rounded-sm animate-win-pulse"
           style={{
             top: `${FILLED_CELL_MARKER_REDUCTION_PX}px`,
@@ -139,10 +137,10 @@ const GridCell: React.FC<GridCellProps> = ({
           }}
         />
       )}
-      
+
       {/* Show solution marker in debug mode */}
       {isSolutionFilled && isDebug && !isRevealed && (
-        <div 
+        <div
           className="absolute bg-emerald-500 rounded-sm"
           style={{
             top: `${FILLED_CELL_MARKER_REDUCTION_PX}px`,
@@ -153,16 +151,16 @@ const GridCell: React.FC<GridCellProps> = ({
           }}
         />
       )}
-      
+
       {/* Show Cross only if it's NOT revealed/debug (unless we want to see crosses on empty cells? No, usually solution cleans up) */}
       {state === CellState.CROSSED && !showSolution && (
         <svg xmlns="http://www.w3.org/2000/svg" className={`${CROSS_MARKER_SIZE} pointer-events-none`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={MARKER_BORDER_WIDTH} 
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={MARKER_BORDER_WIDTH}
             stroke={MARKER_BORDER_COLOR}
-            d="M6 18L18 6M6 6l12 12" 
+            d="M6 18L18 6M6 6l12 12"
           />
         </svg>
       )}

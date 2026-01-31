@@ -1,0 +1,1 @@
+scp -i "D:\downloads\proton-aws-dev1.pem" -r dist/* ubuntu@13.61.252.25:/var/www/nomo/

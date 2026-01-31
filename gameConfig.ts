@@ -1,30 +1,30 @@
 import { DifficultyLevel, DifficultySettings } from './types';
 
 export const DIFFICULTY_CONFIG: Record<DifficultyLevel, DifficultySettings> = {
-  VERY_EASY: { 
-    label: 'Very Easy (90-99%)', 
-    minDensity: 0.60, 
-    maxDensity: 0.79 
+  VERY_EASY: {
+    label: 'Very Easy (90-99%)',
+    minDensity: 0.60,
+    maxDensity: 0.79
   },
-  EASY: { 
-    label: 'Easy (70-90%)', 
-    minDensity: 0.55, 
-    maxDensity: 0.60 
+  EASY: {
+    label: 'Easy (70-90%)',
+    minDensity: 0.55,
+    maxDensity: 0.60
   },
-  MEDIUM: { 
-    label: 'Medium (50-70%)', 
-    minDensity: 0.50, 
-    maxDensity: 0.55 
+  MEDIUM: {
+    label: 'Medium (50-70%)',
+    minDensity: 0.50,
+    maxDensity: 0.55
   },
-  HARD: { 
-    label: 'Hard (30-50%)', 
-    minDensity: 0.4, 
-    maxDensity: 0.50 
+  HARD: {
+    label: 'Hard (30-50%)',
+    minDensity: 0.4,
+    maxDensity: 0.50
   },
-  VERY_HARD: { 
-    label: 'Very Hard (10-30%)', 
-    minDensity: 0.10, 
-    maxDensity: 0.30 
+  VERY_HARD: {
+    label: 'Very Hard (10-30%)',
+    minDensity: 0.10,
+    maxDensity: 0.30
   }
 };
 
@@ -34,7 +34,7 @@ export const GRID_SIZES = [4, 7, 11, 14, 18];
 export const META_LAYER_MAP_IMAGES_COUNT = 3; // Number of map images to stitch together
 
 // Duration of the win animation cycle (one way) in milliseconds
-export const WIN_ANIMATION_DURATION_MS = 1000;
+export const WIN_ANIMATION_DURATION_MS = 1500;
 
 // Border width for grid cells in pixels
 export const CELL_BORDER_WIDTH_PX = 2;
