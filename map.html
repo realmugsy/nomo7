@@ -84,31 +84,38 @@
         }
 
         .hexagon {
-            fill: rgba(79, 70, 229, 0.1);
-            stroke: var(--primary-color);
-            stroke-width: calc(1px / var(--map-zoom, 1));
-            transition: all 0.3s ease;
+            fill: transparent;
+            stroke: none !important;
+            /* Borders handled by grid-overlay */
+            transition: fill 0.3s ease;
             cursor: pointer;
+            pointer-events: all;
         }
 
         .hexagon:hover {
             fill: var(--hex-hover-color, #cbd5e1);
+            outline: none;
+        }
+
+        /* Hover border effect */
+        .hexagon-hover-stroke {
+            fill: none;
             stroke: var(--hex-hover-stroke, var(--primary-color));
             stroke-width: calc(var(--hex-hover-stroke-width, 2px) / var(--map-zoom, 1));
             stroke-opacity: var(--hex-hover-stroke-opacity, 1);
-            opacity: 1 !important;
-            /* Ensure opaque on hover even if .colored */
+            pointer-events: none;
+            display: none;
+        }
+
+        .grid-lines {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: calc(1px / var(--map-zoom, 1));
+            pointer-events: none;
         }
 
         .dark .hexagon {
-            fill: rgba(129, 140, 248, 0.05);
-            /* very subtle default */
-            stroke: var(--primary-color);
-        }
-
-        .dark .hexagon:hover {
-            fill: var(--hex-hover-color-dark, #334155);
-            stroke: var(--hex-hover-stroke-dark, var(--primary-color));
+            fill: transparent;
         }
 
         .hexagon.colored {
@@ -244,10 +251,12 @@
                     const config = window.mapConfig || { gridCols: 30, gridRows: 20, hexagonSize: 20 };
 
                     const size = config.hexagonSize;
+                    const fillPadding = config.fillPadding || 0;
                     const cols = config.gridCols;
                     const rows = config.gridRows;
                     const seed = config.seed || 'default';
                     const rng = seededRandom(stringToSeed(seed));
+                    const fillProb = config.fillPercentage !== undefined ? config.fillPercentage : 0.15;
 
                     const hexWidth = size * Math.sqrt(3);
                     const hexHeight = size * 2;
@@ -260,43 +269,128 @@
                     container.style.width = totalWidth + 'px';
                     container.style.height = totalHeight + 'px';
 
-                    let svgContent = `<svg id="main-map-svg" width="${totalWidth}" height="${totalHeight}" class="hex-svg">`;
-
-                    for (let row = 0; row < rows; row++) {
-                        for (let col = 0; col < cols; col++) {
-                            let x = col * horizDist + (horizDist / 2);
-                            if (row % 2 !== 0) {
-                                x += horizDist / 2;
-                            }
-                            const y = row * vertDist + (hexHeight / 2);
-                            const fillProb = config.fillPercentage !== undefined ? config.fillPercentage : 0.15;
-                            const isColored = rng() < fillProb;
-
-                            svgContent += createHexagon(x, y, size, row, col, isColored);
+                    // Pre-calculate colored status for all hexes
+                    const gridData = [];
+                    for (let r = 0; r < rows; r++) {
+                        gridData[r] = [];
+                        for (let c = 0; c < cols; c++) {
+                            gridData[r][c] = rng() < fillProb;
                         }
                     }
 
-                    svgContent += `</svg>`;
-                    container.innerHTML = svgContent;
+                    let fillGroup = "";
+                    let gridPathD = "";
+                    const processedEdges = new Set();
 
-                    // Add hover reordering handler
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < cols; c++) {
+                            let x = c * horizDist + (horizDist / 2);
+                            if (r % 2 !== 0) x += horizDist / 2;
+                            const y = r * vertDist + (hexHeight / 2);
+                            const isColored = gridData[r][c];
+
+                            // Hexagon Points
+                            const fullPoints = [];
+                            const fillPoints = [];
+                            for (let i = 0; i < 6; i++) {
+                                const angle_deg = 60 * i - 30;
+                                const angle_rad = Math.PI / 180 * angle_deg;
+
+                                // Full size for grid
+                                const fx = x + size * Math.cos(angle_rad);
+                                const fy = y + size * Math.sin(angle_rad);
+                                fullPoints.push({ x: fx, y: fy });
+
+                                // Shrunk size for fill
+                                const fillSize = Math.max(0, size - fillPadding);
+                                const sx = x + fillSize * Math.cos(angle_rad);
+                                const sy = y + fillSize * Math.sin(angle_rad);
+                                fillPoints.push({ x: sx, y: sy });
+                            }
+
+                            // Fills Layer
+                            const fillPointsStr = fillPoints.map(p => `${p.x},${p.y}`).join(' ');
+                            const fullPointsStr = fullPoints.map(p => `${p.x},${p.y}`).join(' ');
+                            fillGroup += `<polygon points="${fillPointsStr}" data-full-points="${fullPointsStr}" class="hexagon ${isColored ? 'colored' : ''}" data-row="${r}" data-col="${c}" />`;
+
+                            // Grid Lines Layer (Shared Unique Edges using FULL points)
+                            for (let i = 0; i < 6; i++) {
+                                const p1 = fullPoints[i];
+                                const p2 = fullPoints[(i + 1) % 6];
+
+                                // Neighbor coordinate logic (Pointy topped, starting from Top-Right 30deg)
+                                // Edge indices matching points[i] to points[i+1]:
+                                // 0: Right, 1: Bottom-Right, 2: Bottom-Left, 3: Left, 4: Top-Left, 5: Top-Right
+                                let nr, nc;
+                                if (r % 2 === 0) {
+                                    // Even row hexes are shifted left
+                                    const neighbors = [
+                                        [r, c + 1],     // 0: Right
+                                        [r + 1, c],     // 1: Bottom-Right
+                                        [r + 1, c - 1], // 2: Bottom-Left
+                                        [r, c - 1],     // 3: Left
+                                        [r - 1, c - 1], // 4: Top-Left
+                                        [r - 1, c]      // 5: Top-Right
+                                    ];
+                                    [nr, nc] = neighbors[i];
+                                } else {
+                                    // Odd row hexes are shifted right
+                                    const neighbors = [
+                                        [r, c + 1],     // 0: Right
+                                        [r + 1, c + 1], // 1: Bottom-Right
+                                        [r + 1, c],     // 2: Bottom-Left
+                                        [r, c - 1],     // 3: Left
+                                        [r - 1, c],      // 4: Top-Left
+                                        [r - 1, c + 1]  // 5: Top-Right
+                                    ];
+                                    [nr, nc] = neighbors[i];
+                                }
+
+                                const neighborExists = nr >= 0 && nr < rows && nc >= 0 && nc < cols;
+                                const neighborIsColored = neighborExists ? gridData[nr][nc] : false;
+
+                                // DRAW BORDER IF: 
+                                // 1. Config.showEmptyBorders is true
+                                // 2. One of the hexes is colored
+                                if (config.showEmptyBorders || isColored || neighborIsColored) {
+                                    const p1k = `${Math.round(p1.x * 100)},${Math.round(p1.y * 100)}`;
+                                    const p2k = `${Math.round(p2.x * 100)},${Math.round(p2.y * 100)}`;
+                                    const edgeKey = [p1k, p2k].sort().join('-');
+
+                                    if (!processedEdges.has(edgeKey)) {
+                                        processedEdges.add(edgeKey);
+                                        gridPathD += `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} `;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    container.innerHTML = `
+                        <svg id="main-map-svg" width="${totalWidth}" height="${totalHeight}" class="hex-svg">
+                            <g id="fills-layer">${fillGroup}</g>
+                            <path d="${gridPathD}" class="grid-lines" id="grid-lines" />
+                            <polygon id="hover-highlight" points="" class="hexagon-hover-stroke" />
+                        </svg>
+                    `;
+
+                    // Hover interactions
                     const svg = document.getElementById('main-map-svg');
+                    const highlight = document.getElementById('hover-highlight');
+
                     svg.addEventListener('mouseover', (e) => {
                         if (e.target.classList.contains('hexagon')) {
-                            // Move to end of SVG to render on top of neighbors
-                            e.target.parentNode.appendChild(e.target);
+                            const points = e.target.getAttribute('data-full-points');
+                            highlight.setAttribute('points', points);
+                            highlight.style.display = 'block';
                         }
                     });
-                }
 
-                function createHexagon(x, y, size, r, c, isColored) {
-                    const points = [];
-                    for (let i = 0; i < 6; i++) {
-                        const angle_deg = 60 * i - 30; // Pointy topped
-                        const angle_rad = Math.PI / 180 * angle_deg;
-                        points.push(`${x + size * Math.cos(angle_rad)},${y + size * Math.sin(angle_rad)}`);
-                    }
-                    return `<polygon points="${points.join(' ')}" class="hexagon ${isColored ? 'colored' : ''}" data-row="${r}" data-col="${c}" />`;
+                    svg.addEventListener('mouseout', (e) => {
+                        if (e.target.classList.contains('hexagon')) {
+                            highlight.style.display = 'none';
+                        }
+                    });
                 }
 
                 function applyConstraints() {
@@ -333,6 +427,17 @@
                     if (zoomDisplay) zoomDisplay.innerText = currentScale.toFixed(1) + 'x';
 
                     container.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${currentScale})`;
+
+                    // Sync line widths with zoom
+                    const lines = document.getElementById('grid-lines');
+                    if (lines) lines.style.strokeWidth = (1 / currentScale) + 'px';
+
+                    const highlight = document.getElementById('hover-highlight');
+                    if (highlight) {
+                        const config = window.mapConfig || {};
+                        const sw = config.hoverStrokeWidth || 2;
+                        highlight.style.strokeWidth = (sw / currentScale) + 'px';
+                    }
                 }
 
                 function adjustZoom(delta) {
