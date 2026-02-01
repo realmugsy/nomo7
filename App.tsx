@@ -47,7 +47,9 @@ const App: React.FC = () => {
   const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null);
   const [revealingCells, setRevealingCells] = useState<Set<string>>(new Set());
   const [coins, setCoins] = useState(INITIAL_COINS); // Track available coins
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark'); // Theme state
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('nomo7-theme') as 'dark' | 'light') || 'dark';
+  }); // Theme state
   const [winAnimationMode, setWinAnimationMode] = useState<'smooth' | 'sharp'>('smooth'); // Animation style toggle
 
   // Mouse drag scrolling state for map
@@ -82,13 +84,14 @@ const App: React.FC = () => {
   const isDragging = useRef<boolean>(false);
   const dragTargetState = useRef<CellState | null>(null);
 
-  // Apply theme class to html element
+  // Apply theme class to html element and save to localStorage
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
+    localStorage.setItem('nomo7-theme', theme);
   }, [theme]);
 
   // Check viewport for mobile helper

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Политика конфиденциальности - Nonogram Style</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .legal-content {
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .legal-content h2 {
+            margin-top: 30px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .legal-content p {
+            margin-bottom: 15px;
+        }
+
+        .legal-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        // Theme initialization
+        (function () {
+            const theme = localStorage.getItem('nomo7-theme') || 'dark';
+            if (theme === 'dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+        })();
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            const newTheme = isDark ? 'dark' : 'light';
+            localStorage.setItem('nomo7-theme', newTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const btn = document.getElementById('theme-toggle-btn');
+            if (!btn) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            btn.innerHTML = isDark ? '☀️' : '🌙';
+            btn.title = isDark ? 'Переключить на светлую тему' : 'Переключить на темную тему';
+        }
+
+        window.onload = updateThemeIcon;
+    </script>
+    <script src="/js/i18n.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="/index.html" class="logo">
+            <span class="logo-icon"></span>
+            <span data-i18n="header.logo">MyGamePortal</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="/index.html" data-i18n="nav.play">Играть</a></li>
+                <li><a href="#" data-i18n="nav.rating">Рейтинг</a></li>
+                <li><a href="/rules.html" data-i18n="nav.rules">Правила</a></li>
+                <li><a href="#" data-i18n="nav.forum">Форум</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <div id="theme-toggle-root" class="theme-toggle-container">
+                <button id="theme-toggle-btn" onclick="toggleTheme()"
+                    class="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 shadow-md transform hover:scale-110 active:scale-95 border border-slate-300 dark:border-slate-500">
+                    🌙
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="game-section legal-content">
+            <h1 style="color: var(--primary-color);" data-i18n="footer.privacy">Политика конфиденциальности</h1>
+
+            <p data-i18n="privacy_detail.intro">Мы уважаем вашу конфиденциальность и стремимся защитить ваши
+                персональные данные. Эта политика объясняет,
+                как мы обрабатываем информацию.</p>
+
+            <h2 data-i18n="privacy_detail.h1_title">1. Сбор информации</h2>
+            <p data-i18n="privacy_detail.h1_p">Наше приложение работает преимущественно на стороне клиента. Мы не
+                собираем личные данные, такие как ваше
+                имя или адрес электронной почты, без вашего явного согласия.</p>
+
+            <h2 data-i18n="privacy_detail.h2_title">2. Использование данных</h2>
+            <p data-i18n="privacy_detail.h2_p">Мы используем локальное хранилище браузера (localStorage) для того, чтобы
+                запомнить ваши настройки, такие
+                как:</p>
+            <ul>
+                <li data-i18n="privacy_detail.h2_li1">Выбранная цветовая тема (светлая/темная).</li>
+                <li data-i18n="privacy_detail.h2_li2">Ваш прогресс в игре.</li>
+                <li data-i18n="privacy_detail.h2_li3">Количество игровых монет.</li>
+            </ul>
+
+            <h2 data-i18n="privacy_detail.h3_title">3. Файлы cookie</h2>
+            <p data-i18n="privacy_detail.h3_p">Мы можем использовать файлы cookie для аналитики, чтобы понимать, как
+                пользователи взаимодействуют с
+                нашим игровым порталом и делать его лучше.</p>
+
+            <h2 data-i18n="privacy_detail.h4_title">4. Сторонние сервисы</h2>
+            <p data-i18n="privacy_detail.h4_p">Игра может использовать внешние API (например, Google Gemini) для
+                генерации игрового контента. В эти
+                сервисы не передается ваша личная информация.</p>
+
+            <div style="margin-top: 40px; text-align: center;">
+                <a href="/index.html" class="btn" data-i18n="nav.play">Вернуться к игре</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p data-i18n="footer.copy">&copy; 2023 MyGamePortal. Все права защищены.</p>
+        <p style="margin-top: 5px;">
+            <a href="/privacy.html" data-i18n="footer.privacy">Политика конфиденциальности</a> |
+            <a href="/terms.html" data-i18n="footer.terms">Условия использования</a> |
+            <a href="/contacts.html" data-i18n="footer.contacts">Контакты</a>
+        </p>
+    </footer>
+</body>
+
+</html>

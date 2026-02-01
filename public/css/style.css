@@ -84,6 +84,12 @@ nav a.active {
     color: var(--primary-color);
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .header-actions .btn {
     font-size: 0.9rem;
     padding: 6px 16px;
@@ -235,6 +241,34 @@ canvas {
     min-width: 30px;
     text-align: center;
     box-shadow: 0 2px 0 #ccc;
+}
+
+/* Specific styling for the wide how-to-play panel */
+.how-to-play-panel {
+    width: 100%;
+    margin-top: 30px !important;
+}
+
+.how-to-play-panel .controls-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 30px;
+    margin-top: 10px;
+}
+
+.how-to-play-panel .controls-list li {
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 200px;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.02);
+    padding: 10px;
+    border-radius: var(--radius);
+}
+
+.dark .how-to-play-panel .controls-list li {
+    background: rgba(255, 255, 255, 0.03);
 }
 
 /* Кнопки действий */

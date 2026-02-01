@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контакты - Nonogram Style</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .legal-content {
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .legal-content h2 {
+            margin-top: 30px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .contact-item {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark .contact-item {
+            background: rgba(255, 255, 255, 0.03);
+        }
+    </style>
+    <script>
+        // Theme initialization
+        (function () {
+            const theme = localStorage.getItem('nomo7-theme') || 'dark';
+            if (theme === 'dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+        })();
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            const newTheme = isDark ? 'dark' : 'light';
+            localStorage.setItem('nomo7-theme', newTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const btn = document.getElementById('theme-toggle-btn');
+            if (!btn) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            btn.innerHTML = isDark ? '☀️' : '🌙';
+            btn.title = isDark ? 'Переключить на светлую тему' : 'Переключить на темную тему';
+        }
+
+        window.onload = updateThemeIcon;
+    </script>
+    <script src="/js/i18n.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="/index.html" class="logo">
+            <span class="logo-icon"></span>
+            <span data-i18n="header.logo">MyGamePortal</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="/index.html" data-i18n="nav.play">Играть</a></li>
+                <li><a href="#" data-i18n="nav.rating">Рейтинг</a></li>
+                <li><a href="/rules.html" data-i18n="nav.rules">Правила</a></li>
+                <li><a href="#" data-i18n="nav.forum">Форум</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <div id="theme-toggle-root" class="theme-toggle-container">
+                <button id="theme-toggle-btn" onclick="toggleTheme()"
+                    class="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 shadow-md transform hover:scale-110 active:scale-95 border border-slate-300 dark:border-slate-500">
+                    🌙
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="game-section legal-content">
+            <h1 style="color: var(--primary-color);" data-i18n="footer.contacts">Контакты</h1>
+
+            <p data-i18n="contacts_detail.intro">У вас возникли вопросы, предложения или вы нашли ошибку в игре? Мы
+                всегда рады обратной связи!</p>
+
+            <h2 data-i18n="contacts_detail.methods_title">Способы связи</h2>
+
+            <div class="contact-item">
+                <strong data-i18n="contacts_detail.email_label">Email:</strong> support@mygameportal.com
+            </div>
+
+            <div class="contact-item">
+                <strong data-i18n="contacts_detail.github_label">GitHub:</strong> <a href="#"
+                    style="color: var(--primary-color);">github.com/nomogram-style</a>
+            </div>
+
+            <p style="margin-top: 30px;" data-i18n="contacts_detail.feedback_time">Мы стараемся отвечать на все запросы
+                в течение 24 часов.</p>
+
+            <div style="margin-top: 40px; text-align: center;">
+                <a href="/index.html" class="btn" data-i18n="nav.play">Вернуться к игре</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p data-i18n="footer.copy">&copy; 2023 MyGamePortal. Все права защищены.</p>
+        <p style="margin-top: 5px;">
+            <a href="/privacy.html" data-i18n="footer.privacy">Политика конфиденциальности</a> |
+            <a href="/terms.html" data-i18n="footer.terms">Условия использования</a> |
+            <a href="/contacts.html" data-i18n="footer.contacts">Контакты</a>
+        </p>
+    </footer>
+</body>
+
+</html>

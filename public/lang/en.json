@@ -47,5 +47,59 @@
         "privacy": "Privacy Policy",
         "terms": "Terms of Use",
         "contacts": "Contacts"
+    },
+    "rules_detail": {
+        "title": "How to Solve Nonograms",
+        "intro": "Nonograms (Japanese crosswords) are logic puzzles in which you need to fill cells in accordance with numbers indicated on the left of rows and at the top of columns.",
+        "h1_title": "1. What do the numbers mean?",
+        "h1_p": "Each number shows how many **consecutive** filled cells are in this row or column.",
+        "h1_li1": "If there is a number <strong>5</strong> in a row, it means there is a block of five filled cells in it.",
+        "h1_li2": "If there are several numbers, for example <strong>3 1</strong>, this means that in this row there is first a block of three cells, and then — a block of one.",
+        "h1_li3": "<strong>Important:</strong> There must be at least one empty (unfilled) cell between two blocks of filled cells.",
+        "h2_title": "2. Start with the obvious",
+        "h2_p": "Look for rows or columns that can be filled immediately. For example, if the grid size is 10x10 and there is a 10 in a row — then the entire row will be filled.",
+        "h3_title": "3. Place crosses",
+        "h3_p": "If you are sure that a cell should be empty, place a <strong>cross (RMB)</strong> in it. This will help you cut off impossible options and find the correct solution faster.",
+        "example_p": "Example for hint <strong>3 1</strong>: three cells are filled, one is empty (cross), one is filled.",
+        "h4_title": "4. Game controls",
+        "h4_li1": "<strong>LMB:</strong> Fill a cell (black/blue color).",
+        "h4_li2": "<strong>RMB:</strong> Place a cross (empty cell).",
+        "h4_li3": "<strong>Hold and drag:</strong> You can fill several cells in a row at once.",
+        "back": "Return to the game"
+    },
+    "privacy_detail": {
+        "title": "Privacy Policy",
+        "intro": "We respect your privacy and are committed to protecting your personal data. This policy explains how we process information.",
+        "h1_title": "1. Information Collection",
+        "h1_p": "Our application works primarily on the client side. We do not collect personal data such as your name or email address without your explicit consent.",
+        "h2_title": "2. Data Usage",
+        "h2_p": "We use the browser's local storage (localStorage) to remember your settings, such as:",
+        "h2_li1": "Selected color theme (light/dark).",
+        "h2_li2": "Your game progress.",
+        "h2_li3": "The number of game coins.",
+        "h3_title": "3. Cookies",
+        "h3_p": "We may use cookies for analytics to understand how users interact with our game portal and make it better.",
+        "h4_title": "4. Third-party services",
+        "h4_p": "The game may use external APIs (e.g., Google Gemini) to generate game content. No personal information is transmitted to these services."
+    },
+    "terms_detail": {
+        "title": "Terms of Use",
+        "intro": "Welcome to our game portal. By using this site, you agree to the following terms.",
+        "h1_title": "1. Acceptance of Terms",
+        "h1_p": "By accessing the site and using the game, you confirm that you have read, understood, and agree to comply with these rules.",
+        "h2_title": "2. Gameplay",
+        "h2_p": "The game is provided 'as is'. We are not responsible for the safety of your progress data in case of clearing the browser cache or storage.",
+        "h3_title": "3. Fair Play",
+        "h3_p": "We welcome fair play. The use of third-party software to automate nonogram solving is discouraged, as it deprives the puzzle itself of meaning.",
+        "h4_title": "4. Changes",
+        "h4_p": "We reserve the right to change these terms and game functionality at any time without prior notice."
+    },
+    "contacts_detail": {
+        "title": "Contacts",
+        "intro": "Do you have questions, suggestions, or found a bug in the game? We are always happy for feedback!",
+        "methods_title": "Ways to reach us",
+        "email_label": "Email:",
+        "github_label": "GitHub:",
+        "feedback_time": "We try to respond to all inquiries within 24 hours."
     }
 }
