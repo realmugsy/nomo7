@@ -1,0 +1,51 @@
+{
+    "title": "Game Portal - Nonogram Style",
+    "header": {
+        "logo": "MyGamePortal",
+        "login": "Login"
+    },
+    "nav": {
+        "play": "Play",
+        "rating": "Rating",
+        "rules": "Rules",
+        "forum": "Forum"
+    },
+    "game": {
+        "title": "Nonograms: Level 1",
+        "difficulty": "Difficulty: Easy",
+        "restart": "↺ Restart",
+        "check": "✓ Check",
+        "canvas_placeholder": "Canvas Game Board"
+    },
+    "panel": {
+        "progress": "Progress",
+        "how_to_play": "How to Play",
+        "tools": "Tools",
+        "like_game": "Enjoying the game?",
+        "share": "Share with friends"
+    },
+    "stats": {
+        "time": "Time",
+        "lives": "Lives",
+        "solved": "Solved"
+    },
+    "controls": {
+        "lmb": "LMB",
+        "paint": "Fill cell",
+        "rmb": "RMB",
+        "cross": "Mark cross",
+        "drag": "Drag",
+        "draw": "Draw by dragging"
+    },
+    "tools": {
+        "lamp": "💡 Hint",
+        "settings": "⚙️ Settings",
+        "next_level": "Next Level ➜"
+    },
+    "footer": {
+        "copy": "&copy; 2023 MyGamePortal. All rights reserved.",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Use",
+        "contacts": "Contacts"
+    }
+}

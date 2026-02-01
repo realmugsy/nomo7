@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игровой Портал - Nonogram Style</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Шапка сайта -->
+    <header>
+        <a href="#" class="logo">
+            <span class="logo-icon"></span>
+            <span data-i18n="header.logo">MyGamePortal</span>
+        </a>
+
+        <nav>
+            <ul>
+                <li><a href="#" class="active" data-i18n="nav.play">Играть</a></li>
+                <li><a href="#" data-i18n="nav.rating">Рейтинг</a></li>
+                <li><a href="#" data-i18n="nav.rules">Правила</a></li>
+                <li><a href="#" data-i18n="nav.forum">Форум</a></li>
+            </ul>
+        </nav>
+
+
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-container">
+
+        <!-- Левая колонка: Игровое поле (Iframe) -->
+        <section class="game-section">
+            <div class="game-header">
+                <div class="game-title">
+                    <h1 data-i18n="game.title">Нонограммы: Уровень 1</h1>
+                </div>
+                <div class="game-meta">
+                    <span data-i18n="game.difficulty">Сложность: Легко</span>
+                </div>
+            </div>
+
+            <!-- Здесь находится контейнер для вашей игры -->
+            <div class="game-wrapper">
+                <canvas id="gameCanvas"></canvas>
+            </div>
+
+
+
+            <div class="panel" style="margin-top: 20px; width: 100%;">
+                <h3 data-i18n="panel.how_to_play">Как играть</h3>
+                <ul class="controls-list">
+                    <li>
+                        <span class="key" data-i18n="controls.lmb">ЛКМ</span>
+                        <span data-i18n="controls.paint">Закрасить клетку</span>
+                    </li>
+                    <li>
+                        <span class="key" data-i18n="controls.rmb">ПКМ</span>
+                        <span data-i18n="controls.cross">Поставить крестик</span>
+                    </li>
+                    <li>
+                        <span class="key" data-i18n="controls.drag">Drag</span>
+                        <span data-i18n="controls.draw">Рисовать нажатием</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+
+
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+        <p data-i18n="footer.copy">&copy; 2023 MyGamePortal. Все права защищены.</p>
+        <p style="margin-top: 5px;">
+            <a href="#" data-i18n="footer.privacy">Политика конфиденциальности</a> |
+            <a href="#" data-i18n="footer.terms">Условия использования</a> |
+            <a href="#" data-i18n="footer.contacts">Контакты</a>
+        </p>
+    </footer>
+
+    <!-- Простой скрипт для таймера (чтобы оживить интерфейс) -->
+    <!-- Простой скрипт для таймера (чтобы оживить интерфейс) -->
+    <script src="js/i18n.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

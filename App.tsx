@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { generatePuzzle } from './services/geminiService';
 import { CellState, GameState, PuzzleData, ToolType, DifficultyLevel } from './types';
 import {
@@ -71,7 +72,6 @@ const App: React.FC = () => {
 
   // Controls
   const [activeTool, setActiveTool] = useState<ToolType>(ToolType.FILL);
-  const [inputSeed, setInputSeed] = useState<string>('');
 
   // Settings
   const [selectedSize, setSelectedSize] = useState<number>(10);
@@ -391,17 +391,11 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-6 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
+    <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-200/50 via-slate-100 to-slate-100 dark:from-indigo-900/20 dark:via-slate-900 dark:to-slate-900 -z-10"></div>
 
-      <header className="text-center space-y-2 mt-4">
-        {/* Added pb-2 to prevent bg-clip-text from cutting off descenders */}
-        <h1 className="text-3xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 pb-2">
-          Nonogram Puzzle
-        </h1>
-      </header>
 
-      <div className="w-full max-w-3xl bg-white/70 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm shadow-xl flex flex-col items-center">
+      <div className="w-full bg-white/70 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm shadow-none flex flex-col items-center">
 
         {/* Top Controls Area - Only shown during gameplay */}
         {(gameState.status === 'playing' || gameState.status === 'won') && (
@@ -431,14 +425,6 @@ const App: React.FC = () => {
                 ))}
               </select>
 
-              <input
-                type="text"
-                placeholder="Seed (Optional)"
-                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 w-32 text-center text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
-                value={inputSeed}
-                onChange={(e) => setInputSeed(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && startNewGame(inputSeed)}
-              />
             </div>
 
             {/* New Game Button */}
@@ -452,9 +438,6 @@ const App: React.FC = () => {
             {/* Seed Display & Debug */}
             {puzzle && (gameState.status === 'playing' || gameState.status === 'won') ? (
               <div className="flex flex-col items-center gap-1">
-                <div className="text-xs text-slate-500 dark:text-slate-500 font-mono select-all cursor-pointer hover:text-slate-400 transition-colors" title="Current Game Seed">
-                  Seed: {puzzle.seed}
-                </div>
 
                 <div className="text-xs text-slate-500 font-mono" title="Puzzle density">
                   Density: <span className="font-bold text-indigo-400">{stats.percent}%</span> ({stats.count}/{puzzle.size * puzzle.size} cells)
@@ -505,14 +488,6 @@ const App: React.FC = () => {
                     title="💰 Cheat: Add 10 coins"
                   >
                     +10 💰
-                  </button>
-
-                  <button
-                    onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
-                    className="px-2 py-1 text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded transition-colors"
-                    title="Toggle Theme"
-                  >
-                    {theme === 'dark' ? '☀️' : '🌙'}
                   </button>
                 </div>
               </div>
@@ -791,6 +766,18 @@ const App: React.FC = () => {
 
       </div>
 
+      {document.getElementById('theme-toggle-root') && createPortal(
+        <button
+          onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+          className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 shadow-md transform hover:scale-110 active:scale-95 border border-slate-300 dark:border-slate-500"
+          title={theme === 'dark' ? 'Переключить на светлую тему' : 'Переключить на темную тему'}
+        >
+          <span className="text-xl leading-none">
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </span>
+        </button>,
+        document.getElementById('theme-toggle-root')!
+      )}
     </div>
   );
 };

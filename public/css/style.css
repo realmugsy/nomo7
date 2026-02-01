@@ -1,0 +1,461 @@
+/* --- Сброс и Базовые стили --- */
+:root {
+    --primary-color: #4a90e2;
+    /* Основной синий */
+    --primary-hover: #357abd;
+    --bg-color: #f4f6f8;
+    /* Светло-серый фон страницы */
+    --surface-color: #ffffff;
+    /* Белый фон карточек */
+    --text-main: #333333;
+    --text-secondary: #666666;
+    --border-color: #e0e0e0;
+    --success-color: #2ecc71;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --radius: 8px;
+    --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- Шапка (Header) --- */
+header {
+    background-color: var(--surface-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 0 20px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Иконка логотипа (CSS) */
+.logo-icon {
+    width: 24px;
+    height: 24px;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+    display: inline-block;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+nav a:hover,
+nav a.active {
+    color: var(--primary-color);
+}
+
+.header-actions .btn {
+    font-size: 0.9rem;
+    padding: 6px 16px;
+}
+
+/* Language Switcher */
+.lang-switcher {
+    display: flex;
+    gap: 5px;
+    margin-right: 15px;
+}
+
+.lang-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.lang-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.lang-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* --- Основной макет (Layout) --- */
+.main-container {
+    flex: 1;
+    max-width: 1200px;
+    margin: 20px auto;
+    width: 100%;
+    padding: 0 20px;
+    display: block;
+    /* Игровая область на всю ширину */
+}
+
+/* --- Игровая область (Left Column) --- */
+.game-section {
+    background-color: var(--surface-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.game-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.game-title h1 {
+    font-size: 1.2rem;
+    color: var(--text-main);
+}
+
+.game-meta {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Контейнер для Игры (Canvas) */
+.game-wrapper {
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    /* Сохраняем соотношение сторон 16:9 или 4:3, можно менять padding-bottom */
+    padding-bottom: 75%;
+    /* 4:3 Aspect Ratio */
+    background-color: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* --- Боковая панель (Right Column) --- */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.panel {
+    background-color: var(--surface-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+}
+
+.panel h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: var(--text-main);
+    border-bottom: 2px solid var(--primary-color);
+    display: inline-block;
+    padding-bottom: 4px;
+}
+
+/* Список управления */
+.controls-list {
+    list-style: none;
+}
+
+.controls-list li {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.controls-list li:last-child {
+    margin-bottom: 0;
+}
+
+.key {
+    background: #eee;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #555;
+    min-width: 30px;
+    text-align: center;
+    box-shadow: 0 2px 0 #ccc;
+}
+
+/* Кнопки действий */
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.btn {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* Инфо о игре */
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.stat-box {
+    text-align: center;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 6px;
+    flex: 1;
+    margin: 0 5px;
+}
+
+.stat-box:first-child {
+    margin-left: 0;
+}
+
+.stat-box:last-child {
+    margin-right: 0;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-main);
+}
+
+/* --- Подвал (Footer) --- */
+footer {
+    background-color: #fff;
+    border-top: 1px solid var(--border-color);
+    padding: 20px;
+    text-align: center;
+    margin-top: auto;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* --- Адаптивность --- */
+@media (max-width: 900px) {
+    .main-container {
+        grid-template-columns: 1fr;
+        /* Одна колонка */
+    }
+
+    .sidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .panel {
+        flex: 1 1 300px;
+        /* Панели растягиваются */
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 0 10px;
+    }
+
+    nav {
+        display: none;
+        /* Скрываем меню на очень маленьких экранах для простоты */
+    }
+
+    .game-wrapper {
+        padding-bottom: 56.25%;
+        /* 16:9 на мобильных */
+    }
+
+    .sidebar {
+        flex-direction: column;
+    }
+}
+
+/* --- Dark Mode Overrides (Matches Tailwind Slate-900 palette) --- */
+html.dark {
+    --bg-color: #0f172a;
+    /* Slate 900 */
+    --surface-color: #1e293b;
+    /* Slate 800 */
+    --text-main: #f1f5f9;
+    /* Slate 100 */
+    --text-secondary: #94a3b8;
+    /* Slate 400 */
+    --border-color: #334155;
+    /* Slate 700 */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+html.dark body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+html.dark header {
+    background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+html.dark .logo {
+    color: #60a5fa;
+    /* Blue 400 */
+}
+
+html.dark .logo-icon {
+    background-color: #60a5fa;
+}
+
+html.dark .game-section,
+html.dark .panel {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+}
+
+html.dark .game-wrapper {
+    background-color: #020617;
+    /* Slate 950 for game background */
+    border-color: var(--border-color);
+}
+
+html.dark .key {
+    background: #334155;
+    border-color: #475569;
+    color: #e2e8f0;
+    box-shadow: 0 2px 0 #1e293b;
+}
+
+html.dark .stat-box {
+    background: #0f172a;
+}
+
+html.dark footer {
+    background-color: var(--surface-color);
+    border-top-color: var(--border-color);
+}
+
+html.dark nav a {
+    color: var(--text-secondary);
+}
+
+html.dark nav a:hover,
+html.dark nav a.active {
+    color: #60a5fa;
+}
+
+html.dark .lang-btn {
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+html.dark .lang-btn:hover,
+html.dark .lang-btn.active {
+    border-color: #60a5fa;
+    color: #60a5fa;
+}
+
+html.dark .lang-btn.active {
+    background-color: #60a5fa;
+    color: white;
+}
