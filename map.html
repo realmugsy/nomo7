@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="nav.map">Карта приключений - Nonogram Style</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .map-content {
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 600px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius);
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            /* Viewport */
+            cursor: grab;
+            user-select: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .map-placeholder:active {
+            cursor: grabbing;
+        }
+
+        #hex-grid-container {
+            position: absolute;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: white;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .dark .zoom-btn {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-color: #334155;
+        }
+
+        .zoom-btn:hover {
+            background: #f8fafc;
+        }
+
+        .dark .zoom-btn:hover {
+            background: #334155;
+        }
+
+        .hex-svg {
+            overflow: visible;
+        }
+
+        .hexagon {
+            fill: rgba(79, 70, 229, 0.1);
+            stroke: var(--primary-color);
+            stroke-width: calc(1px / var(--map-zoom, 1));
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .hexagon:hover {
+            fill: var(--hex-hover-color, #cbd5e1);
+            stroke: var(--hex-hover-stroke, var(--primary-color));
+            stroke-width: calc(var(--hex-hover-stroke-width, 2px) / var(--map-zoom, 1));
+            stroke-opacity: var(--hex-hover-stroke-opacity, 1);
+            opacity: 1 !important;
+            /* Ensure opaque on hover even if .colored */
+        }
+
+        .dark .hexagon {
+            fill: rgba(129, 140, 248, 0.05);
+            /* very subtle default */
+            stroke: var(--primary-color);
+        }
+
+        .dark .hexagon:hover {
+            fill: var(--hex-hover-color-dark, #334155);
+            stroke: var(--hex-hover-stroke-dark, var(--primary-color));
+        }
+
+        .hexagon.colored {
+            fill: var(--primary-color);
+            fill-opacity: 0.3;
+        }
+
+        .dark .hexagon.colored {
+            fill: var(--primary-color);
+            fill-opacity: 0.4;
+        }
+    </style>
+    <script>
+        // Theme initialization
+        (function () {
+            const theme = localStorage.getItem('nomo7-theme') || 'dark';
+            if (theme === 'dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+        })();
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            const newTheme = isDark ? 'dark' : 'light';
+            localStorage.setItem('nomo7-theme', newTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const btn = document.getElementById('theme-toggle-btn');
+            if (!btn) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            btn.innerHTML = isDark ? '☀️' : '🌙';
+            btn.title = isDark ? 'Переключить на светлую тему' : 'Переключить на темную тему';
+        }
+
+        window.onload = updateThemeIcon;
+    </script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/mapConfig.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="/index.html" class="logo">
+            <span class="logo-icon"></span>
+            <span data-i18n="header.logo">MyGamePortal</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="/index.html" data-i18n="nav.play">Играть</a></li>
+                <li><a href="/map.html" class="active" data-i18n="nav.map">Карта</a></li>
+                <li><a href="/rules.html" data-i18n="nav.rules">Правила</a></li>
+                <li><a href="#" data-i18n="nav.forum">Форум</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <div id="theme-toggle-root" class="theme-toggle-container">
+                <button id="theme-toggle-btn" onclick="toggleTheme()"
+                    class="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 shadow-md transform hover:scale-110 active:scale-95 border border-slate-300 dark:border-slate-500">
+                    🌙
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="game-section map-content">
+            <h1 style="color: var(--primary-color);" data-i18n="nav.map">Карта приключений</h1>
+
+            <p style="margin-bottom: 20px;">Здесь вы сможете выбирать уровни и следить за своим прогрессом!</p>
+
+            <div class="map-placeholder" id="viewport">
+                <div id="hex-grid-container"></div>
+
+                <div class="zoom-controls">
+                    <span id="zoom-level-display"
+                        style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">1.0x</span>
+                    <button class="zoom-btn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
+                    <button class="zoom-btn" onclick="adjustZoom(-0.1)" title="Zoom Out">-</button>
+                    <button class="zoom-btn" onclick="resetView()" title="Reset View">⟲</button>
+                </div>
+
+                <div style="display:none; color: var(--text-secondary);" id="map-error">
+                    Карта загружается или временно недоступна...
+                </div>
+            </div>
+
+            <script>
+                // Simple seed-based random generator (LCG)
+                function seededRandom(seed) {
+                    let m = 0x80000000;
+                    let a = 1103515245;
+                    let c = 12345;
+                    let state = seed % m;
+                    return function () {
+                        state = (a * state + c) % m;
+                        return state / (m - 1);
+                    };
+                }
+
+                function stringToSeed(str) {
+                    let seed = 0;
+                    for (let i = 0; i < str.length; i++) {
+                        seed = (seed << 5) - seed + str.charCodeAt(i);
+                        seed |= 0;
+                    }
+                    return seed;
+                }
+
+                let isDragging = false;
+                let startX, startY;
+                let scrollLeft, scrollTop;
+                let currentScale = 1.0;
+                let offsetX = 0;
+                let offsetY = 0;
+
+                function initMapSettings() {
+                    const config = window.mapConfig || {};
+                    const root = document.documentElement;
+                    if (config.hoverColorLight) root.style.setProperty('--hex-hover-color', config.hoverColorLight);
+                    if (config.hoverColorDark) root.style.setProperty('--hex-hover-color-dark', config.hoverColorDark);
+                    if (config.hoverStrokeColorLight) root.style.setProperty('--hex-hover-stroke', config.hoverStrokeColorLight);
+                    if (config.hoverStrokeColorDark) root.style.setProperty('--hex-hover-stroke-dark', config.hoverStrokeColorDark);
+                    if (config.hoverStrokeWidth) root.style.setProperty('--hex-hover-stroke-width', config.hoverStrokeWidth + 'px');
+                    if (config.hoverStrokeOpacity !== undefined) root.style.setProperty('--hex-hover-stroke-opacity', config.hoverStrokeOpacity);
+
+                    currentScale = config.zoom || 1.0;
+                    updateGridTransform();
+                }
+
+                function generateHexGrid() {
+                    const container = document.getElementById('hex-grid-container');
+                    const config = window.mapConfig || { gridCols: 30, gridRows: 20, hexagonSize: 20 };
+
+                    const size = config.hexagonSize;
+                    const cols = config.gridCols;
+                    const rows = config.gridRows;
+                    const seed = config.seed || 'default';
+                    const rng = seededRandom(stringToSeed(seed));
+
+                    const hexWidth = size * Math.sqrt(3);
+                    const hexHeight = size * 2;
+                    const vertDist = hexHeight * 3 / 4;
+                    const horizDist = hexWidth;
+
+                    const totalWidth = cols * horizDist + (horizDist / 2);
+                    const totalHeight = rows * vertDist + (hexHeight / 4);
+
+                    container.style.width = totalWidth + 'px';
+                    container.style.height = totalHeight + 'px';
+
+                    let svgContent = `<svg id="main-map-svg" width="${totalWidth}" height="${totalHeight}" class="hex-svg">`;
+
+                    for (let row = 0; row < rows; row++) {
+                        for (let col = 0; col < cols; col++) {
+                            let x = col * horizDist + (horizDist / 2);
+                            if (row % 2 !== 0) {
+                                x += horizDist / 2;
+                            }
+                            const y = row * vertDist + (hexHeight / 2);
+                            const fillProb = config.fillPercentage !== undefined ? config.fillPercentage : 0.15;
+                            const isColored = rng() < fillProb;
+
+                            svgContent += createHexagon(x, y, size, row, col, isColored);
+                        }
+                    }
+
+                    svgContent += `</svg>`;
+                    container.innerHTML = svgContent;
+
+                    // Add hover reordering handler
+                    const svg = document.getElementById('main-map-svg');
+                    svg.addEventListener('mouseover', (e) => {
+                        if (e.target.classList.contains('hexagon')) {
+                            // Move to end of SVG to render on top of neighbors
+                            e.target.parentNode.appendChild(e.target);
+                        }
+                    });
+                }
+
+                function createHexagon(x, y, size, r, c, isColored) {
+                    const points = [];
+                    for (let i = 0; i < 6; i++) {
+                        const angle_deg = 60 * i - 30; // Pointy topped
+                        const angle_rad = Math.PI / 180 * angle_deg;
+                        points.push(`${x + size * Math.cos(angle_rad)},${y + size * Math.sin(angle_rad)}`);
+                    }
+                    return `<polygon points="${points.join(' ')}" class="hexagon ${isColored ? 'colored' : ''}" data-row="${r}" data-col="${c}" />`;
+                }
+
+                function applyConstraints() {
+                    const container = document.getElementById('hex-grid-container');
+                    const viewport = document.getElementById('viewport');
+                    const config = window.mapConfig || { hexagonSize: 20 };
+                    const buffer = config.hexagonSize * currentScale;
+
+                    const zoomedWidth = container.clientWidth * currentScale;
+                    const zoomedHeight = container.clientHeight * currentScale;
+
+                    // X constraints: Center if smaller, otherwise keep within bounds with buffer
+                    if (zoomedWidth <= viewport.clientWidth) {
+                        offsetX = (viewport.clientWidth - zoomedWidth) / 2;
+                    } else {
+                        offsetX = Math.max(viewport.clientWidth - zoomedWidth - buffer, Math.min(buffer, offsetX));
+                    }
+
+                    // Y constraints: Center if smaller, otherwise keep within bounds with buffer
+                    if (zoomedHeight <= viewport.clientHeight) {
+                        offsetY = (viewport.clientHeight - zoomedHeight) / 2;
+                    } else {
+                        offsetY = Math.max(viewport.clientHeight - zoomedHeight - buffer, Math.min(buffer, offsetY));
+                    }
+                }
+
+                function updateGridTransform() {
+                    applyConstraints();
+                    const container = document.getElementById('hex-grid-container');
+                    const root = document.documentElement;
+                    root.style.setProperty('--map-zoom', currentScale);
+
+                    const zoomDisplay = document.getElementById('zoom-level-display');
+                    if (zoomDisplay) zoomDisplay.innerText = currentScale.toFixed(1) + 'x';
+
+                    container.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${currentScale})`;
+                }
+
+                function adjustZoom(delta) {
+                    const config = window.mapConfig || {};
+                    const minZoom = config.minZoom || 0.5;
+                    const maxZoom = config.maxZoom || 3.0;
+
+                    const newScale = Math.max(minZoom, Math.min(maxZoom, currentScale + delta));
+                    if (newScale !== currentScale) {
+                        currentScale = newScale;
+                        updateGridTransform();
+                    }
+                }
+
+                function resetView() {
+                    const container = document.getElementById('hex-grid-container');
+                    const viewport = document.getElementById('viewport');
+
+                    currentScale = (window.mapConfig && window.mapConfig.zoom) || 1.0;
+
+                    // Center the grid in the viewport initially
+                    offsetX = (viewport.clientWidth - container.clientWidth * currentScale) / 2;
+                    offsetY = (viewport.clientHeight - container.clientHeight * currentScale) / 2;
+
+                    updateGridTransform();
+                }
+
+                // Interactive Panning
+                const viewport = document.getElementById('viewport');
+
+                viewport.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    viewport.style.cursor = 'grabbing';
+                    startX = e.pageX - offsetX;
+                    startY = e.pageY - offsetY;
+                });
+
+                window.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    viewport.style.cursor = 'grab';
+                });
+
+                window.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    offsetX = e.pageX - startX;
+                    offsetY = e.pageY - startY;
+                    updateGridTransform();
+                });
+
+                // Zoom with wheel
+                viewport.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                    adjustZoom(delta);
+                }, { passive: false });
+
+                window.addEventListener('DOMContentLoaded', () => {
+                    initMapSettings();
+                    generateHexGrid();
+                    resetView(); // Center initially
+                });
+            </script>
+
+            <div style="margin-top: 40px;">
+                <a href="/index.html" class="btn" data-i18n="nav.play">Начать играть</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p data-i18n="footer.copy">&copy; 2023 MyGamePortal. Все права защищены.</p>
+        <p style="margin-top: 5px;">
+            <a href="/privacy.html" data-i18n="footer.privacy">Политика конфиденциальности</a> |
+            <a href="/terms.html" data-i18n="footer.terms">Условия использования</a> |
+            <a href="/contacts.html" data-i18n="footer.contacts">Контакты</a>
+        </p>
+    </footer>
+</body>
+
+</html>

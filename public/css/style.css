@@ -87,8 +87,23 @@ nav a.active {
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
+
+.game-selectors-container {
+    display: flex;
+    gap: 8px;
+}
+
+.game-selectors-container select {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface-color);
+    color: var(--text-main);
+}
+
 
 .header-actions .btn {
     font-size: 0.9rem;
@@ -173,13 +188,8 @@ nav a.active {
     width: 100%;
     margin: 0 auto;
     position: relative;
-    /* Сохраняем соотношение сторон 16:9 или 4:3, можно менять padding-bottom */
-    padding-bottom: 75%;
-    /* 4:3 Aspect Ratio */
-    background-color: #eee;
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid #ddd;
 }
 
 canvas {

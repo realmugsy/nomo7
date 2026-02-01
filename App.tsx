@@ -13,9 +13,7 @@ import {
 } from './gameConfig';
 import GridCell from './components/GridCell';
 import Hints from './components/Hints';
-import { INITIAL_META_GAME_STATE, isMarkerUnlocked, unlockNextMarker, getAllMarkers } from './metagame';
 import { INITIAL_GRIND_STATE, completeLevel } from './grind';
-import { MARKER_POSITIONS, MARKER_CONNECTIONS } from './markerPositions';
 
 // Helper to create empty grid
 const createEmptyGrid = (size: number): CellState[][] =>
@@ -37,12 +35,12 @@ const App: React.FC = () => {
   // Game State
   const [puzzle, setPuzzle] = useState<PuzzleData | null>(null);
   const [playerGrid, setPlayerGrid] = useState<CellState[][]>([]);
-  const [gameState, setGameState] = useState<GameState>({ status: 'idle' });
+  const [gameState, setGameState] = useState<GameState>({ status: 'loading' });
   const [isDebugVisible, setIsDebugVisible] = useState<boolean>(false);
   const [isCheckHintsActive, setIsCheckHintsActive] = useState<boolean>(false);
   const [winCorner, setWinCorner] = useState<number | null>(null); // 0:TL, 1:TR, 2:BL, 3:BR
   const [lastCorrectCell, setLastCorrectCell] = useState<{ r: number, c: number } | null>(null); // Track last correctly placed cell
-  const [unlockedMarkers, setUnlockedMarkers] = useState<number[]>(INITIAL_META_GAME_STATE.unlockedMarkers); // Track unlocked meta layer markers
+
   const [grindState, setGrindState] = useState(INITIAL_GRIND_STATE); // Grind system state
   const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null);
   const [revealingCells, setRevealingCells] = useState<Set<string>>(new Set());
@@ -52,25 +50,7 @@ const App: React.FC = () => {
   }); // Theme state
   const [winAnimationMode, setWinAnimationMode] = useState<'smooth' | 'sharp'>('smooth'); // Animation style toggle
 
-  // Mouse drag scrolling state for map
-  const [isMapDragging, setIsMapDragging] = useState(false);
-  const [mapDragStart, setMapDragStart] = useState({ x: 0, y: 0 });
-  const [mapScrollPosition, setMapScrollPosition] = useState(0);
 
-  // Visibility toggles
-  const [showMarkers, setShowMarkers] = useState(true);
-  const [showMapBackground, setShowMapBackground] = useState(true);
-
-  // Refs for DOM elements
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const markersContainerRef = useRef<HTMLDivElement>(null);
-  const gridContainerRef = useRef<HTMLDivElement>(null);
-  const backgroundRef = useRef<HTMLDivElement>(null);
-
-  // Get container width for infinite scrolling
-  const getContainerWidth = () => {
-    return mapContainerRef.current?.clientWidth || 1000;
-  };
 
   // Controls
   const [activeTool, setActiveTool] = useState<ToolType>(ToolType.FILL);
@@ -142,25 +122,11 @@ const App: React.FC = () => {
     }
   }, [selectedSize, selectedDifficulty]);
 
-  // Handle meta layer marker click
-  const handleMarkerClick = (markerNumber: number) => {
-    if (isMarkerUnlocked(markerNumber, unlockedMarkers)) {
-      // Start a new game when an unlocked marker is clicked
-      startNewGame();
-    }
-  };
 
-  // Return to map
-  const handleBackToMap = () => {
-    setGameState({ status: 'idle' });
-  };
 
   // Update unlocked markers when a game is won
   useEffect(() => {
     if (gameState.status === 'won' && puzzle) {
-      // Unlock the next marker if it's not already unlocked
-      setUnlockedMarkers(prev => unlockNextMarker(prev));
-
       // Update grind state
       setGrindState(prev => completeLevel(prev));
     }
@@ -370,7 +336,8 @@ const App: React.FC = () => {
     if (size <= 5) return "w-7 h-7 md:w-10 md:h-10";
     if (size <= 10) return "w-4 h-4 md:w-7 md:h-7";
     if (size <= 15) return "w-4 h-4 md:w-6 md:h-6";
-    if (size <= 20) return "w-3 h-3 md:w-4 md:h-4";
+    if (size <= 20) return "w-4 h-4 md:w-6 md:h-6";
+    // if (size <= 20) return "w-3 h-3 md:w-4 md:h-4";
     return "w-2 h-2 md:w-4 md:h-4"; // Expert ~18x18
   };
 
@@ -388,10 +355,16 @@ const App: React.FC = () => {
 
   const stats = getStats();
 
-  // Auto-start game on component mount
+  // Auto-start or restart game when settings change
   useEffect(() => {
     startNewGame();
-  }, []);
+  }, [selectedSize, selectedDifficulty, startNewGame]);
+
+  // Initial start removed as we now have the effect above or want to show map?
+  // Previous user request was for Map first. 
+  // If Map is shown (status: 'idle'), we maybe SHOULDN'T start a game automatically.
+  // But if they CHANGE settings, they probably want to play.
+  // Let's stick to: if playing/won -> restart. If idle -> just update state.
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
@@ -404,31 +377,34 @@ const App: React.FC = () => {
         {(gameState.status === 'playing' || gameState.status === 'won') && (
           <div className="flex flex-col items-center gap-4 w-full mb-4">
 
-            {/* Settings Row */}
-            <div className="flex flex-wrap gap-3 justify-center w-full">
-              {/* Size Selector */}
-              <select
-                value={selectedSize}
-                onChange={(e) => setSelectedSize(Number(e.target.value))}
-                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-200"
-              >
-                {GRID_SIZES.map(size => (
-                  <option key={size} value={size}>Size: {size}x{size}</option>
-                ))}
-              </select>
+            {/* Settings Row - Moved to Portal */}
+            {document.getElementById('game-selectors-root') && createPortal(
+              <div className="flex gap-3">
+                {/* Size Selector */}
+                <select
+                  value={selectedSize}
+                  onChange={(e) => setSelectedSize(Number(e.target.value))}
+                  className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-200"
+                >
+                  {GRID_SIZES.map(size => (
+                    <option key={size} value={size}>{size}x{size}</option>
+                  ))}
+                </select>
 
-              {/* Difficulty Selector */}
-              <select
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyLevel)}
-                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-200"
-              >
-                {(Object.keys(DIFFICULTY_CONFIG) as DifficultyLevel[]).map((key) => (
-                  <option key={key} value={key}>{DIFFICULTY_CONFIG[key].label}</option>
-                ))}
-              </select>
+                {/* Difficulty Selector */}
+                <select
+                  value={selectedDifficulty}
+                  onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyLevel)}
+                  className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-200"
+                >
+                  {(Object.keys(DIFFICULTY_CONFIG) as DifficultyLevel[]).map((key) => (
+                    <option key={key} value={key}>{DIFFICULTY_CONFIG[key].label.split(' ')[0]}</option>
+                  ))}
+                </select>
+              </div>,
+              document.getElementById('game-selectors-root')!
+            )}
 
-            </div>
 
             {/* New Game Button */}
             <button
@@ -539,7 +515,8 @@ const App: React.FC = () => {
 
               {/* Column Hints */}
               {colHints.map((col, i) => {
-                const isThickRight = (i + 1) % 5 === 0 && i !== puzzle.size - 1;
+                const dividerInterval = puzzle.size === 8 ? 4 : 5;
+                const isThickRight = (i + 1) % dividerInterval === 0 && i !== puzzle.size - 1;
                 const isColCorrect = isCheckHintsActive && isColComplete(i);
 
                 let classes = "bg-slate-200/50 dark:bg-slate-900/50 border-b border-slate-300 dark:border-slate-800 pb-1 flex flex-col justify-end";
@@ -555,7 +532,8 @@ const App: React.FC = () => {
 
               {/* Rows */}
               {rowHints.map((row, r) => {
-                const isThickBottom = (r + 1) % 5 === 0 && r !== puzzle.size - 1;
+                const dividerInterval = puzzle.size === 8 ? 4 : 5;
+                const isThickBottom = (r + 1) % dividerInterval === 0 && r !== puzzle.size - 1;
                 const isRowCorrect = isCheckHintsActive && isRowComplete(r);
 
                 let hintClasses = "border-r border-slate-300 dark:border-slate-800 pr-1 flex items-center justify-end bg-slate-200/50 dark:bg-slate-900/50";
@@ -592,8 +570,8 @@ const App: React.FC = () => {
                             onMouseDown={(e) => handleMouseDown(e, r, c)}
                             onMouseEnter={(e) => handleMouseEnter(e, r, c)}
                             isMobile={isMobile}
-                            borderRightThick={(c + 1) % 5 === 0 && c !== puzzle.size - 1}
-                            borderBottomThick={(r + 1) % 5 === 0 && r !== puzzle.size - 1}
+                            borderRightThick={(c + 1) % (puzzle.size === 8 ? 4 : 5) === 0 && c !== puzzle.size - 1}
+                            borderBottomThick={(r + 1) % (puzzle.size === 8 ? 4 : 5) === 0 && r !== puzzle.size - 1}
                             animationDelay={delay}
                             animationDuration={`${WIN_ANIMATION_DURATION_MS}ms`}
                             isRevealing={revealingCells.has(`${r}-${c}`)}
@@ -622,150 +600,7 @@ const App: React.FC = () => {
           </div>
         )} */}
 
-        {/* Meta Layer with Image Markers */}
-        {gameState.status === 'idle' && (
-          <div className="mt-4 w-full max-w-4xl">
-            <div className="relative bg-white/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-8 min-h-[500px] overflow-hidden"
-              ref={mapContainerRef}
-              onMouseMove={(e) => {
-                // Handle map dragging for scrolling
-                if (isMapDragging) {
-                  const deltaX = mapDragStart.x - e.clientX;
-                  const newScrollPosition = mapScrollPosition + deltaX;
 
-                  // Apply constraints to prevent scrolling beyond first and last images
-                  const containerWidth = getContainerWidth();
-                  const minScroll = 0;
-                  const maxScroll = (META_LAYER_MAP_IMAGES_COUNT - 1) * containerWidth;
-                  const constrainedScroll = Math.max(minScroll, Math.min(maxScroll, newScrollPosition));
-
-                  setMapScrollPosition(constrainedScroll);
-                  setMapDragStart({ x: e.clientX, y: e.clientY });
-                }
-
-                // Calculate mouse position relative to the map container
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                setMousePosition({ x, y });
-              }}
-              onMouseDown={(e) => {
-                // Start dragging for map scrolling
-                setIsMapDragging(true);
-                setMapDragStart({ x: e.clientX, y: e.clientY });
-              }}
-              onMouseUp={() => {
-                // Stop dragging for map scrolling
-                setIsMapDragging(false);
-              }}
-              onMouseLeave={() => {
-                // Stop dragging when mouse leaves and update mouse position
-                setIsMapDragging(false);
-                setMousePosition(null);
-              }}>
-              {/* Infinite scrolling map background */}
-              <div className="absolute inset-0" style={{ display: showMapBackground ? 'block' : 'none' }}>
-                {/* Multiple copies of the map based on configuration */}
-                {Array.from({ length: META_LAYER_MAP_IMAGES_COUNT }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="absolute top-0 h-full bg-cover bg-center bg-no-repeat"
-                    style={{
-                      backgroundImage: 'url(/src/map.png)',
-                      width: '100%',
-                      left: index * getContainerWidth() - mapScrollPosition,
-                    }}
-                  />
-                ))}
-              </div>
-
-              {/* Coordinate grid overlay */}
-              <div className="absolute inset-0 pointer-events-none" style={{ display: showMapBackground ? 'block' : 'none' }}>
-                {/* Multiple copies of the grid based on configuration */}
-                {Array.from({ length: META_LAYER_MAP_IMAGES_COUNT }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="absolute top-0 h-full"
-                    style={{
-                      backgroundImage: `
-                        linear-gradient(to right, rgba(148, 163, 184, 0.2) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(148, 163, 184, 0.2) 1px, transparent 1px)
-                      `,
-                      backgroundSize: '50px 50px',
-                      width: '100%',
-                      left: index * getContainerWidth() - mapScrollPosition,
-                    }}
-                  />
-                ))}
-              </div>
-
-              {/* Connection lines between markers */}
-              <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 15, transform: `translateX(${-mapScrollPosition}px)` }}>
-                {MARKER_CONNECTIONS.map(([markerA, markerB], index) => {
-                  const posA = MARKER_POSITIONS[markerA];
-                  const posB = MARKER_POSITIONS[markerB];
-                  return (
-                    <line
-                      key={`connection-${index}`}
-                      x1={posA.x}
-                      y1={posA.y}
-                      x2={posB.x}
-                      y2={posB.y}
-                      stroke="lime"
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                    />
-                  );
-                })}
-              </svg>
-
-              {/* Markers container */}
-              <div className="absolute inset-0"
-                ref={markersContainerRef}
-                style={{
-                  width: '100%',
-                  transform: `translateX(${-mapScrollPosition}px)`,
-                  display: showMarkers ? 'block' : 'none' // Toggle marker visibility
-                }}>
-                {/* Markers positioned absolutamente for precise placement */}
-                {getAllMarkers().map((number) => {
-                  const position = MARKER_POSITIONS[number];
-                  return (
-                    <div
-                      key={number}
-                      className={`absolute flex flex-col items-center cursor-pointer transition-all transform hover:scale-110 ${isMarkerUnlocked(number, unlockedMarkers)
-                        ? 'opacity-100 hover:opacity-90'
-                        : 'opacity-40 cursor-not-allowed'
-                        }`}
-                      style={{
-                        left: `${position.x - 32}px`, // Adjust for 64px marker width (center alignment)
-                        top: `${position.y - 32}px`   // Adjust for 64px marker height (center alignment)
-                      }}
-                      onClick={() => isMarkerUnlocked(number, unlockedMarkers) && handleMarkerClick(number)}
-                    >
-                      {/* Use marker.png image */}
-                      <div className="w-16 h-16 flex items-center justify-center">
-                        <img
-                          src="/src/marker.png"
-                          alt={`Marker ${number}`}
-                          className="w-full h-full object-contain"
-                        />
-                        {/* Number overlay */}
-                        <span className="absolute text-lg font-bold text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
-                          {number}
-                        </span>
-                      </div>
-                      {/* Coordinate label showing center coordinates */}
-                      <span className="text-xs text-slate-400 mt-1 font-mono">
-                        [{position.x},{position.y}]
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
 
       </div>
 

@@ -29,12 +29,13 @@
     <nav>
       <ul>
         <li><a href="/index.html" class="active" data-i18n="nav.play">Играть</a></li>
-        <li><a href="#" data-i18n="nav.rating">Рейтинг</a></li>
+        <li><a href="/map.html" data-i18n="nav.map">Карта</a></li>
         <li><a href="/rules.html" data-i18n="nav.rules">Правила</a></li>
         <li><a href="#" data-i18n="nav.forum">Форум</a></li>
       </ul>
     </nav>
     <div class="header-actions">
+      <div id="game-selectors-root" class="game-selectors-container"></div>
       <div id="theme-toggle-root" class="theme-toggle-container"></div>
     </div>
   </header>
@@ -55,7 +56,7 @@
 
       <!-- Здесь находится контейнер для вашей игры -->
       <!-- Modified to host React App instead of Canvas -->
-      <div class="game-wrapper" style="position: relative; height: auto; min-height: 600px; padding-bottom: 0;">
+      <div class="game-wrapper" style="position: relative; height: auto;">
         <div id="root" style="width: 100%; height: 100%;"></div>
       </div>
 
