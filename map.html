@@ -119,13 +119,12 @@
         }
 
         .hexagon.colored {
-            fill: var(--primary-color);
-            fill-opacity: 0.3;
+            /* fill set inline in JS */
+            fill-opacity: 0.6;
         }
 
         .dark .hexagon.colored {
-            fill: var(--primary-color);
-            fill-opacity: 0.4;
+            fill-opacity: 0.7;
         }
     </style>
     <script>
@@ -269,12 +268,18 @@
                     container.style.width = totalWidth + 'px';
                     container.style.height = totalHeight + 'px';
 
-                    // Pre-calculate colored status for all hexes
+                    // Pre-calculate colored status and color for all hexes
                     const gridData = [];
+                    const hexColors = config.hexColors || [config.primaryColor || '#6366f1'];
                     for (let r = 0; r < rows; r++) {
                         gridData[r] = [];
                         for (let c = 0; c < cols; c++) {
-                            gridData[r][c] = rng() < fillProb;
+                            const isColored = rng() < fillProb;
+                            const colorIndex = Math.floor(rng() * hexColors.length);
+                            gridData[r][c] = {
+                                isColored: isColored,
+                                color: hexColors[colorIndex]
+                            };
                         }
                     }
 
@@ -287,7 +292,8 @@
                             let x = c * horizDist + (horizDist / 2);
                             if (r % 2 !== 0) x += horizDist / 2;
                             const y = r * vertDist + (hexHeight / 2);
-                            const isColored = gridData[r][c];
+                            const hexInfo = gridData[r][c];
+                            const isColored = hexInfo.isColored;
 
                             // Hexagon Points
                             const fullPoints = [];
@@ -311,7 +317,8 @@
                             // Fills Layer
                             const fillPointsStr = fillPoints.map(p => `${p.x},${p.y}`).join(' ');
                             const fullPointsStr = fullPoints.map(p => `${p.x},${p.y}`).join(' ');
-                            fillGroup += `<polygon points="${fillPointsStr}" data-full-points="${fullPointsStr}" class="hexagon ${isColored ? 'colored' : ''}" data-row="${r}" data-col="${c}" />`;
+                            const fillColor = isColored ? hexInfo.color : 'transparent';
+                            fillGroup += `<polygon points="${fillPointsStr}" data-full-points="${fullPointsStr}" class="hexagon ${isColored ? 'colored' : ''}" style="fill: ${fillColor}" data-row="${r}" data-col="${c}" />`;
 
                             // Grid Lines Layer (Shared Unique Edges using FULL points)
                             for (let i = 0; i < 6; i++) {
@@ -347,7 +354,7 @@
                                 }
 
                                 const neighborExists = nr >= 0 && nr < rows && nc >= 0 && nc < cols;
-                                const neighborIsColored = neighborExists ? gridData[nr][nc] : false;
+                                const neighborIsColored = neighborExists ? gridData[nr][nc].isColored : false;
 
                                 // DRAW BORDER IF: 
                                 // 1. Config.showEmptyBorders is true
