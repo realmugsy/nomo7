@@ -31,7 +31,47 @@ const stringToSeed = (str: string): number => {
   return Math.abs(hash);
 };
 
+const DIFFICULTY_LEVELS: DifficultyLevel[] = ['VERY_EASY', 'EASY', 'MEDIUM', 'HARD', 'VERY_HARD'];
+
+// --- Challenge Token Logic ---
+const encodeChallenge = (seed: number, size: number, difficulty: DifficultyLevel): string => {
+  const diffIdx = DIFFICULTY_LEVELS.indexOf(difficulty);
+  const raw = `${size}:${diffIdx}:${seed}`;
+  // Simple obfuscation (Base64 + swapping some chars)
+  const b64 = btoa(raw).replace(/=/g, '');
+  return b64.split('').reverse().join('');
+};
+
+const decodeChallenge = (token: string): { seed: number, size: number, difficulty: DifficultyLevel } | null => {
+  try {
+    let b64 = token.split('').reverse().join('');
+    // Restore padding
+    while (b64.length % 4 !== 0) b64 += '=';
+    const raw = atob(b64);
+    const [sizeStr, diffIdxStr, seedStr] = raw.split(':');
+    const size = parseInt(sizeStr, 10);
+    const diffIdx = parseInt(diffIdxStr, 10);
+    const seed = parseInt(seedStr, 10);
+    const difficulty = DIFFICULTY_LEVELS[diffIdx];
+
+    if (isNaN(size) || isNaN(seed) || !difficulty) return null;
+    return { size, seed, difficulty };
+  } catch {
+    return null;
+  }
+};
+
+const getChallengeFromUrl = () => {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  const c = params.get('c');
+  return c ? decodeChallenge(c) : null;
+};
+
 const App: React.FC = () => {
+  // Challenge Loading (Synchronous on mount)
+  const challengeData = useRef(getChallengeFromUrl());
+
   // Game State
   const [puzzle, setPuzzle] = useState<PuzzleData | null>(null);
   const [playerGrid, setPlayerGrid] = useState<CellState[][]>([]);
@@ -49,6 +89,7 @@ const App: React.FC = () => {
     return (localStorage.getItem('nomo7-theme') as 'dark' | 'light') || 'dark';
   }); // Theme state
   const [winAnimationMode, setWinAnimationMode] = useState<'smooth' | 'sharp'>('smooth'); // Animation style toggle
+  const [timer, setTimer] = useState<number>(0); // Gameplay timer in seconds
 
 
 
@@ -56,13 +97,27 @@ const App: React.FC = () => {
   const [activeTool, setActiveTool] = useState<ToolType>(ToolType.FILL);
 
   // Settings
-  const [selectedSize, setSelectedSize] = useState<number>(10);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>('MEDIUM');
+  const [selectedSize, setSelectedSize] = useState<number>(challengeData.current?.size || 10);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>(challengeData.current?.difficulty || 'MEDIUM');
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [showCopyMessage, setShowCopyMessage] = useState<boolean>(false);
 
   // Dragging State
   const isDragging = useRef<boolean>(false);
   const dragTargetState = useRef<CellState | null>(null);
+
+  // Timer Effect
+  useEffect(() => {
+    let interval: number | undefined;
+    if (gameState.status === 'playing') {
+      interval = window.setInterval(() => {
+        setTimer(prev => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [gameState.status]);
 
   // Apply theme class to html element and save to localStorage
   useEffect(() => {
@@ -93,22 +148,41 @@ const App: React.FC = () => {
   }, []);
 
   // Initialize a default game or start fresh
-  const startNewGame = useCallback(async (seedVal?: string) => {
+  const startNewGame = useCallback(async (seedVal?: string, forceRandom: boolean = false) => {
     setGameState({ status: 'loading' });
+    setTimer(0); // Reset timer
     setIsDebugVisible(false); // Reset debug on new game
     setIsCheckHintsActive(false); // Reset hint checking
     setWinCorner(null); // Reset win animation
     setLastCorrectCell(null); // Reset last correct cell tracking
     try {
       let finalSeed: number;
+
+      // Priority 1: Direct seed input (dev/debug)
       if (seedVal && seedVal.trim().length > 0) {
         if (/^\d+$/.test(seedVal)) {
           finalSeed = parseInt(seedVal, 10);
         } else {
           finalSeed = stringToSeed(seedVal);
         }
-      } else {
+      }
+      // Priority 2: Use challenge info from URL if available and NOT force-starting a new random game
+      else if (challengeData.current && !forceRandom) {
+        finalSeed = challengeData.current.seed;
+      }
+      // Priority 3: Random seed
+      else {
         finalSeed = Math.floor(Math.random() * 2000000000);
+
+        // If we are starting a random game, clear the challenge from URL/state
+        if (typeof window !== 'undefined' && challengeData.current) {
+          const url = new URL(window.location.href);
+          if (url.searchParams.has('c')) {
+            url.searchParams.delete('c');
+            window.history.replaceState({}, '', url.toString());
+          }
+          challengeData.current = null;
+        }
       }
 
       const diffConfig = DIFFICULTY_CONFIG[selectedDifficulty];
@@ -366,8 +440,73 @@ const App: React.FC = () => {
   // But if they CHANGE settings, they probably want to play.
   // Let's stick to: if playing/won -> restart. If idle -> just update state.
 
+  // Helper to format time
+  const formatTime = (seconds: number): string => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    const pad = (num: number) => num < 10 ? `0${num}` : num;
+
+    if (hrs > 0) {
+      return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+    }
+    return `${pad(mins)}:${pad(secs)}`;
+  };
+
+  const restartCurrentGame = useCallback(() => {
+    if (!puzzle) return;
+    setPlayerGrid(createEmptyGrid(puzzle.size));
+    setTimer(0);
+    setGameState({ status: 'playing' });
+    setWinCorner(null);
+    setLastCorrectCell(null);
+  }, [puzzle]);
+
+  // Share current puzzle
+  const handleShare = () => {
+    if (!puzzle) return;
+    const token = encodeChallenge(puzzle.seed, puzzle.size, selectedDifficulty);
+    const url = new URL(window.location.href);
+    url.searchParams.set('c', token);
+
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      setShowCopyMessage(true);
+      setTimeout(() => setShowCopyMessage(false), 2000);
+    });
+  };
+
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
+
+      {/* Debug Info: Density and Seed shifted to top-right corner */}
+      {puzzle && (gameState.status === 'playing' || gameState.status === 'won') && (
+        <div className="absolute top-3 right-3 text-[10px] text-slate-500 font-mono opacity-40 hover:opacity-100 transition-opacity z-50 flex flex-col items-end gap-1">
+          <div className="pointer-events-none text-right">
+            Density: <span className="font-bold text-indigo-400">{stats.percent}%</span><br />
+            ({stats.count}/{puzzle.size * puzzle.size})<br />
+            Seed: <span className="text-slate-400">{puzzle.seed}</span>
+          </div>
+
+          <button
+            onClick={handleShare}
+            className="mt-1 bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700 flex items-center gap-1.5 transition-all active:scale-95 pointer-events-auto"
+            title="Copy challenge link to share with friends"
+          >
+            {showCopyMessage ? (
+              <>
+                <span className="text-emerald-400">✓</span>
+                <span className="text-emerald-400">Copied!</span>
+              </>
+            ) : (
+              <>
+                <span>🔗</span>
+                <span>Share</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
 
       <div className="w-full bg-white/70 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm shadow-none flex flex-col items-center">
@@ -405,68 +544,32 @@ const App: React.FC = () => {
             )}
 
 
-            {/* New Game Button */}
-            <button
-              onClick={() => startNewGame()}
-              className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-slate-900/50 transition-all hover:scale-105 text-sm"
-            >
-              New Game
-            </button>
+            <div className="flex gap-4">
+              {/* Restart Button */}
+              <button
+                onClick={restartCurrentGame}
+                className="bg-slate-600 hover:bg-slate-700 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-slate-900/50 transition-all hover:scale-105 text-sm flex items-center gap-2"
+                title="Reset progress for this puzzle"
+              >
+                <span>↺</span> Restart
+              </button>
+
+              {/* New Game Button */}
+              <button
+                onClick={() => startNewGame(undefined, true)}
+                className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-slate-900/50 transition-all hover:scale-105 text-sm"
+              >
+                New Game
+              </button>
+            </div>
 
             {/* Seed Display & Debug */}
             {puzzle && (gameState.status === 'playing' || gameState.status === 'won') ? (
               <div className="flex flex-col items-center gap-1">
 
-                <div className="text-xs text-slate-500 font-mono" title="Puzzle density">
-                  Density: <span className="font-bold text-indigo-400">{stats.percent}%</span> ({stats.count}/{puzzle.size * puzzle.size} cells)
-                </div>
-
-
-                <div className="text-xs text-slate-500 font-mono" title="Available coins for boosters">
-                  Coins: <span className="font-bold text-amber-400">{coins}</span> 💰
-                </div>
-
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleDebugToggle}
-                    className="px-2 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded transition-colors"
-                  >
-                    {isDebugVisible ? 'Hide' : 'Show'} Solution
-                  </button>
-
-
-                  <button
-                    onClick={handleCheckHintsToggle}
-                    className="px-2 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded transition-colors"
-                  >
-                    {isCheckHintsActive ? 'Hide' : 'Check'} Hints
-                  </button>
-
-
-                  <button
-                    onClick={handleCheatWin}
-                    className="px-2 py-1 text-xs bg-amber-700 hover:bg-amber-600 text-amber-200 rounded transition-colors"
-                  >
-                    Cheat Win
-                  </button>
-
-                  <button
-                    onClick={handleBlast}
-                    disabled={coins < BLAST_COST || getEmptyCellCount() < 3}
-                    className="px-2 py-1 text-xs bg-blue-700 hover:bg-blue-600 disabled:bg-blue-800/50 disabled:cursor-not-allowed text-blue-100 rounded transition-all"
-                    title={`💥 Reveal 3 random empty cells for ${BLAST_COST} coins`}
-                  >
-                    💥 Blast ({BLAST_COST})
-                  </button>
-
-                  <button
-                    onClick={handleAddCoins}
-                    className="px-2 py-1 text-xs bg-amber-700 hover:bg-amber-600 text-amber-200 rounded transition-colors shadow-sm"
-                    title="💰 Cheat: Add 10 coins"
-                  >
-                    +10 💰
-                  </button>
+                <div className="text-2xl text-slate-300 font-mono flex items-center gap-2 mb-2" title="Time elapsed">
+                  <span className="text-xl">⏱️</span>
+                  <span className="font-bold tracking-wider">{formatTime(timer)}</span>
                 </div>
               </div>
             ) : <div className="h-4"></div>}
@@ -583,8 +686,28 @@ const App: React.FC = () => {
                 );
               })}
             </div>
+
+            {/* Show Correct Hints Checkbox - Moved below the grid */}
+            <div className="mt-6 flex justify-center">
+              <label className="flex items-center gap-3 cursor-pointer group bg-slate-800/30 px-4 py-2 rounded-full border border-slate-700/50 hover:border-slate-600/50 transition-all">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={isCheckHintsActive}
+                    onChange={handleCheckHintsToggle}
+                    className="sr-only"
+                  />
+                  <div className={`w-10 h-5 rounded-full transition-colors ${isCheckHintsActive ? 'bg-indigo-600' : 'bg-slate-700'}`}></div>
+                  <div className={`absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-transform ${isCheckHintsActive ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                </div>
+                <span className="text-sm font-bold text-slate-400 group-hover:text-slate-200 transition-colors">
+                  Show Correct hints
+                </span>
+              </label>
+            </div>
           </div>
-        )}
+        )
+        }
 
         {/* {gameState.status === 'won' && puzzle && (
           <div className="mt-8 text-center animate-bounce">

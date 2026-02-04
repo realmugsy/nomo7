@@ -1,9 +1,9 @@
 class I18n {
     constructor() {
-        this.currentLang = localStorage.getItem('lang') || navigator.language.slice(0, 2) || 'ru';
+        this.currentLang = localStorage.getItem('lang') || 'en';
         this.supportedLangs = ['ru', 'en'];
         if (!this.supportedLangs.includes(this.currentLang)) {
-            this.currentLang = 'ru';
+            this.currentLang = 'en';
         }
         this.translations = {};
     }

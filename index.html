@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Игровой Портал - Nonogram Style</title>
-  <!-- Assets served from /public -->
+  <title>Game Portal - Nonogram Style</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
   <script>
     // Prevent theme flick: Apply theme before body renders
@@ -28,10 +28,10 @@
 
     <nav>
       <ul>
-        <li><a href="/index.html" class="active" data-i18n="nav.play">Играть</a></li>
-        <li><a href="/map.html" data-i18n="nav.map">Карта</a></li>
-        <li><a href="/rules.html" data-i18n="nav.rules">Правила</a></li>
-        <li><a href="#" data-i18n="nav.forum">Форум</a></li>
+        <li><a href="/index.html" class="active" data-i18n="nav.play">Play</a></li>
+        <li><a href="/map.html" data-i18n="nav.map">Map</a></li>
+        <li><a href="/rules.html" data-i18n="nav.rules">Rules</a></li>
+        <li><a href="#" data-i18n="nav.forum">Forum</a></li>
       </ul>
     </nav>
     <div class="header-actions">
@@ -47,10 +47,10 @@
     <section class="game-section">
       <div class="game-header">
         <div class="game-title">
-          <h1 data-i18n="game.title">Нонограммы: Уровень 1</h1>
+          <h1 data-i18n="game.title">Nonograms: Level 1</h1>
         </div>
         <div class="game-meta">
-          <span data-i18n="game.difficulty">Сложность: Настраиваемая</span>
+          <span data-i18n="game.difficulty">Difficulty: Customizable</span>
         </div>
       </div>
 
@@ -59,25 +59,116 @@
       <div class="game-wrapper" style="position: relative; height: auto;">
         <div id="root" style="width: 100%; height: 100%;"></div>
       </div>
-
-      </div>
     </section>
 
-    <div class="panel how-to-play-panel" style="margin-top: 20px;">
-      <h3 data-i18n="panel.how_to_play">Как играть</h3>
-      <ul class="controls-list">
-        <li>
-          <span class="key" data-i18n="controls.lmb">ЛКМ</span>
-          <span data-i18n="controls.paint">Закрасить клетку</span>
+    <!--
+    <div class="panel how-to-play-panel rules-content" style="margin-top: 20px;">
+      <h3 data-i18n="panel.how_to_play">How to Play</h3>
+
+      <p data-i18n="rules_detail.intro">Nonograms (Japanese crosswords) are logic puzzles...</p>
+
+      <h2 data-i18n="rules_detail.h1_title">1. What do the numbers mean?</h2>
+      <p data-i18n="rules_detail.h1_p">Each number shows how many **consecutive** filled cells are in this row or column.</p>
+      <ul>
+        <li data-i18n="rules_detail.h1_li1">If there is a number 5 in a row...</li>
+        <li data-i18n="rules_detail.h1_li2">If there are several numbers, for example 3 1...</li>
+        <li data-i18n="rules_detail.h1_li3">Important: There must be at least one empty (unfilled) cell between two blocks.</li>
+      </ul>
+
+      <h2 data-i18n="rules_detail.h2_title">2. Start with the obvious</h2>
+      <p data-i18n="rules_detail.h2_p">Look for rows or columns that can be filled immediately.</p>
+
+      <h2 data-i18n="rules_detail.h3_title">3. Place crosses</h2>
+      <p data-i18n="rules_detail.h3_p">If you are sure that a cell should be empty, place a cross (RMB) in it.</p>
+
+      <div class="example-grid">
+        <div class="example-cell filled"></div>
+        <div class="example-cell filled"></div>
+        <div class="example-cell filled"></div>
+        <div class="example-cell cross"></div>
+        <div class="example-cell filled"></div>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-secondary);" data-i18n="rules_detail.example_p">Example for hint 3 1.</p>
+    </div>
+    -->
+
+    <div class="panel how-to-play-panel rules-content" style="margin-top: 20px;">
+      <h3 data-i18n="panel.how_to_play">How to Play</h3>
+      <p data-i18n="rules_detail.intro_p1">Nonograms (also known as Griddlers or Japanese Crosswords) are picture logic
+        puzzles where you must decode a hidden image using numbers placed along the edges of the grid. Each number
+        represents the length of a continuous block of filled cells in that specific row or column. A fundamental rule
+        is that there must be at least one empty (unfilled) cell separating any two adjacent blocks of filled cells.</p>
+      <p data-i18n="rules_detail.intro_p2" style="margin-top: 15px;">The solving process is based on strict deduction:
+        you analyze the intersections of horizontal and vertical lines, gradually filling in cells that must logically
+        be shaded. The game is considered complete when all numerical requirements are met, revealing a silhouette or a
+        pixel-art image. Nonograms do not require guessing; any well-designed puzzle has only one logically correct
+        solution that can be found through the process of elimination.</p>
+
+      <h2 data-i18n="rules_detail.tips_title"
+        style="margin-top: 40px; margin-bottom: 20px; color: var(--primary-color); text-align: center; font-size: 1.8rem;">
+        Tips and Strategies
+        for Success</h2>
+      <ul style="list-style-type: none; padding-left: 0; margin-top: 15px; line-height: 1.4;">
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip1_title">Start with the Largest
+            Numbers</strong>: <span data-i18n="rules_detail.tips.tip1_text">If a number in a row matches the full width
+            or height of the grid, fill it in entirely without hesitation.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip2_title">Use the Overlap
+            Method</strong>: <span data-i18n="rules_detail.tips.tip2_text">If the sum of the numbers in a row (plus the
+            mandatory gaps) covers more than half the length, you can calculate the 'overlap' cells that will be filled
+            regardless of the exact placement.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip3_title">Mark Empty Cells with
+            'X's</strong>: <span data-i18n="rules_detail.tips.tip3_text">This is absolutely critical. As soon as you
+            determine a cell cannot be filled, mark it with an 'X' to narrow down your search area.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip4_title">Look for 'Zero' Rows</strong>:
+          <span data-i18n="rules_detail.tips.tip4_text">If a row or column has a '0' or no numbers at all, immediately
+            cross out the entire line with 'X's.</span>
         </li>
-        <li>
-          <span class="key" data-i18n="controls.rmb">ПКМ</span>
-          <span data-i18n="controls.cross">Поставить крестик</span>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip5_title">Anchor the Edges</strong>:
+          <span data-i18n="rules_detail.tips.tip5_text">If a filled cell is located right against the edge of the grid,
+            it must be part of the first (or last) number group for that row or column.</span>
         </li>
-        <li>
-          <span class="key" data-i18n="controls.drag">Drag</span>
-          <span data-i18n="controls.draw">Рисовать / Прокручивать карту</span>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip6_title">Cross Off Completed
+            Numbers</strong>: <span data-i18n="rules_detail.tips.tip6_text">Once you have fully formed a block of cells
+            corresponding to a number, cross that number off your clue list to stay organized.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip7_title">Seal Your Blocks</strong>:
+          <span data-i18n="rules_detail.tips.tip7_text">Once a group of cells is completed, place an 'X' on both ends of
+            it to prevent the block from accidentally being extended.</span>
         </li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip8_title">Use the Elimination
+            Method</strong>: <span data-i18n="rules_detail.tips.tip8_text">If a specific number group cannot physically
+            fit into a remaining gap, you know that space must be empty.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip9_title">Check Intersections</strong>:
+          <span data-i18n="rules_detail.tips.tip9_text">Every cell you fill in a row must simultaneously satisfy the
+            rules of its intersecting column.</span>
+        </li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip10_title">Never Guess</strong>: <span
+            data-i18n="rules_detail.tips.tip10_text">A single mistake early on can ruin the entire logical chain. If you
+            are stuck, look for a clue elsewhere on the board.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip11_title">Work Inward from the
+            Borders</strong>: <span data-i18n="rules_detail.tips.tip11_text">It is often easiest to find hooks in the
+            corner cells or the outermost rows, as they have the fewest placement options.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip12_title">Identify Unreachable
+            Gaps</strong>: <span data-i18n="rules_detail.tips.tip12_text">If the distance between two filled cells is
+            smaller than the minimum block size required for that row, those cells cannot be connected.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip13_title">Separate Your
+            Blocks</strong>: <span data-i18n="rules_detail.tips.tip13_text">If there is an 'X' between two filled
+            sections, it guarantees they belong to different number clues.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip14_title">Look for Impossible
+            Positions</strong>: <span data-i18n="rules_detail.tips.tip14_text">If placing a block in a certain spot
+            creates a contradiction in the perpendicular row, that spot must be marked as empty.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip15_title">Move from Simple to
+            Complex</strong>: <span data-i18n="rules_detail.tips.tip15_text">Fill in the obvious rows first (e.g., a
+            '10' in a 10-cell row), then move on to analyzing smaller, more ambiguous numbers.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip16_title">Notice Symmetry</strong>:
+          <span data-i18n="rules_detail.tips.tip16_text">Many simple nonograms are symmetrical; while you shouldn't rely
+            on it entirely, it can often point you in the right direction.</span>
+        </li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip17_title">Calculate Total
+            Length</strong>: <span data-i18n="rules_detail.tips.tip17_text">Always remember the 'minimum length' of a
+            row is the sum of all its numbers plus one empty space between each.</span></li>
+        <li style="margin-bottom: 8px;"><strong data-i18n="rules_detail.tips.tip18_title">Marking Empty Cells Organizes
+            Chaos</strong>: <span data-i18n="rules_detail.tips.tip18_text">Without 'X' marks, the board becomes visually
+            cluttered, making it impossible to accurately judge the remaining playable space.</span></li>
       </ul>
     </div>
 
@@ -85,11 +176,11 @@
 
   <!-- Подвал -->
   <footer>
-    <p data-i18n="footer.copy">&copy; 2023 MyGamePortal. Все права защищены.</p>
+    <p data-i18n="footer.copy">&copy; 2023 MyGamePortal. All rights reserved.</p>
     <p style="margin-top: 5px;">
-      <a href="/privacy.html" data-i18n="footer.privacy">Политика конфиденциальности</a> |
-      <a href="/terms.html" data-i18n="footer.terms">Условия использования</a> |
-      <a href="/contacts.html" data-i18n="footer.contacts">Контакты</a>
+      <a href="/privacy.html" data-i18n="footer.privacy">Privacy Policy</a> |
+      <a href="/terms.html" data-i18n="footer.terms">Terms of Use</a> |
+      <a href="/contacts.html" data-i18n="footer.contacts">Contacts</a>
     </p>
   </footer>
 

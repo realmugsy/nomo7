@@ -13,8 +13,8 @@ export const DIFFICULTY_CONFIG: Record<DifficultyLevel, DifficultySettings> = {
   },
   MEDIUM: {
     label: 'Medium (50-70%)',
-    minDensity: 0.50,
-    maxDensity: 0.55
+    minDensity: 0.53,
+    maxDensity: 0.58
   },
   HARD: {
     label: 'Hard (30-50%)',

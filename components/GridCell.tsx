@@ -114,7 +114,7 @@ const GridCell: React.FC<GridCellProps> = ({
       {/* Show filled cell marker when filled and not in solution mode */}
       {state === CellState.FILLED && !showSolution && (
         <div
-          className="absolute bg-indigo-500 rounded-sm"
+          className="absolute bg-indigo-500 rounded-sm animate-cell-pop shadow-lg shadow-indigo-500/20"
           style={{
             top: `${FILLED_CELL_MARKER_REDUCTION_PX}px`,
             left: `${FILLED_CELL_MARKER_REDUCTION_PX}px`,
@@ -156,7 +156,7 @@ const GridCell: React.FC<GridCellProps> = ({
 
       {/* Show Cross only if it's NOT revealed/debug (unless we want to see crosses on empty cells? No, usually solution cleans up) */}
       {state === CellState.CROSSED && !showSolution && (
-        <svg xmlns="http://www.w3.org/2000/svg" className={`${CROSS_MARKER_SIZE} pointer-events-none`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className={`${CROSS_MARKER_SIZE} pointer-events-none animate-cross-pop`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

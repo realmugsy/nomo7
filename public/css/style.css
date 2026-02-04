@@ -509,3 +509,78 @@ html.dark .lang-btn.active {
     background-color: #60a5fa;
     color: white;
 }
+
+/* --- Shared Rules Content Styles --- */
+.rules-content {
+    line-height: 1.8;
+}
+
+.rules-content h1,
+.rules-content h2,
+.rules-content h3 {
+    color: var(--primary-color);
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.rules-content h2 {
+    font-size: 1.2rem;
+    border-bottom: 2px solid var(--primary-color);
+    display: inline-block;
+    padding-bottom: 4px;
+}
+
+.rules-content p {
+    margin-bottom: 12px;
+}
+
+.rules-content ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.rules-content li {
+    margin-bottom: 8px;
+}
+
+.example-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 30px);
+    gap: 2px;
+    margin: 20px 0;
+    background: #ccc;
+    padding: 2px;
+    width: fit-content;
+}
+
+.dark .example-grid {
+    background: #444;
+}
+
+.example-cell {
+    width: 30px;
+    height: 30px;
+    background: white;
+}
+
+.dark .example-cell {
+    background: #1e293b;
+}
+
+.example-cell.filled {
+    background: #4a90e2;
+}
+
+.example-cell.cross {
+    position: relative;
+}
+
+.example-cell.cross::after {
+    content: '×';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #94a3b8;
+    font-size: 20px;
+}
