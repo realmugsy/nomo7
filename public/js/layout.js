@@ -16,9 +16,10 @@ const HEADER_HTML = `
         </ul>
     </nav>
     <div class="header-actions">
-        <!-- Placeholders for React portals -->
+        <!-- Placeholders to prevent CLS -->
+        <div id="lang-switcher-root" class="lang-switcher-container" style="min-width: 80px;"></div>
         <div id="game-selectors-root" class="game-selectors-container"></div>
-        <div id="theme-toggle-root" class="theme-toggle-container"></div>
+        <div id="theme-toggle-root" class="theme-toggle-container" style="min-width: 40px; min-height: 40px;"></div>
     </div>
 `;
 

@@ -54,6 +54,8 @@ header {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 180px;
+    /* Hold space for translated name */
 }
 
 /* Иконка логотипа (CSS) */
@@ -88,6 +90,9 @@ nav a.active {
     display: flex;
     align-items: center;
     gap: 15px;
+    min-width: 200px;
+    /* Hold space for lang + theme toggle */
+    justify-content: flex-end;
 }
 
 .game-selectors-container {
@@ -236,6 +241,8 @@ nav a.active {
     margin-bottom: 15px;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
+    min-height: 50px;
+    /* Reserved space for title and meta info */
 }
 
 .game-title h1 {
@@ -255,6 +262,10 @@ nav a.active {
     position: relative;
     border-radius: 4px;
     overflow: hidden;
+    min-height: 600px;
+    /* Reserved space for the React app */
+    background-color: rgba(0, 0, 0, 0.05);
+    /* Subtle placeholder */
 }
 
 canvas {
@@ -430,13 +441,19 @@ canvas {
 
 /* --- Подвал (Footer) --- */
 footer {
-    background-color: #fff;
+    background-color: var(--surface-color);
     border-top: 1px solid var(--border-color);
     padding: 20px;
     text-align: center;
     margin-top: auto;
     font-size: 0.85rem;
     color: var(--text-secondary);
+    min-height: 120px;
+    /* Reserved space for footer content */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 footer a {

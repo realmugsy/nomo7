@@ -1,11 +1,25 @@
 class I18n {
     constructor() {
-        this.currentLang = localStorage.getItem('lang') || 'en';
         this.supportedLangs = ['ru', 'en', 'es', 'de', 'fr', 'it'];
-        if (!this.supportedLangs.includes(this.currentLang)) {
-            this.currentLang = 'en';
-        }
+        this.currentLang = this.getInitialLanguage();
         this.translations = {};
+    }
+
+    getInitialLanguage() {
+        // 1. Try localStorage
+        const savedLang = localStorage.getItem('lang');
+        if (savedLang && this.supportedLangs.includes(savedLang)) {
+            return savedLang;
+        }
+
+        // 2. Try browser language
+        const browserLang = (navigator.language || navigator.userLanguage || 'en').split('-')[0].toLowerCase();
+        if (this.supportedLangs.includes(browserLang)) {
+            return browserLang;
+        }
+
+        // 3. Fallback to English
+        return 'en';
     }
 
     async init() {
@@ -79,9 +93,10 @@ class I18n {
         switcherContainer.appendChild(select);
 
         // Add to header
-        const headerActions = document.querySelector('.header-actions');
-        if (headerActions) {
-            headerActions.prepend(switcherContainer);
+        const root = document.querySelector('#lang-switcher-root');
+        if (root) {
+            root.innerHTML = '';
+            root.appendChild(switcherContainer);
         }
     }
 
