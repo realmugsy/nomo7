@@ -1,0 +1,101 @@
+{
+    "title": "Nonogram World",
+    "header": {
+        "logo": "Nonogram World",
+        "login": "Iniciar sesión"
+    },
+    "nav": {
+        "play": "Jugar",
+        "map": "Mapa",
+        "rules": "Reglas",
+        "forum": "Foro"
+    },
+    "game": {
+        "title": "Nonogramas: Nivel 1",
+        "difficulty": "Dificultad: Fácil",
+        "restart": "↺ Reiniciar",
+        "check": "✓ Verificar",
+        "canvas_placeholder": "Tablero de juego Canvas"
+    },
+    "panel": {
+        "progress": "Progreso",
+        "how_to_play": "Cómo jugar",
+        "tools": "Herramientas",
+        "like_game": "¿Te gusta el juego?",
+        "share": "Compartir con amigos"
+    },
+    "stats": {
+        "time": "Tiempo",
+        "lives": "Vidas",
+        "solved": "Resuelto"
+    },
+    "controls": {
+        "lmb": "Botón Izquierdo",
+        "paint": "Rellenar celda",
+        "rmb": "Botón Derecho",
+        "cross": "Marcar cruz",
+        "drag": "Arrastrar",
+        "draw": "Dibujar arrastrando"
+    },
+    "tools": {
+        "lamp": "💡 Pista",
+        "settings": "⚙️ Ajustes",
+        "next_level": "Siguiente nivel ➜"
+    },
+    "footer": {
+        "copy": "&copy; 2026 Nonogram World. Todos los derechos reservados.",
+        "privacy": "Política de privacidad",
+        "terms": "Términos de uso",
+        "contacts": "Contactos",
+        "version": "Versión: 0.1.004"
+    },
+    "rules_detail": {
+        "title": "Cómo resolver Nonogramas",
+        "intro_p1": "Los Nonogramas (también conocidos como Griddlers o crucigramas japoneses) son acertijos lógicos de imágenes donde debes decodificar una imagen oculta utilizando números colocados a lo largo de los bordes de la cuadrícula.",
+        "intro_p2": "El proceso de resolución se basa en la deducción estricta: analizas las intersecciones de líneas horizontales y verticales, llenando gradualmente las celdas que lógicamente deben estar sombreadas.",
+        "tips_title": "Consejos y estrategias para el éxito",
+        "tips": {
+            "tip1_title": "Comienza con los números más grandes",
+            "tip1_text": "Si un número coincide con el ancho o alto total de la cuadrícula, rellénalo por completo.",
+            "tip2_title": "Usa el método de superposición",
+            "tip2_text": "Si la suma de los números cubre más de la mitad de la longitud, puedes calcular las celdas que se llenarán sin importar la ubicación exacta.",
+            "tip3_title": "Marca las celdas vacías con 'X'",
+            "tip3_text": "Esto es fundamental. En cuanto determines que una celda no puede llenarse, márcala con una 'X'.",
+            "tip4_title": "Busca filas de 'Cero'",
+            "tip4_text": "Si una fila o columna tiene un '0', marca inmediatamente toda la línea con 'X'."
+        },
+        "back": "Volver al juego"
+    },
+    "privacy_detail": {
+        "title": "Política de Privacidad",
+        "intro": "Respetamos su privacidad y nos comprometemos a proteger sus datos personales.",
+        "h1_title": "1. Recolección de información",
+        "h1_p": "Nuestra aplicación funciona principalmente en el lado del cliente. No recolectamos datos personales sin su consentimiento.",
+        "h2_title": "2. Uso de datos",
+        "h2_p": "Usamos el almacenamiento local del navegador (localStorage) para recordar sus ajustes seleccionados.",
+        "h3_title": "3. Cookies",
+        "h3_p": "Podemos usar cookies para análisis con el fin de entender cómo los usuarios interactúan con Nonogram World.",
+        "h4_title": "4. Servicios de terceros",
+        "h4_p": "El juego puede usar APIs externas (p. ej., Google Gemini) para generar contenido."
+    },
+    "terms_detail": {
+        "title": "Términos de Uso",
+        "intro": "Bienvenido a Nonogram World. Al usar este sitio, usted acepta los siguientes términos.",
+        "h1_title": "1. Aceptación de términos",
+        "h1_p": "Al acceder al sitio y usar el juego, usted confirma que ha leído y acepta estas reglas.",
+        "h2_title": "2. Jugabilidad",
+        "h2_p": "El juego se proporciona 'tal cual'. No somos responsables de la pérdida de sus datos de progreso.",
+        "h3_title": "3. Juego Limpio",
+        "h3_p": "Fomentamos el juego limpio. Se desaconseja el uso de software de terceros para resolver los acertijos.",
+        "h4_title": "4. Cambios",
+        "h4_p": "Nos reservamos el derecho de cambiar estos términos en cualquier momento."
+    },
+    "contacts_detail": {
+        "title": "Contactos",
+        "intro": "¿Tiene preguntas, sugerencias o encontró un error? ¡Siempre agradecemos sus comentarios!",
+        "methods_title": "Formas de contactarnos",
+        "email_label": "Correo electrónico:",
+        "github_label": "GitHub:",
+        "feedback_time": "Intentamos responder a todas las consultas en un plazo de 24 horas."
+    }
+}

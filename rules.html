@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Правила игры - Nonogram Style</title>
+    <title>Nonogram World</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="/css/style.css">
     <script>
@@ -81,57 +81,12 @@
             font-size: 20px;
         }
     </style>
-    <script>
-        // Theme initialization
-        (function () {
-            const theme = localStorage.getItem('nomo7-theme') || 'dark';
-            if (theme === 'dark') document.documentElement.classList.add('dark');
-            else document.documentElement.classList.remove('dark');
-        })();
-
-        function toggleTheme() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            const newTheme = isDark ? 'dark' : 'light';
-            localStorage.setItem('nomo7-theme', newTheme);
-            updateThemeIcon();
-        }
-
-        function updateThemeIcon() {
-            const btn = document.getElementById('theme-toggle-btn');
-            if (!btn) return;
-            const isDark = document.documentElement.classList.contains('dark');
-            btn.innerHTML = isDark ? '☀️' : '🌙';
-            btn.title = isDark ? 'Переключить на светлую тему' : 'Переключить на темную тему';
-        }
-
-        window.onload = updateThemeIcon;
-    </script>
+    <script src="/js/layout.js"></script>
     <script src="/js/i18n.js"></script>
 </head>
 
 <body>
-    <header>
-        <a href="/index.html" class="logo">
-            <span class="logo-icon"></span>
-            <span data-i18n="header.logo">MyGamePortal</span>
-        </a>
-        <nav>
-            <ul>
-                <li><a href="/index.html" data-i18n="nav.play">Play</a></li>
-                <li><a href="/map.html" data-i18n="nav.map">Map</a></li>
-                <li><a href="/rules.html" class="active" data-i18n="nav.rules">Rules</a></li>
-                <li><a href="#" data-i18n="nav.forum">Forum</a></li>
-            </ul>
-        </nav>
-        <div class="header-actions">
-            <div id="theme-toggle-root" class="theme-toggle-container">
-                <button id="theme-toggle-btn" onclick="toggleTheme()"
-                    class="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 shadow-md transform hover:scale-110 active:scale-95 border border-slate-300 dark:border-slate-500">
-                    🌙
-                </button>
-            </div>
-        </div>
-    </header>
+    <header></header>
 
     <main class="main-container">
         <section class="game-section rules-content">
@@ -281,14 +236,7 @@
         </section>
     </main>
 
-    <footer>
-        <p data-i18n="footer.copy">&copy; 2023 MyGamePortal. All rights reserved.</p>
-        <p style="margin-top: 5px;">
-            <a href="/privacy.html" data-i18n="footer.privacy">Privacy Policy</a> |
-            <a href="/terms.html" data-i18n="footer.terms">Terms of Use</a> |
-            <a href="/contacts.html" data-i18n="footer.contacts">Contacts</a>
-        </p>
-    </footer>
+    <footer></footer>
 </body>
 
 </html>

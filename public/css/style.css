@@ -110,6 +110,71 @@ nav a.active {
     padding: 6px 16px;
 }
 
+/* Common Utilities */
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.gap-2 {
+    gap: 8px;
+}
+
+.gap-3 {
+    gap: 12px;
+}
+
+.gap-4 {
+    gap: 16px;
+}
+
+/* Theme Toggle Button Styles */
+.theme-toggle-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background-color: #e2e8f0;
+    /* Slate 200 equivalent */
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    font-size: 1.25rem;
+}
+
+.theme-toggle-btn:hover {
+    background-color: #cbd5e1;
+    /* Slate 300 equivalent */
+    transform: scale(1.1);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.dark .theme-toggle-btn {
+    background-color: #334155;
+    /* Slate 700 equivalent */
+    border-color: #475569;
+    /* Slate 600 equivalent */
+}
+
+.dark .theme-toggle-btn:hover {
+    background-color: #475569;
+    /* Slate 600 equivalent */
+}
+
 /* Language Switcher */
 .lang-switcher {
     display: flex;
@@ -117,27 +182,26 @@ nav a.active {
     margin-right: 15px;
 }
 
-.lang-btn {
-    background: none;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+.lang-select {
     padding: 4px 8px;
-    cursor: pointer;
     font-size: 0.8rem;
     font-weight: bold;
-    color: var(--text-secondary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface-color);
+    color: var(--text-main);
+    cursor: pointer;
     transition: all 0.2s;
+    outline: none;
 }
 
-.lang-btn:hover {
+.lang-select:hover {
     border-color: var(--primary-color);
-    color: var(--primary-color);
 }
 
-.lang-btn.active {
-    background-color: var(--primary-color);
-    color: white;
+.lang-select:focus {
     border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
 /* --- Основной макет (Layout) --- */
@@ -494,20 +558,14 @@ html.dark nav a.active {
     color: #60a5fa;
 }
 
-html.dark .lang-btn {
+html.dark .lang-select {
     border-color: var(--border-color);
-    color: var(--text-secondary);
+    color: var(--text-main);
 }
 
-html.dark .lang-btn:hover,
-html.dark .lang-btn.active {
+html.dark .lang-select:hover {
     border-color: #60a5fa;
     color: #60a5fa;
-}
-
-html.dark .lang-btn.active {
-    background-color: #60a5fa;
-    color: white;
 }
 
 /* --- Shared Rules Content Styles --- */

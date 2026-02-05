@@ -97,8 +97,18 @@ const App: React.FC = () => {
   const [activeTool, setActiveTool] = useState<ToolType>(ToolType.FILL);
 
   // Settings
-  const [selectedSize, setSelectedSize] = useState<number>(challengeData.current?.size || 10);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>(challengeData.current?.difficulty || 'MEDIUM');
+  const [selectedSize, setSelectedSize] = useState<number>(() => {
+    if (challengeData.current) return challengeData.current.size;
+    const params = new URLSearchParams(window.location.search);
+    const size = parseInt(params.get('size') || '', 10);
+    return !isNaN(size) ? size : 10;
+  });
+  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>(() => {
+    if (challengeData.current) return challengeData.current.difficulty;
+    const params = new URLSearchParams(window.location.search);
+    const diff = params.get('difficulty') as DifficultyLevel;
+    return (diff && DIFFICULTY_LEVELS.includes(diff)) ? diff : 'MEDIUM';
+  });
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [showCopyMessage, setShowCopyMessage] = useState<boolean>(false);
 
@@ -517,12 +527,11 @@ const App: React.FC = () => {
 
             {/* Settings Row - Moved to Portal */}
             {document.getElementById('game-selectors-root') && createPortal(
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 {/* Size Selector */}
                 <select
                   value={selectedSize}
                   onChange={(e) => setSelectedSize(Number(e.target.value))}
-                  className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-200"
                 >
                   {GRID_SIZES.map(size => (
                     <option key={size} value={size}>{size}x{size}</option>
@@ -533,7 +542,6 @@ const App: React.FC = () => {
                 <select
                   value={selectedDifficulty}
                   onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyLevel)}
-                  className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-200"
                 >
                   {(Object.keys(DIFFICULTY_CONFIG) as DifficultyLevel[]).map((key) => (
                     <option key={key} value={key}>{DIFFICULTY_CONFIG[key].label.split(' ')[0]}</option>
@@ -729,12 +737,10 @@ const App: React.FC = () => {
       {document.getElementById('theme-toggle-root') && createPortal(
         <button
           onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
-          className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 shadow-md transform hover:scale-110 active:scale-95 border border-slate-300 dark:border-slate-500"
+          className="theme-toggle-btn"
           title={theme === 'dark' ? 'Переключить на светлую тему' : 'Переключить на темную тему'}
         >
-          <span className="text-xl leading-none">
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </span>
+          {theme === 'dark' ? '☀️' : '🌙'}
         </button>,
         document.getElementById('theme-toggle-root')!
       )}

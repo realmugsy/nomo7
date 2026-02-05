@@ -1,7 +1,7 @@
 class I18n {
     constructor() {
         this.currentLang = localStorage.getItem('lang') || 'en';
-        this.supportedLangs = ['ru', 'en'];
+        this.supportedLangs = ['ru', 'en', 'es', 'de', 'fr', 'it'];
         if (!this.supportedLangs.includes(this.currentLang)) {
             this.currentLang = 'en';
         }
@@ -49,10 +49,11 @@ class I18n {
         document.title = this.translations.title || document.title;
         document.documentElement.lang = this.currentLang;
 
-        // Update switcher active state
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.lang === this.currentLang);
-        });
+        // Update switcher value
+        const select = document.querySelector('.lang-select');
+        if (select) {
+            select.value = this.currentLang;
+        }
     }
 
     getValue(obj, path) {
@@ -63,19 +64,21 @@ class I18n {
         const switcherContainer = document.createElement('div');
         switcherContainer.className = 'lang-switcher';
 
+        const select = document.createElement('select');
+        select.className = 'lang-select';
+
         this.supportedLangs.forEach(lang => {
-            const btn = document.createElement('button');
-            btn.textContent = lang.toUpperCase();
-            btn.className = 'lang-btn';
-            btn.dataset.lang = lang;
-            if (lang === this.currentLang) btn.classList.add('active');
-
-            btn.onclick = () => this.loadLanguage(lang);
-
-            switcherContainer.appendChild(btn);
+            const option = document.createElement('option');
+            option.value = lang;
+            option.textContent = lang.toUpperCase();
+            if (lang === this.currentLang) option.selected = true;
+            select.appendChild(option);
         });
 
-        // Add to header (adjust selector as needed)
+        select.onchange = (e) => this.loadLanguage(e.target.value);
+        switcherContainer.appendChild(select);
+
+        // Add to header
         const headerActions = document.querySelector('.header-actions');
         if (headerActions) {
             headerActions.prepend(switcherContainer);

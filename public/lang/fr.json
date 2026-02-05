@@ -1,0 +1,101 @@
+{
+    "title": "Nonogram World",
+    "header": {
+        "logo": "Nonogram World",
+        "login": "Connexion"
+    },
+    "nav": {
+        "play": "Jouer",
+        "map": "Carte",
+        "rules": "Règles",
+        "forum": "Forum"
+    },
+    "game": {
+        "title": "Nonogrammes: Niveau 1",
+        "difficulty": "Difficulté: Facile",
+        "restart": "↺ Recommencer",
+        "check": "✓ Vérifier",
+        "canvas_placeholder": "Plateau de jeu Canvas"
+    },
+    "panel": {
+        "progress": "Progrès",
+        "how_to_play": "Comment jouer",
+        "tools": "Outils",
+        "like_game": "Vous aimez le jeu ?",
+        "share": "Partager avec des amis"
+    },
+    "stats": {
+        "time": "Temps",
+        "lives": "Vies",
+        "solved": "Résolu"
+    },
+    "controls": {
+        "lmb": "Clic gauche",
+        "paint": "Remplir la cellule",
+        "rmb": "Clic droit",
+        "cross": "Marquer d'une croix",
+        "drag": "Glisser",
+        "draw": "Dessiner en glissant"
+    },
+    "tools": {
+        "lamp": "💡 Indice",
+        "settings": "⚙️ Paramètres",
+        "next_level": "Niveau suivant ➜"
+    },
+    "footer": {
+        "copy": "&copy; 2026 Nonogram World. Tous droits réservés.",
+        "privacy": "Politique de confidentialité",
+        "terms": "Conditions d'utilisation",
+        "contacts": "Contacts",
+        "version": "Version: 0.1.004"
+    },
+    "rules_detail": {
+        "title": "Comment résoudre les Nonogrammes",
+        "intro_p1": "Les Nonogrammes (également connus sous le nom de Griddlers ou mots croisés japonais) sont des puzzles logiques d'images où vous devez décoder une image cachée.",
+        "intro_p2": "Le processus de résolution est basé sur une déduction stricte : vous analysez les intersections de lignes horizontales et verticales.",
+        "tips_title": "Conseils et stratégies pour réussir",
+        "tips": {
+            "tip1_title": "Commencez par les plus grands nombres",
+            "tip1_text": "Si un nombre correspond à la largeur ou à la hauteur totale de la grille, remplissez-la entièrement.",
+            "tip2_title": "Utilisez la méthode du chevauchement",
+            "tip2_text": "Si la somme des nombres couvre plus de la moitié de la longueur, vous pouvez calculer les cases qui seront remplies.",
+            "tip3_title": "Marquez les cases vides avec des 'X'",
+            "tip3_text": "C'est absolument critique. Dès que vous déterminez qu'une case ne peut pas être remplie, marquez-la d'un 'X'.",
+            "tip4_title": "Cherchez les lignes 'Zéro'",
+            "tip4_text": "Si une ligne ou une colonne a un '0', barrez immédiatement toute la ligne avec des 'X'."
+        },
+        "back": "Retour au jeu"
+    },
+    "privacy_detail": {
+        "title": "Politique de Confidentialité",
+        "intro": "Nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles.",
+        "h1_title": "1. Collecte d'informations",
+        "h1_p": "Notre application fonctionne principalement côté client. Nous ne collectons pas de données personnelles sans votre consentement explicite.",
+        "h2_title": "2. Utilisation des données",
+        "h2_p": "Nous utilisons le stockage local du navigateur (localStorage) pour mémoriser vos paramètres.",
+        "h3_title": "3. Cookies",
+        "h3_p": "Nous pouvons utiliser des cookies à des fins d'analyse pour comprendre comment les utilisateurs interagissent avec Nonogram World.",
+        "h4_title": "4. Services tiers",
+        "h4_p": "Le jeu peut utiliser des API externes (ex : Google Gemini) pour générer du contenu."
+    },
+    "terms_detail": {
+        "title": "Conditions d'Utilisation",
+        "intro": "Bienvenue sur Nonogram World. En utilisant ce site, vous acceptez les conditions suivantes.",
+        "h1_title": "1. Acceptation des conditions",
+        "h1_p": "En accédant au site, vous confirmez que vous avez lu et accepté de vous conformer à ces règles.",
+        "h2_title": "2. Gameplay",
+        "h2_p": "Le jeu est fourni 'en l'état'. Nous ne sommes pas responsables de la perte de vos données de progression.",
+        "h3_title": "3. Fair-play",
+        "h3_p": "Nous encourageons le fair-play. L'utilisation de logiciels tiers pour résoudre les puzzles est découragée.",
+        "h4_title": "4. Changements",
+        "h4_p": "Nous nous réservons le droit de modifier ces conditions à tout moment."
+    },
+    "contacts_detail": {
+        "title": "Contacts",
+        "intro": "Vous avez des questions, des suggestions ou un bogue ? Nous sommes toujours ravis de vos retours !",
+        "methods_title": "Moyens de nous contacter",
+        "email_label": "E-mail :",
+        "github_label": "GitHub :",
+        "feedback_time": "Nous essayons de répondre à toutes les demandes dans les 24 heures."
+    }
+}

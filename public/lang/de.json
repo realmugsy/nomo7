@@ -1,0 +1,101 @@
+{
+    "title": "Nonogram World",
+    "header": {
+        "logo": "Nonogram World",
+        "login": "Anmelden"
+    },
+    "nav": {
+        "play": "Spielen",
+        "map": "Karte",
+        "rules": "Regeln",
+        "forum": "Forum"
+    },
+    "game": {
+        "title": "Nonogramme: Level 1",
+        "difficulty": "Schwierigkeit: Einfach",
+        "restart": "↺ Neustart",
+        "check": "✓ Prüfen",
+        "canvas_placeholder": "Canvas-Spielfeld"
+    },
+    "panel": {
+        "progress": "Fortschritt",
+        "how_to_play": "Spielanleitung",
+        "tools": "Werkzeuge",
+        "like_game": "Gefällt dir das Spiel?",
+        "share": "Mit Freunden teilen"
+    },
+    "stats": {
+        "time": "Zeit",
+        "lives": "Leben",
+        "solved": "Gelöst"
+    },
+    "controls": {
+        "lmb": "Linksklick",
+        "paint": "Zelle füllen",
+        "rmb": "Rechtsklick",
+        "cross": "Kreuz setzen",
+        "drag": "Ziehen",
+        "draw": "Durch Ziehen zeichnen"
+    },
+    "tools": {
+        "lamp": "💡 Hinweis",
+        "settings": "⚙️ Einstellungen",
+        "next_level": "Nächstes Level ➜"
+    },
+    "footer": {
+        "copy": "&copy; 2026 Nonogram World. Alle Rechte vorbehalten.",
+        "privacy": "Datenschutz",
+        "terms": "Nutzungsbedingungen",
+        "contacts": "Kontakte",
+        "version": "Version: 0.1.004"
+    },
+    "rules_detail": {
+        "title": "Nonogramme lösen",
+        "intro_p1": "Nonogramme (auch bekannt als Griddlers oder japanische Kreuzworträtsel) sind Logikrätsel, bei denen Sie ein verstecktes Bild mithilfe von Zahlen an den Rändern des Rasters entschlüsseln müssen.",
+        "intro_p2": "Der Lösungsprozess basiert auf strenger Deduktion: Sie analysieren die Schnittpunkte horizontaler und vertikaler Linien.",
+        "tips_title": "Tipps und Strategien für den Erfolg",
+        "tips": {
+            "tip1_title": "Beginnen Sie mit den größten Zahlen",
+            "tip1_text": "Wenn eine Zahl der vollen Breite oder Höhe des Rasters entspricht, füllen Sie sie vollständig aus.",
+            "tip2_title": "Nutzen Sie die Überlappungsmethode",
+            "tip2_text": "Wenn die Summe der Zahlen mehr als die Hälfte der Länge abdeckt, können Sie die überlappenden Felder berechnen.",
+            "tip3_title": "Leere Zellen mit 'X' markieren",
+            "tip3_text": "Dies ist absolut entscheidend. Sobald Sie feststellen, dass eine Zelle nicht gefüllt werden kann, markieren Sie sie mit einem 'X'.",
+            "tip4_title": "Suchen Sie nach 'Null'-Reihen",
+            "tip4_text": "Wenn eine Reihe oder Spalte eine '0' hat, streichen Sie sofort die gesamte Linie mit 'X' durch."
+        },
+        "back": "Zurück zum Spiel"
+    },
+    "privacy_detail": {
+        "title": "Datenschutzrichtlinie",
+        "intro": "Wir respektieren Ihre Privatsphäre und verpflichten uns zum Schutz Ihrer personenbezogenen Daten.",
+        "h1_title": "1. Datenerhebung",
+        "h1_p": "Unsere Anwendung arbeitet primär clientseitig. Wir erheben keine personenbezogenen Daten ohne Ihre ausdrückliche Zustimmung.",
+        "h2_title": "2. Datennutzung",
+        "h2_p": "Wir nutzen den lokalen Speicher des Browsers (localStorage), um Ihre Einstellungen zu speichern.",
+        "h3_title": "3. Cookies",
+        "h3_p": "Wir können Cookies für Analysen verwenden, um zu verstehen, wie Nutzer mit Nonogram World interagieren.",
+        "h4_title": "4. Drittanbieter-Dienste",
+        "h4_p": "Das Spiel kann externe APIs (z. B. Google Gemini) zur Inhaltsgenerierung nutzen."
+    },
+    "terms_detail": {
+        "title": "Nutzungsbedingungen",
+        "intro": "Willkommen bei Nonogram World. Durch die Nutzung dieser Website erklären Sie sich mit den folgenden Bedingungen einverstanden.",
+        "h1_title": "1. Annahme der Bedingungen",
+        "h1_p": "Durch den Zugriff auf die Website bestätigen Sie, dass Sie diese Regeln gelesen und verstanden haben.",
+        "h2_title": "2. Gameplay",
+        "h2_p": "Das Spiel wird im vorliegenden Zustand bereitgestellt. Wir haften nicht für den Verlust Ihrer Fortschrittsdaten.",
+        "h3_title": "3. Fairplay",
+        "h3_p": "Wir begrüßen Fairplay. Die Nutzung von Drittanbieter-Software zum Lösen der Rätsel ist nicht erwünscht.",
+        "h4_title": "4. Änderungen",
+        "h4_p": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern."
+    },
+    "contacts_detail": {
+        "title": "Kontakte",
+        "intro": "Haben Sie Fragen, Vorschläge oder einen Fehler gefunden? Wir freuen uns immer über Feedback!",
+        "methods_title": "Kontaktmöglichkeiten",
+        "email_label": "E-Mail:",
+        "github_label": "GitHub:",
+        "feedback_time": "Wir bemühen uns, alle Anfragen innerhalb von 24 Stunden zu beantworten."
+    }
+}

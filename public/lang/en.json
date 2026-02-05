@@ -1,7 +1,7 @@
 {
-    "title": "Game Portal - Nonogram Style",
+    "title": "Nonogram World",
     "header": {
-        "logo": "MyGamePortal",
+        "logo": "Nonogram World",
         "login": "Login"
     },
     "nav": {
@@ -43,10 +43,11 @@
         "next_level": "Next Level ➜"
     },
     "footer": {
-        "copy": "&copy; 2023 MyGamePortal. All rights reserved.",
+        "copy": "&copy; 2026 Nonogram World. All rights reserved.",
         "privacy": "Privacy Policy",
         "terms": "Terms of Use",
-        "contacts": "Contacts"
+        "contacts": "Contacts",
+        "version": "Version: 0.1.004"
     },
     "rules_detail": {
         "title": "How to Solve Nonograms",
@@ -104,13 +105,13 @@
         "h2_li2": "Your game progress.",
         "h2_li3": "The number of game coins.",
         "h3_title": "3. Cookies",
-        "h3_p": "We may use cookies for analytics to understand how users interact with our game portal and make it better.",
+        "h3_p": "We may use cookies for analytics to understand how users interact with Nonogram World and make it better.",
         "h4_title": "4. Third-party services",
         "h4_p": "The game may use external APIs (e.g., Google Gemini) to generate game content. No personal information is transmitted to these services."
     },
     "terms_detail": {
         "title": "Terms of Use",
-        "intro": "Welcome to our game portal. By using this site, you agree to the following terms.",
+        "intro": "Welcome to Nonogram World. By using this site, you agree to the following terms.",
         "h1_title": "1. Acceptance of Terms",
         "h1_p": "By accessing the site and using the game, you confirm that you have read, understood, and agree to comply with these rules.",
         "h2_title": "2. Gameplay",
