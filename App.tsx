@@ -10,6 +10,7 @@ import {
   BLAST_REVEAL_DELAY_MS,
   INITIAL_COINS,
   BLAST_COST,
+  DAILY_PUZZLE_CONFIG,
 } from './gameConfig';
 import GridCell from './components/GridCell';
 import Hints from './components/Hints';
@@ -20,6 +21,15 @@ const createEmptyGrid = (size: number): CellState[][] =>
   Array(size).fill(null).map(() => Array(size).fill(CellState.EMPTY));
 
 // Helper to convert string seed to integer
+// Helper to get deterministic daily seed (YYYYMMDD)
+const getDailySeed = (): number => {
+  const d = new Date();
+  const YYYY = d.getUTCFullYear();
+  const MM = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const DD = String(d.getUTCDate()).padStart(2, '0');
+  return parseInt(`${YYYY}${MM}${DD}`, 10);
+};
+
 const stringToSeed = (str: string): number => {
   let hash = 0;
   if (str.length === 0) return 0;
@@ -109,6 +119,7 @@ const App: React.FC = () => {
     const diff = params.get('difficulty') as DifficultyLevel;
     return (diff && DIFFICULTY_LEVELS.includes(diff)) ? diff : 'MEDIUM';
   });
+
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [showCopyMessage, setShowCopyMessage] = useState<boolean>(false);
 
@@ -165,6 +176,18 @@ const App: React.FC = () => {
     setIsCheckHintsActive(false); // Reset hint checking
     setWinCorner(null); // Reset win animation
     setLastCorrectCell(null); // Reset last correct cell tracking
+
+    // Direct Access Prevention: If daily already solved, redirect to normal random game
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'daily') {
+      const today = new Date().getUTCFullYear() + '-' + (new Date().getUTCMonth() + 1) + '-' + new Date().getUTCDate();
+      if (localStorage.getItem('lastDailySolved') === today) {
+        params.delete('mode');
+        window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+        // Continue but it won't be in daily mode anymore
+      }
+    }
+
     try {
       let finalSeed: number;
 
@@ -176,11 +199,15 @@ const App: React.FC = () => {
           finalSeed = stringToSeed(seedVal);
         }
       }
-      // Priority 2: Use challenge info from URL if available and NOT force-starting a new random game
+      // Priority 2: Daily mode (Deterministic)
+      else if (new URLSearchParams(window.location.search).get('mode') === 'daily') {
+        finalSeed = getDailySeed();
+      }
+      // Priority 3: Use challenge info from URL if available and NOT force-starting a new random game
       else if (challengeData.current && !forceRandom) {
         finalSeed = challengeData.current.seed;
       }
-      // Priority 3: Random seed
+      // Priority 4: Random seed
       else {
         finalSeed = Math.floor(Math.random() * 2000000000);
 
@@ -195,8 +222,12 @@ const App: React.FC = () => {
         }
       }
 
-      const diffConfig = DIFFICULTY_CONFIG[selectedDifficulty];
-      const newPuzzle = await generatePuzzle(finalSeed, selectedSize, diffConfig);
+      const isDaily = new URLSearchParams(window.location.search).get('mode') === 'daily';
+      const finalSize = isDaily ? DAILY_PUZZLE_CONFIG.SIZE : selectedSize;
+      const finalDiff: DifficultyLevel = isDaily ? DAILY_PUZZLE_CONFIG.DIFFICULTY : selectedDifficulty;
+
+      const diffConfig = DIFFICULTY_CONFIG[finalDiff];
+      const newPuzzle = await generatePuzzle(finalSeed, finalSize, diffConfig);
 
       setPuzzle(newPuzzle);
       setPlayerGrid(createEmptyGrid(newPuzzle.size));
@@ -208,11 +239,23 @@ const App: React.FC = () => {
 
 
 
-  // Update unlocked markers when a game is won
+  // Update unlocked markers and award daily coins when a game is won
   useEffect(() => {
     if (gameState.status === 'won' && puzzle) {
       // Update grind state
       setGrindState(prev => completeLevel(prev));
+
+      // Handle daily奖励
+      const isDaily = new URLSearchParams(window.location.search).get('mode') === 'daily';
+      if (isDaily) {
+        const today = new Date().getUTCFullYear() + '-' + (new Date().getUTCMonth() + 1) + '-' + new Date().getUTCDate();
+        const lastDaily = localStorage.getItem('lastDailySolved');
+        if (lastDaily !== today) {
+          setCoins(prev => prev + 50);
+          localStorage.setItem('lastDailySolved', today);
+          // Optional: we can show a special message or sound here later
+        }
+      }
     }
   }, [gameState.status, puzzle]);
 
@@ -380,6 +423,13 @@ const App: React.FC = () => {
     setCoins(prev => prev + 10);
   };
 
+  // Reset Daily Cheat (For Debug/Testing)
+  const handleResetDaily = () => {
+    localStorage.removeItem('lastDailySolved');
+    // Refresh to update UI (layout.js and App.tsx checks)
+    window.location.reload();
+  };
+
   // Get count of empty cells - used for blast button disabled state
   const getEmptyCellCount = useCallback(() => {
     if (!playerGrid.length) return 0;
@@ -490,31 +540,40 @@ const App: React.FC = () => {
     <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
 
       {/* Debug Info: Density and Seed shifted to top-right corner */}
-      {puzzle && (gameState.status === 'playing' || gameState.status === 'won') && (
-        <div className="absolute top-3 right-3 text-[10px] text-slate-500 font-mono opacity-40 hover:opacity-100 transition-opacity z-50 flex flex-col items-end gap-1">
-          <div className="pointer-events-none text-right">
+      {puzzle && (gameState.status === 'playing' || gameState.status === 'won') && isDebugVisible && (
+        <div className="absolute top-3 right-3 text-[10px] text-slate-500 font-mono opacity-100 transition-opacity z-50 flex flex-col items-end gap-1 bg-slate-100/80 dark:bg-slate-900/80 p-2 rounded border border-slate-300 dark:border-slate-800 backdrop-blur-sm">
+          <div className="text-right">
             Density: <span className="font-bold text-indigo-400">{stats.percent}%</span><br />
             ({stats.count}/{puzzle.size * puzzle.size})<br />
             Seed: <span className="text-slate-400">{puzzle.seed}</span>
           </div>
 
-          <button
-            onClick={handleShare}
-            className="mt-1 bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700 flex items-center gap-1.5 transition-all active:scale-95 pointer-events-auto"
-            title="Copy challenge link to share with friends"
-          >
-            {showCopyMessage ? (
-              <>
-                <span className="text-emerald-400">✓</span>
-                <span className="text-emerald-400">Copied!</span>
-              </>
-            ) : (
-              <>
-                <span>🔗</span>
-                <span>Share</span>
-              </>
-            )}
-          </button>
+          <div className="flex flex-col gap-1 mt-1">
+            <button
+              onClick={handleShare}
+              className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700 flex items-center gap-1.5 transition-all active:scale-95 pointer-events-auto"
+              title="Copy challenge link to share with friends"
+            >
+              {showCopyMessage ? (
+                <>
+                  <span className="text-emerald-400">✓</span>
+                  <span className="text-emerald-400">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <span>🔗</span>
+                  <span>Share</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleResetDaily}
+              className="bg-rose-900/40 hover:bg-rose-900/60 text-rose-300 px-2 py-1 rounded border border-rose-800/50 flex items-center gap-1.5 transition-all active:scale-95 text-[9px] font-bold"
+            >
+              <span>♻️</span> Reset Daily
+            </button>
+          </div>
         </div>
       )}
 
@@ -530,8 +589,16 @@ const App: React.FC = () => {
               <div className="flex gap-2">
                 {/* Size Selector */}
                 <select
-                  value={selectedSize}
-                  onChange={(e) => setSelectedSize(Number(e.target.value))}
+                  value={new URLSearchParams(window.location.search).get('mode') === 'daily' ? DAILY_PUZZLE_CONFIG.SIZE : selectedSize}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    const url = new URL(window.location.href);
+                    if (url.searchParams.get('mode') === 'daily') {
+                      url.searchParams.delete('mode');
+                      window.history.replaceState({}, '', url.toString());
+                    }
+                    setSelectedSize(val);
+                  }}
                 >
                   {GRID_SIZES.map(size => (
                     <option key={size} value={size}>{size}x{size}</option>
@@ -540,8 +607,16 @@ const App: React.FC = () => {
 
                 {/* Difficulty Selector */}
                 <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyLevel)}
+                  value={new URLSearchParams(window.location.search).get('mode') === 'daily' ? DAILY_PUZZLE_CONFIG.DIFFICULTY : selectedDifficulty}
+                  onChange={(e) => {
+                    const val = e.target.value as DifficultyLevel;
+                    const url = new URL(window.location.href);
+                    if (url.searchParams.get('mode') === 'daily') {
+                      url.searchParams.delete('mode');
+                      window.history.replaceState({}, '', url.toString());
+                    }
+                    setSelectedDifficulty(val);
+                  }}
                 >
                   {(Object.keys(DIFFICULTY_CONFIG) as DifficultyLevel[]).map((key) => (
                     <option key={key} value={key}>{DIFFICULTY_CONFIG[key].label.split(' ')[0]}</option>
@@ -553,6 +628,16 @@ const App: React.FC = () => {
 
 
             <div className="flex gap-4">
+              {/* Daily Title if applicable */}
+              {new URLSearchParams(window.location.search).get('mode') === 'daily' && (
+                <div className="bg-amber-100 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700/50 px-4 py-2 rounded-lg text-amber-800 dark:text-amber-200 font-bold flex items-center gap-2 mb-2">
+                  <span>📅</span>
+                  <span>
+                    <span data-i18n="footer.daily_title">Daily Challenge</span>: {new Date().toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+
               {/* Restart Button */}
               <button
                 onClick={restartCurrentGame}
@@ -562,13 +647,21 @@ const App: React.FC = () => {
                 <span>↺</span> Restart
               </button>
 
-              {/* New Game Button */}
-              <button
-                onClick={() => startNewGame(undefined, true)}
-                className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-slate-900/50 transition-all hover:scale-105 text-sm"
-              >
-                New Game
-              </button>
+              {/* New Game Button with Hidden Debug Trigger */}
+              <div className="relative flex items-center gap-2">
+                <button
+                  onClick={() => startNewGame(undefined, true)}
+                  className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-slate-900/50 transition-all hover:scale-105 text-sm"
+                >
+                  New Game
+                </button>
+                {/* Secret Trigger Area */}
+                <div
+                  className="w-8 h-8 cursor-default opacity-0 hover:opacity-10 transition-opacity bg-white/20 rounded-full"
+                  onClick={() => setIsDebugVisible(prev => !prev)}
+                  title="Debug Toggle (Secret)"
+                ></div>
+              </div>
             </div>
 
             {/* Seed Display & Debug */}

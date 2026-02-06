@@ -7,6 +7,7 @@
     "nav": {
         "play": "Play",
         "map": "Map",
+        "daily": "Daily Puzzle",
         "rules": "Rules",
         "forum": "Forum"
     },
@@ -47,6 +48,9 @@
         "privacy": "Privacy Policy",
         "terms": "Terms of Use",
         "contacts": "Contacts",
+        "daily_title": "Daily Challenge",
+        "daily_reward": "Daily Reward! +{{coins}} 🪙",
+        "daily_solved": "Already Solved",
         "version": "Version: 0.1.006"
     },
     "rules_detail": {

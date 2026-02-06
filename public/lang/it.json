@@ -7,6 +7,7 @@
     "nav": {
         "play": "Gioca",
         "map": "Mappa",
+        "daily": "Puzzle del giorno",
         "rules": "Regole",
         "forum": "Forum"
     },
@@ -47,6 +48,9 @@
         "privacy": "Informativa sulla privacy",
         "terms": "Termini di utilizzo",
         "contacts": "Contatti",
+        "daily_title": "Sfida quotidiana",
+        "daily_reward": "Premio giornaliero! +{{coins}} 🪙",
+        "daily_solved": "Già risolto",
         "version": "Versione: 0.1.006"
     },
     "rules_detail": {

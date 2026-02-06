@@ -61,3 +61,9 @@ export const BLAST_REVEAL_DELAY_MS = 500; // ms between sequential cell reveals 
 
 export const INITIAL_COINS = 20;
 export const BLAST_COST = 3;
+
+// Daily Puzzle Settings
+export const DAILY_PUZZLE_CONFIG = {
+  SIZE: 15,
+  DIFFICULTY: 'VERY_EASY' as DifficultyLevel
+};

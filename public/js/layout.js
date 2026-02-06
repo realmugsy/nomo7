@@ -11,6 +11,10 @@ const HEADER_HTML = `
         <ul>
             <li><a href="/index.html" data-nav="play" data-i18n="nav.play">Play</a></li>
             <li><a href="/map.html" data-nav="map" data-i18n="nav.map">Map</a></li>
+            <li><a href="/index.html?mode=daily" data-nav="daily">
+                <span data-i18n="nav.daily">Daily Puzzle</span>
+                <span class="daily-badge">NEW</span>
+            </a></li>
             <li><a href="/rules.html" data-nav="rules" data-i18n="nav.rules">Rules</a></li>
             <li><a href="#" data-nav="forum" data-i18n="nav.forum">Forum</a></li>
         </ul>
@@ -88,7 +92,10 @@ function injectLayout() {
         // Mark active link
         const path = window.location.pathname;
         let activeNav = '';
-        if (path.includes('index.html') || path === '/') activeNav = 'play';
+        if (path.includes('index.html') || path === '/') {
+            const params = new URLSearchParams(window.location.search);
+            activeNav = params.get('mode') === 'daily' ? 'daily' : 'play';
+        }
         else if (path.includes('map.html')) activeNav = 'map';
         else if (path.includes('rules.html')) activeNav = 'rules';
         // Add more as needed
@@ -96,6 +103,13 @@ function injectLayout() {
         if (activeNav) {
             const activeLink = header.querySelector(`[data-nav="${activeNav}"]`);
             if (activeLink) activeLink.classList.add('active');
+        }
+
+        // Hide Daily Link if already solved today
+        const todayStr = new Date().getUTCFullYear() + '-' + (new Date().getUTCMonth() + 1) + '-' + new Date().getUTCDate();
+        if (localStorage.getItem('lastDailySolved') === todayStr) {
+            const dailyLinkLi = header.querySelector('[data-nav="daily"]')?.closest('li');
+            if (dailyLinkLi) dailyLinkLi.style.display = 'none';
         }
 
         // Synchronize selectors with URL params

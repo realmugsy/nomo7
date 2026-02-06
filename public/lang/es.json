@@ -7,6 +7,7 @@
     "nav": {
         "play": "Jugar",
         "map": "Mapa",
+        "daily": "Rompecabezas del día",
         "rules": "Reglas",
         "forum": "Foro"
     },
@@ -47,6 +48,9 @@
         "privacy": "Política de privacidad",
         "terms": "Términos de uso",
         "contacts": "Contactos",
+        "daily_title": "Desafío diario",
+        "daily_reward": "¡Recompensa diaria! +{{coins}} 🪙",
+        "daily_solved": "Ya resuelto",
         "version": "Versión: 0.1.006"
     },
     "rules_detail": {

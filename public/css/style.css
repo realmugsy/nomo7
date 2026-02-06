@@ -659,3 +659,20 @@ html.dark .lang-select:hover {
     color: #94a3b8;
     font-size: 20px;
 }
+
+/* --- Daily Mode --- */
+.daily-badge {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.dark .daily-badge {
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+}
