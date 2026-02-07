@@ -9,14 +9,13 @@ const HEADER_HTML = `
     </a>
     <nav>
         <ul>
-            <li><a href="/index.html" data-nav="play" data-i18n="nav.play">Play</a></li>
-            <li><a href="/map.html" data-nav="map" data-i18n="nav.map">Map</a></li>
             <li><a href="/index.html?mode=daily" data-nav="daily">
                 <span data-i18n="nav.daily">Daily Puzzle</span>
                 <span class="daily-badge">NEW</span>
             </a></li>
+            <li><a href="/index.html" data-nav="play" data-i18n="nav.play">Play</a></li>
+            <li><a href="/map.html" data-nav="map" data-i18n="nav.map">Map</a></li>
             <li><a href="/rules.html" data-nav="rules" data-i18n="nav.rules">Rules</a></li>
-            <li><a href="#" data-nav="forum" data-i18n="nav.forum">Forum</a></li>
         </ul>
     </nav>
     <div class="header-actions">

@@ -651,16 +651,12 @@ const App: React.FC = () => {
               <div className="relative flex items-center gap-2">
                 <button
                   onClick={() => startNewGame(undefined, true)}
-                  className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-slate-900/50 transition-all hover:scale-105 text-sm"
+                  className="bg-slate-600 hover:bg-slate-700 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-slate-900/50 transition-all hover:scale-105 text-sm flex items-center gap-2"
                 >
-                  New Game
+                  <span>+</span> New Game
                 </button>
-                {/* Secret Trigger Area */}
-                <div
-                  className="w-8 h-8 cursor-default opacity-0 hover:opacity-10 transition-opacity bg-white/20 rounded-full"
-                  onClick={() => setIsDebugVisible(prev => !prev)}
-                  title="Debug Toggle (Secret)"
-                ></div>
+
+
               </div>
             </div>
 

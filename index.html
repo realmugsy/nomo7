@@ -27,14 +27,7 @@
 
     <!-- Левая колонка: Игровое поле (Iframe) -->
     <section class="game-section">
-      <div class="game-header">
-        <div class="game-title">
-          <h1 data-i18n="game.title">Nonograms: Level 1</h1>
-        </div>
-        <div class="game-meta">
-          <span data-i18n="game.difficulty">Difficulty: Customizable</span>
-        </div>
-      </div>
+
 
       <!-- Здесь находится контейнер для вашей игры -->
       <!-- Modified to host React App instead of Canvas -->
@@ -75,7 +68,9 @@
     -->
 
     <div class="panel how-to-play-panel rules-content" style="margin-top: 20px;">
-      <h3 data-i18n="panel.how_to_play">How to Play</h3>
+      <h2
+        style="margin-top: 30px; margin-bottom: 25px; text-align: center; font-size: 2rem; color: var(--primary-color);"
+        data-i18n="panel.how_to_play">How to Play</h2>
       <p data-i18n="rules_detail.intro_p1">Nonograms (also known as Griddlers or Japanese Crosswords) are picture logic
         puzzles where you must decode a hidden image using numbers placed along the edges of the grid. Each number
         represents the length of a continuous block of filled cells in that specific row or column. A fundamental rule
@@ -163,7 +158,8 @@
   <script src="/js/i18n.js"></script>
   <script src="/js/script.js"></script>
   <!-- React Enty Point -->
-  <script type="module" src="/index.tsx"></script>
+  <script type="module" src="/src/index.tsx"></script>
+
 </body>
 
 </html>

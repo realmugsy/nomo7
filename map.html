@@ -24,11 +24,11 @@
         }
 
         .map-placeholder {
-            width: 100%;
+            width: 1000px;
             height: 600px;
             background: rgba(0, 0, 0, 0.05);
             border-radius: var(--radius);
-            margin: 20px 0;
+            margin: 20px auto;
             position: relative;
             overflow: hidden;
             /* Viewport */
@@ -146,9 +146,9 @@
 
     <main class="main-container">
         <section class="game-section map-content">
-            <h1 style="color: var(--primary-color);" data-i18n="nav.map">Карта приключений</h1>
+            <h1 style="color: var(--primary-color);" data-i18n="nav.map">Expedition map</h1>
 
-            <p style="margin-bottom: 20px;">Здесь вы сможете выбирать уровни и следить за своим прогрессом!</p>
+            <p style="margin-bottom: 20px;">Preparation for an expedition</p>
 
             <div class="map-placeholder" id="viewport">
                 <div id="hex-grid-container"></div>
@@ -473,9 +473,69 @@
                 });
             </script>
 
-            <div style="margin-top: 40px;">
-                <a href="/index.html" class="btn" data-i18n="nav.play">Начать играть</a>
+            <div style="margin-top: 40px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                <p style="margin-bottom: 15px; font-size: 1.1rem;" data-i18n="subscription.title">Оставьте свою почту и
+                    мы дадим вам знать, когда экспедиция будет готова!</p>
+                <form id="subscribe-form" style="display: flex; gap: 10px; justify-content: center;">
+                    <input type="email" name="email" data-i18n="subscription.placeholder" placeholder="Email"
+                        style="padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color, #ccc); flex: 1; background: var(--bg-secondary, #fff); color: var(--text-primary, #000);"
+                        required />
+                    <button class="btn" type="submit" data-i18n="subscription.button">Отправить</button>
+                </form>
+                <div id="form-message" style="margin-top: 10px; font-size: 0.9rem; min-height: 20px;"></div>
             </div>
+
+            <script>
+                document.getElementById('subscribe-form').addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const form = this;
+                    const emailInput = form.querySelector('input[name="email"]');
+                    const email = emailInput.value;
+                    const btn = form.querySelector('button');
+                    const msg = document.getElementById('form-message');
+                    // Store original key to restore it properly logic could be tricky with i18n auto-update, 
+                    // but for now we just restore key from i18n.
+
+                    btn.disabled = true;
+                    btn.innerText = (window.i18n && window.i18n.t('subscription.sending')) || 'Отправка...';
+                    msg.innerText = '';
+
+                    // Google Apps Script Web App URL
+                    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3hnaUx4055rC0NomUyWCnrO_iEzQX6xAuX2jleQaziYdoBu9GIShZXvKMfNBw1shEIA/exec';
+
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', // Important for GAS
+                        headers: {
+                            'Content-Type': 'text/plain' // Avoids CORS preflight
+                        },
+                        body: JSON.stringify({ email: email })
+                    }).then(() => {
+                        // In no-cors mode, we can't read the response, but if we got here, request was sent
+                        msg.style.color = 'var(--primary-color)';
+                        msg.innerText = (window.i18n && window.i18n.t('subscription.success')) || 'Спасибо! Мы свяжемся с вами.';
+                        form.reset();
+                    }).catch(err => {
+                        console.error('Error:', err);
+                        msg.style.color = '#ef4444';
+                        msg.innerText = (window.i18n && window.i18n.t('subscription.error')) || 'Ошибка отправки. Попробуйте позже.';
+                    }).finally(() => {
+                        btn.disabled = false;
+                        // Force re-apply translation to button to restore original text
+                        if (window.i18n) window.i18n.updatePage();
+                        else btn.innerText = 'Отправить';
+
+                        // Clear message after 5 seconds
+                        setTimeout(() => {
+                            // Check if message is currently showing error (weak check but works for now)
+                            if (msg.innerText !== '') {
+                                msg.innerText = '';
+                            }
+                        }, 5000);
+                    });
+                });
+            </script>
         </section>
     </main>
 

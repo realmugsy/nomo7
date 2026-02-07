@@ -6,7 +6,7 @@
     },
     "nav": {
         "play": "Play",
-        "map": "Map",
+        "map": "Expedition (coming soon)",
         "daily": "Daily Puzzle",
         "rules": "Rules",
         "forum": "Forum"
@@ -51,7 +51,7 @@
         "daily_title": "Daily Challenge",
         "daily_reward": "Daily Reward! +{{coins}} 🪙",
         "daily_solved": "Already Solved",
-        "version": "Version: 0.1.006"
+        "version": "Version: 0.1.007"
     },
     "rules_detail": {
         "title": "How to Solve Nonograms",
@@ -132,5 +132,13 @@
         "email_label": "Email:",
         "github_label": "GitHub:",
         "feedback_time": "We try to respond to all inquiries within 24 hours."
+    },
+    "subscription": {
+        "title": "Leave your email and we'll let you know when the expedition is ready!",
+        "placeholder": "Email",
+        "button": "Send",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you.",
+        "error": "Sending error. Please try again later."
     }
 }
