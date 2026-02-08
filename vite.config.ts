@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+//import sitemap from 'vite-plugin-sitemap'
 import react from '@vitejs/plugin-react'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
@@ -8,7 +9,16 @@ const __dirname = dirname(__filename)
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    //sitemap({
+    //  hostname: "https://nonogramworld.com",
+    // Optional: exclude specific pages
+    //  exclude: ['/thank-you.html'],
+    // Optional: change sitemap.xml location
+    // sitemap: 'public/sitemap.xml',
+    //}),
+  ],
   build: {
     rollupOptions: {
       input: {
