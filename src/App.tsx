@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { generatePuzzle } from './services/geminiService';
-import { CellState, GameState, PuzzleData, ToolType, DifficultyLevel } from './types';
+import { CellState, GameState, PuzzleData, ToolType, DifficultyLevel, RecordData } from './types';
+import { getPuzzleId, saveRecord, getTopRecords } from './services/recordsService';
 import {
   DIFFICULTY_CONFIG,
   GRID_SIZES,
@@ -126,6 +127,42 @@ const App: React.FC = () => {
   // Dragging State
   const isDragging = useRef<boolean>(false);
   const dragTargetState = useRef<CellState | null>(null);
+
+  // Leaderboard State
+  const [playerName, setPlayerName] = useState<string>(() => localStorage.getItem('nomo7-player-name') || '');
+  const [topRecords, setTopRecords] = useState<RecordData[]>([]);
+  const [isRecordSubmitted, setIsRecordSubmitted] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Fetch top records when game is won
+  useEffect(() => {
+    if (gameState.status === 'won' && puzzle) {
+      const pid = getPuzzleId(puzzle.size, selectedDifficulty, puzzle.seed);
+      getTopRecords(pid).then(records => setTopRecords(records));
+      setIsRecordSubmitted(false); // Reset for new win
+    }
+  }, [gameState.status, puzzle, selectedDifficulty]);
+
+  const handleRecordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!puzzle || !playerName.trim() || isRecordSubmitted) return;
+
+    setIsSubmitting(true);
+    localStorage.setItem('nomo7-player-name', playerName); // Save name
+
+    const pid = getPuzzleId(puzzle.size, selectedDifficulty, puzzle.seed);
+    const result = await saveRecord(pid, playerName, timer * 1000);
+
+    if (result.ok) {
+      setIsRecordSubmitted(true);
+      // Refresh top records
+      const records = await getTopRecords(pid);
+      setTopRecords(records);
+    } else {
+      alert('Failed to save record: ' + (result.error || 'Unknown error'));
+    }
+    setIsSubmitting(false);
+  };
 
   // Timer Effect
   useEffect(() => {
@@ -806,18 +843,62 @@ const App: React.FC = () => {
         )
         }
 
-        {/* {gameState.status === 'won' && puzzle && (
-          <div className="mt-8 text-center animate-bounce">
+        {gameState.status === 'won' && puzzle && (
+          <div className="mt-8 text-center animate-bounce-in w-full max-w-md">
             <h2 className="text-3xl font-bold text-emerald-400 mb-2">Puzzle Solved!</h2>
-            <p className="text-slate-300">It was: <span className="text-indigo-400 font-bold text-lg uppercase">{puzzle.title}</span></p>
+            <p className="text-slate-300 mb-4">It was: <span className="text-indigo-400 font-bold text-lg uppercase">{puzzle.title}</span></p>
+
+            {/* Leaderboard Section */}
+            <div className="bg-slate-200 dark:bg-slate-900/80 rounded-lg p-4 mb-4 text-left border border-slate-300 dark:border-slate-700">
+              <h3 className="text-lg font-bold text-slate-700 dark:text-slate-200 mb-2 border-b border-slate-400 dark:border-slate-700 pb-1">Leaderboard</h3>
+
+              {!isRecordSubmitted ? (
+                <form onSubmit={handleRecordSubmit} className="flex gap-2 mb-4">
+                  <input
+                    type="text"
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value)}
+                    placeholder="Enter your name"
+                    className="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-3 py-1 text-sm"
+                    maxLength={24}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded text-sm font-bold disabled:opacity-50"
+                  >
+                    {isSubmitting ? '...' : 'Save'}
+                  </button>
+                </form>
+              ) : (
+                <div className="text-center text-emerald-500 font-bold mb-4 text-sm bg-emerald-900/20 py-1 rounded border border-emerald-900/30">
+                  ✨ Record Saved!
+                </div>
+              )}
+
+              <div className="space-y-1 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                {topRecords.length > 0 ? (
+                  topRecords.map((rec, idx) => (
+                    <div key={idx} className={`flex justify-between text-sm p-1 rounded ${rec.playerName === playerName && isRecordSubmitted && rec.timeMs === timer * 1000 ? 'bg-indigo-100 dark:bg-indigo-900/30 font-bold border border-indigo-200 dark:border-indigo-800' : 'odd:bg-slate-100 dark:odd:bg-slate-800/50'}`}>
+                      <span className="truncate max-w-[120px]">{idx + 1}. {rec.playerName}</span>
+                      <span className="font-mono text-slate-500 dark:text-slate-400">{formatTime(Math.floor(rec.timeMs / 1000))}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-slate-400 text-xs py-2">No records yet. Be the first!</div>
+                )}
+              </div>
+            </div>
+
             <button
-              onClick={() => startNewGame(inputSeed)}
-              className="mt-6 bg-emerald-600 hover:bg-emerald-500 text-white px-12 py-4 rounded-full font-bold shadow-lg shadow-emerald-900/50 transition-all hover:scale-105 text-lg"
+              onClick={() => startNewGame(undefined, true)}
+              className="mt-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-emerald-900/50 transition-all hover:scale-105"
             >
               🎉 Play Another
             </button>
           </div>
-        )} */}
+        )}
 
 
 

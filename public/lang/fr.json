@@ -51,7 +51,7 @@
         "daily_title": "Défi quotidien",
         "daily_reward": "Récompense quotidienne ! +{{coins}} 🪙",
         "daily_solved": "Déjà résolu",
-        "version": "Version: 0.1.006"
+        "version": "Version: 0.1.009"
     },
     "rules_detail": {
         "title": "Comment résoudre les Nonogrammes",

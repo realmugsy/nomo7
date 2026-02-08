@@ -29,3 +29,17 @@ export interface DifficultySettings {
   minDensity: number;
   maxDensity: number;
 }
+
+export interface RecordData {
+  _id?: string;
+  puzzleId: string;
+  playerName: string;
+  timeMs: number;
+  createdAt?: string;
+}
+
+export interface TopRecordsResponse {
+  ok: boolean;
+  puzzleId: string;
+  top: RecordData[];
+}
