@@ -1,4 +1,4 @@
-import { RecordData, TopRecordsResponse } from "../types";
+import { RecordData, TopRecordsResponse, Move } from "../types";
 
 const API_BASE_URL = '/api';
 
@@ -16,7 +16,8 @@ export const getPuzzleId = (size: number, difficulty: string, seed: number): str
 export const saveRecord = async (
     puzzleId: string,
     playerName: string,
-    timeMs: number
+    timeMs: number,
+    history?: Move[],
 ): Promise<{ ok: boolean; id?: string; error?: string }> => {
     try {
         const response = await fetch(`${API_BASE_URL}/records`, {
@@ -28,6 +29,7 @@ export const saveRecord = async (
                 puzzleId,
                 playerName,
                 timeMs,
+                history,
             }),
         });
 

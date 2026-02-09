@@ -30,12 +30,20 @@ export interface DifficultySettings {
   maxDensity: number;
 }
 
+export interface Move {
+  r: number;
+  c: number;
+  newState: CellState; // Explicit state
+  time: number;
+}
+
 export interface RecordData {
   _id?: string;
   puzzleId: string;
   playerName: string;
   timeMs: number;
   createdAt?: string;
+  history?: Move[];
 }
 
 export interface TopRecordsResponse {

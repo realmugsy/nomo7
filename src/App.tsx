@@ -46,6 +46,7 @@ const App: React.FC = () => {
     resetDaily,
     isRowComplete,
     isColComplete,
+    history,
   } = useGameLogic();
 
 
@@ -342,6 +343,7 @@ const App: React.FC = () => {
           <Leaderboard
             puzzle={puzzle}
             timer={timer}
+            history={history}
             difficulty={selectedDifficulty}
             onPlayAgain={() => startNewGame(undefined, true)}
           />

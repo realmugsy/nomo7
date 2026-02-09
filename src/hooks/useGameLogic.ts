@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { generatePuzzle } from '../services/geminiService';
-import { CellState, GameState, PuzzleData, ToolType, DifficultyLevel } from '../types';
+import { CellState, GameState, PuzzleData, ToolType, DifficultyLevel, Move } from '../types';
 import {
     DIFFICULTY_CONFIG,
     GRID_SIZES,
@@ -96,6 +96,7 @@ export const useGameLogic = () => {
     // const [winAnimationMode, setWinAnimationMode] = useState<'smooth' | 'sharp'>('smooth'); // Animation style toggle - appears unused in UI interaction but logic exists? logic says 'sharp' hardcoded in gridcell
 
     const [timer, setTimer] = useState<number>(0); // Gameplay timer in seconds
+    const [history, setHistory] = useState<Move[]>([]); // Move history for validation
 
     // Controls
     const [activeTool, setActiveTool] = useState<ToolType>(ToolType.FILL);
@@ -170,6 +171,7 @@ export const useGameLogic = () => {
         setIsCheckHintsActive(false); // Reset hint checking
         setWinCorner(null); // Reset win animation
         setLastCorrectCell(null); // Reset last correct cell tracking
+        setHistory([]); // Reset history
 
         // Direct Access Prevention: If daily already solved, redirect to normal random game
         const params = new URLSearchParams(window.location.search);
@@ -296,11 +298,20 @@ export const useGameLogic = () => {
                     (target === 0 && newState !== CellState.FILLED)) {
                     setLastCorrectCell({ r, c });
                 }
+
+                // Record move logic
+                // We only record if state actually changed (guaranteed by early return above)
+                setHistory(prev => [...prev, {
+                    r,
+                    c,
+                    newState,
+                    time: timer * 1000
+                }]);
             }
 
             return newGrid;
         });
-    }, [puzzle, gameState.status]);
+    }, [puzzle, gameState.status, timer]);
 
     // Interaction Handlers
     const handleMouseDown = (e: React.MouseEvent, r: number, c: number) => {
@@ -324,6 +335,9 @@ export const useGameLogic = () => {
 
         isDragging.current = true;
         dragTargetState.current = targetState;
+
+
+
         updateCell(r, c, targetState);
     };
 
@@ -448,6 +462,7 @@ export const useGameLogic = () => {
         // State
         stats,
         puzzle,
+        history,
         playerGrid,
         gameState,
         timer,

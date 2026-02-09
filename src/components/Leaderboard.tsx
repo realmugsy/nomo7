@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PuzzleData, RecordData, DifficultyLevel } from '../types';
+import { PuzzleData, RecordData, DifficultyLevel, Move } from '../types';
 import { getPuzzleId, saveRecord, getTopRecords } from '../services/recordsService';
 import { formatTime } from '../utils/time';
 
@@ -7,10 +7,11 @@ interface LeaderboardProps {
     puzzle: PuzzleData;
     timer: number;
     difficulty: DifficultyLevel;
+    history: Move[];
     onPlayAgain: () => void;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, onPlayAgain }) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, history, onPlayAgain }) => {
     const [playerName, setPlayerName] = useState<string>(() => localStorage.getItem('nomo7-player-name') || '');
     const [topRecords, setTopRecords] = useState<RecordData[]>([]);
     const [isRecordSubmitted, setIsRecordSubmitted] = useState<boolean>(false);
@@ -41,7 +42,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, on
         localStorage.setItem('nomo7-player-name', playerName); // Save name
 
         const pid = getPuzzleId(puzzle.size, difficulty, puzzle.seed);
-        const result = await saveRecord(pid, playerName, timer * 1000);
+        const result = await saveRecord(pid, playerName, timer * 1000, history);
 
         if (result.ok && result.id) {
             setIsRecordSubmitted(true);
