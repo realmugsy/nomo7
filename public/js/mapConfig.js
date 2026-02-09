@@ -1,7 +1,7 @@
 // Map configuration settings
 window.mapConfig = {
-    gridCols: 20,
-    gridRows: 15,
+    gridCols: 15,
+    gridRows: 10,
     hexagonSize: 20, // Base size of the hexagons in pixels
     zoom: 1.5,      // Default zoom level
     minZoom: 1.0,   // Minimum zoom limit

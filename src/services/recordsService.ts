@@ -46,9 +46,9 @@ export const saveRecord = async (
 /**
  * Get top records for a specific puzzle.
  */
-export const getTopRecords = async (puzzleId: string, limit: number = 10): Promise<RecordData[]> => {
+export const getTopRecords = async (puzzleId: string, limit: number = 10, offset: number = 0): Promise<RecordData[]> => {
     try {
-        const response = await fetch(`${API_BASE_URL}/records/top?puzzleId=${encodeURIComponent(puzzleId)}&limit=${limit}`);
+        const response = await fetch(`${API_BASE_URL}/records/top?puzzleId=${encodeURIComponent(puzzleId)}&limit=${limit}&offset=${offset}`);
 
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`);

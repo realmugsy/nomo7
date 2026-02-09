@@ -15,12 +15,22 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, on
     const [topRecords, setTopRecords] = useState<RecordData[]>([]);
     const [isRecordSubmitted, setIsRecordSubmitted] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [offset, setOffset] = useState<number>(0);
+    const [highlightRecordId, setHighlightRecordId] = useState<string | null>(null);
 
-    // Fetch top records when mounted
+    const PAGE_SIZE = 10;
+
+    // Fetch top records when mounted or offset changes
     useEffect(() => {
         const pid = getPuzzleId(puzzle.size, difficulty, puzzle.seed);
-        getTopRecords(pid).then(records => setTopRecords(records));
-        setIsRecordSubmitted(false); // Reset for new win
+        getTopRecords(pid, PAGE_SIZE, offset).then(records => setTopRecords(records));
+    }, [puzzle, difficulty, offset]);
+
+    // Reset state on new puzzle
+    useEffect(() => {
+        setIsRecordSubmitted(false);
+        setHighlightRecordId(null);
+        setOffset(0);
     }, [puzzle, difficulty]);
 
     const handleRecordSubmit = async (e: React.FormEvent) => {
@@ -33,10 +43,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, on
         const pid = getPuzzleId(puzzle.size, difficulty, puzzle.seed);
         const result = await saveRecord(pid, playerName, timer * 1000);
 
-        if (result.ok) {
+        if (result.ok && result.id) {
             setIsRecordSubmitted(true);
+            setHighlightRecordId(result.id);
+            // Reset offset to 0 to see if we made it to top, or just refresh current view
+            setOffset(0);
             // Refresh top records
-            const records = await getTopRecords(pid);
+            const records = await getTopRecords(pid, PAGE_SIZE, 0);
             setTopRecords(records);
         } else {
             alert('Failed to save record: ' + (result.error || 'Unknown error'));
@@ -45,13 +58,16 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, on
     };
 
     return (
-        <div className="mt-8 text-center animate-bounce-in w-full max-w-md">
+        <div className="mt-8 text-center animate-bounce-in w-full max-w-md flex flex-col items-center">
             <h2 className="text-3xl font-bold text-emerald-400 mb-2">Puzzle Solved!</h2>
             <p className="text-slate-300 mb-4">It was: <span className="text-indigo-400 font-bold text-lg uppercase">{puzzle.title}</span></p>
 
             {/* Leaderboard Section */}
-            <div className="bg-slate-200 dark:bg-slate-900/80 rounded-lg p-4 mb-4 text-left border border-slate-300 dark:border-slate-700">
-                <h3 className="text-lg font-bold text-slate-700 dark:text-slate-200 mb-2 border-b border-slate-400 dark:border-slate-700 pb-1">Leaderboard</h3>
+            <div className="bg-slate-200 dark:bg-slate-900/80 rounded-lg p-4 mb-4 text-left border border-slate-300 dark:border-slate-700 w-full">
+                <h3 className="text-lg font-bold text-slate-700 dark:text-slate-200 mb-2 border-b border-slate-400 dark:border-slate-700 pb-1 flex justify-between items-center">
+                    <span>Leaderboard</span>
+                    <span className="text-xs font-normal text-slate-500">Page {Math.floor(offset / PAGE_SIZE) + 1}</span>
+                </h3>
 
                 {!isRecordSubmitted ? (
                     <form onSubmit={handleRecordSubmit} className="flex gap-2 mb-4">
@@ -78,17 +94,41 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, on
                     </div>
                 )}
 
-                <div className="space-y-1 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                <div className="space-y-1 min-h-[160px]">
                     {topRecords.length > 0 ? (
-                        topRecords.map((rec, idx) => (
-                            <div key={idx} className={`flex justify-between text-sm p-1 rounded ${rec.playerName === playerName && isRecordSubmitted && rec.timeMs === timer * 1000 ? 'bg-indigo-100 dark:bg-indigo-900/30 font-bold border border-indigo-200 dark:border-indigo-800' : 'odd:bg-slate-100 dark:odd:bg-slate-800/50'}`}>
-                                <span className="truncate max-w-[120px] text-slate-700 dark:text-slate-300">{idx + 1}. {rec.playerName}</span>
-                                <span className="font-mono text-slate-500 dark:text-slate-400">{formatTime(Math.floor(rec.timeMs / 1000))}</span>
-                            </div>
-                        ))
+                        topRecords.map((rec, idx) => {
+                            const isMe = rec._id === highlightRecordId;
+                            const rank = offset + idx + 1;
+                            return (
+                                <div key={idx} className={`flex justify-between text-sm p-1 rounded ${isMe ? 'bg-amber-100 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-700 font-bold ring-1 ring-amber-400' : 'odd:bg-slate-100 dark:odd:bg-slate-800/50'}`}>
+                                    <span className="truncate max-w-[160px] text-slate-700 dark:text-slate-300">
+                                        {rank}. {rec.playerName} {isMe && ' (You)'}
+                                    </span>
+                                    <span className="font-mono text-slate-500 dark:text-slate-400">{formatTime(Math.floor(rec.timeMs / 1000))}</span>
+                                </div>
+                            );
+                        })
                     ) : (
-                        <div className="text-center text-slate-400 text-xs py-2">No records yet. Be the first!</div>
+                        <div className="text-center text-slate-400 text-xs py-8">No records yet. Be the first!</div>
                     )}
+                </div>
+
+                {/* Pagination Controls */}
+                <div className="flex justify-between items-center mt-4 pt-2 border-t border-slate-300 dark:border-slate-700">
+                    <button
+                        onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
+                        disabled={offset === 0}
+                        className="px-3 py-1 text-xs rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-200 dark:disabled:hover:bg-slate-800 transition-colors"
+                    >
+                        ◀ Prev
+                    </button>
+                    <button
+                        onClick={() => setOffset(offset + PAGE_SIZE)}
+                        disabled={topRecords.length < PAGE_SIZE}
+                        className="px-3 py-1 text-xs rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-200 dark:disabled:hover:bg-slate-800 transition-colors"
+                    >
+                        Next ▶
+                    </button>
                 </div>
             </div>
 
