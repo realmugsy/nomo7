@@ -1,4 +1,3 @@
-
 // validation.js
 // Logic for validating nonogram solutions given a history of moves.
 
@@ -13,18 +12,26 @@ const CellState = {
     CROSSED: 2
 };
 
-// Simplified seed calculation (Linear Congruential Generator)
-// This MUST match the frontend implementation in generatePuzzle exactly.
-const LCG_A = 1664525;
-const LCG_C = 1013904223;
-const LCG_M = 4294967296;
+const DIFFICULTY_CONFIG = {
+    VERY_EASY: { minDensity: 0.60, maxDensity: 0.79 },
+    EASY: { minDensity: 0.55, maxDensity: 0.60 },
+    MEDIUM: { minDensity: 0.53, maxDensity: 0.58 },
+    HARD: { minDensity: 0.4, maxDensity: 0.50 },
+    VERY_HARD: { minDensity: 0.10, maxDensity: 0.30 }
+};
+
+// Simplified seed calculation (Mulberry32 - matches frontend)
+const mulberry32 = (seed) => {
+    return () => {
+        let t = (seed += 0x6D2B79F5) | 0;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+};
 
 function seededRandom(seed) {
-    let state = seed;
-    return function () {
-        state = (LCG_A * state + LCG_C) % LCG_M;
-        return state / LCG_M;
-    };
+    return mulberry32(seed);
 }
 
 // Function to reconstruct the puzzle grid from seed and size
@@ -42,20 +49,63 @@ function seededRandom(seed) {
 
 // Replicating basic grid generation struct to match frontend random sequence
 function generateTargetGrid(seed, size, difficulty) {
-    // This is the tricky part without sharing code.
-    // If we can't regenerate the exact puzzle, we can't validate fully.
-    // OPTION: Trust the frontend sending the "puzzleId" which contains the seed?
-    // Yes, but we need the generation algorithm.
-    // Let's assume for this MVP we validates:
-    // 1. Moves are within bounds.
-    // 2. Play time is reasonable (server side check using start/end time if socket, or just sanity check).
-    // 3. Replayed grid state matches the submitted "solution" (if submitted).
-    // Actually, Leaderboard component sends `timeMs`. It doesn't send the full grid.
-    // So we HAVE to regenerate the puzzle to know if they solved it.
+    const rng = seededRandom(seed);
+    const grid = Array(size).fill(0).map(() => Array(size).fill(0));
 
-    // For now, let's implement the history replay validation.
-    // The "is it correct" check will be mocked or require porting `generatePuzzle`.
-    return null;
+    const targetDensity = difficulty.minDensity + (rng() * (difficulty.maxDensity - difficulty.minDensity));
+    const totalCells = size * size;
+    const targetFillCount = Math.floor(totalCells * targetDensity);
+
+    // 1. Initial Noise based on target density
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            const val = rng() < targetDensity ? 1 : 0;
+            grid[y][x] = val;
+        }
+    }
+
+    // 2. Density Correction
+    let currentFillCount = 0;
+    grid.forEach(row => row.forEach(val => currentFillCount += val));
+    let diff = currentFillCount - targetFillCount;
+
+    const coords = [];
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            coords.push({ x, y });
+        }
+    }
+
+    for (let i = coords.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [coords[i], coords[j]] = [coords[j], coords[i]];
+    }
+
+    if (diff > 0) {
+        for (const { x, y } of coords) {
+            if (diff === 0) break;
+            if (grid[y][x] === 1) {
+                grid[y][x] = 0;
+                diff--;
+            }
+        }
+    } else if (diff < 0) {
+        for (const { x, y } of coords) {
+            if (diff === 0) break;
+            if (grid[y][x] === 0) {
+                grid[y][x] = 1;
+                diff++;
+            }
+        }
+    }
+
+    currentFillCount = 0;
+    grid.forEach(row => row.forEach(val => currentFillCount += val));
+
+    if (currentFillCount === 0 && targetFillCount > 0) grid[Math.floor(size / 2)][Math.floor(size / 2)] = 1;
+    if (currentFillCount === totalCells && targetFillCount < totalCells) grid[0][0] = 0;
+
+    return grid;
 }
 
 /**
@@ -73,10 +123,23 @@ async function validateSolution(puzzleId, history) {
 
     const [sizeStr, diffStr, seedStr] = puzzleId.split(':');
     const size = parseInt(sizeStr);
+    const difficulty = diffStr.replace(/\s+/g, '_').toUpperCase(); // Sanitize
+    const seed = parseInt(seedStr);
+
+    // Get difficulty settings
+    const diffSettings = DIFFICULTY_CONFIG[difficulty];
+    if (!diffSettings) {
+        console.log(`Validation Failed: Unknown difficulty ${difficulty}`);
+        return false;
+    }
+
+    // Generate target grid
+    const targetGrid = generateTargetGrid(seed, size, diffSettings);
 
     // Replay History
-    // We start with an empty user grid.
     const userGrid = Array(size).fill(null).map(() => Array(size).fill(CellState.EMPTY));
+    let startTime = null;
+    let endTime = null;
 
     for (const move of history) {
         const { r, c, newState, time } = move;
@@ -93,15 +156,49 @@ async function validateSolution(puzzleId, history) {
             return false;
         }
 
+        // Track time
+        if (startTime === null) startTime = time;
+        endTime = time;
+
         // Apply move
         userGrid[r][c] = newState;
     }
 
-    // At this point `userGrid` represents the user's final board.
-    // todo: Check if `userGrid` matches the actual puzzle solution.
-    // For now, we return true if replay was successful (no illegal moves).
-    // In a production app, include `geminiService` logic here to compare `userGrid` vs `targetGrid`.
+    // 3. Time validation
+    const timeMs = endTime - startTime;
+    if (timeMs < 1000) {
+        console.log(`Validation Failed: Too fast (${timeMs}ms)`);
+        return false;
+    }
 
+    // 4. Reasonable moves validation
+    const filledCount = userGrid.flat().filter(cell => cell === CellState.FILLED).length;
+    const totalCells = size * size;
+    const minReasonableMoves = Math.ceil(totalCells * 0.1); // At least 10% of cells
+    const maxReasonableMoves = totalCells; // Can fill all cells (edge case)
+
+    if (filledCount < minReasonableMoves || filledCount > maxReasonableMoves) {
+        console.log(`Validation Failed: Unreasonable filled count (${filledCount}/${totalCells})`);
+        return false;
+    }
+
+    // 5. Solution validation - compare grids
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            const userState = userGrid[r][c];
+            const targetState = targetGrid[r][c];
+
+            // User must have FILLED all cells that should be filled
+            // User can have CROSSED or EMPTY cells that should be filled (not optimal but valid)
+            // User must NOT have FILLED cells that should be EMPTY
+            if (userState === CellState.FILLED && targetState === 0) {
+                console.log(`Validation Failed: Incorrectly filled cell at [${r},${c}]`);
+                return false;
+            }
+        }
+    }
+
+    console.log(`Validation Passed: ${timeMs}ms, ${filledCount} filled cells`);
     return true;
 }
 

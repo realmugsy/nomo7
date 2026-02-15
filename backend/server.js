@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const { validateSolution } = require('./validation');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3100;
 
 // Middleware
 app.use(cors());
@@ -34,6 +34,11 @@ recordSchema.index({ puzzleId: 1, timeMs: 1 });
 
 const Record = mongoose.model('Record', recordSchema);
 
+// GET /api/health - Check if server is alive
+app.get('/api/health', (req, res) => {
+    res.json({ ok: true, message: 'Server is running', timestamp: new Date() });
+});
+
 // API Routes
 
 // GET /api/records/top - Get top records for a puzzle
@@ -53,7 +58,7 @@ app.get('/api/records/top', async (req, res) => {
         res.json({ ok: true, puzzleId, top: records });
     } catch (error) {
         console.error('Error fetching records:', error);
-        res.status(500).json({ ok: false, error: 'Internal Server Error' });
+        res.status(500).json({ ok: false, error: 'Internal Server Error', message: error.message });
     }
 });
 
@@ -90,7 +95,7 @@ app.post('/api/records', async (req, res) => {
         res.status(201).json({ ok: true, id: savedRecord._id });
     } catch (error) {
         console.error('Error saving record:', error);
-        res.status(500).json({ ok: false, error: 'Internal Server Error' });
+        res.status(500).json({ ok: false, error: 'Internal Server Error', message: error.message });
     }
 });
 

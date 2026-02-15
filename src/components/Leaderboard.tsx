@@ -42,6 +42,15 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, hi
         localStorage.setItem('nomo7-player-name', playerName); // Save name
 
         const pid = getPuzzleId(puzzle.size, difficulty, puzzle.seed);
+
+        // Debug logging
+        console.log('Submitting record:');
+        console.log('  Puzzle ID:', pid);
+        console.log('  Player Name:', playerName);
+        console.log('  Time:', timer * 1000, 'ms');
+        console.log('  History length:', history.length);
+        console.log('  First few moves:', history.slice(0, 3));
+
         const result = await saveRecord(pid, playerName, timer * 1000, history);
 
         if (result.ok && result.id) {

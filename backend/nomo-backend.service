@@ -1,0 +1,1 @@
+["Unit]\nDescription=Nomo Backend API\nAfter=network.target mongodb.service\n\n[Service]\nType=simple\nUser=www-data\nWorkingDirectory=/var/www/nomo/backend\nEnvironment=NODE_ENV=production\nExecStart=/usr/bin/node server.js\nRestart=always\nRestartSec=10\n\n[Install]\nWantedBy=multi-user.target"]

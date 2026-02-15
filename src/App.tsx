@@ -67,8 +67,8 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
 
-      {/* Debug Info */}
-      {puzzle && (gameState.status === 'playing' || gameState.status === 'won') && isDebugVisible && (
+      {/* Debug Info - Only in DEV */}
+      {import.meta.env.DEV && puzzle && (gameState.status === 'playing' || gameState.status === 'won') && isDebugVisible && (
         <div className="absolute top-3 right-3 text-[10px] text-slate-500 font-mono opacity-100 transition-opacity z-50 flex flex-col items-end gap-1 bg-slate-100/80 dark:bg-slate-900/80 p-2 rounded border border-slate-300 dark:border-slate-800 backdrop-blur-sm">
           <div className="text-right">
             Density: <span className="font-bold text-indigo-400">{stats.percent}%</span><br />
@@ -189,6 +189,14 @@ const App: React.FC = () => {
                 >
                   <span>+</span> New Game
                 </button>
+                {import.meta.env.DEV && (
+                  <button
+                    onClick={cheatWin}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full font-bold shadow-lg shadow-indigo-900/50 transition-all hover:scale-105 text-sm flex items-center gap-2"
+                  >
+                    <span>⚡</span> Win
+                  </button>
+                )}
               </div>
             </div>
 

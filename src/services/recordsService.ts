@@ -7,7 +7,9 @@ const API_BASE_URL = '/api';
  * Format: size:difficulty:seed
  */
 export const getPuzzleId = (size: number, difficulty: string, seed: number): string => {
-    return `${size}:${difficulty}:${seed}`;
+    // Sanitize difficulty to ensure no spaces (e.g., "VERY EASY" -> "VERY_EASY")
+    const sanitizedDifficulty = difficulty.replace(/\s+/g, '_').toUpperCase();
+    return `${size}:${sanitizedDifficulty}:${seed}`;
 };
 
 /**
