@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.022] - 2026-02-15
+### Fixed
+- Improved **Timer Robustness**: The game timer now uses `Date.now()` delta calculation to remain accurate even when the browser throttles the tab due to user inactivity or background mode.
+
 ## [0.1.021] - 2026-02-15
 ### Fixed
 - Fixed **Puzzle Verification** failure by synchronizing the RNG consumption pattern between frontend and backend. The server now uses an identical `Random` class wrapper to ensure 100% deterministic grid generation.

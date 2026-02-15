@@ -121,19 +121,26 @@ export const useGameLogic = () => {
     // Dragging State
     const isDragging = useRef<boolean>(false);
     const dragTargetState = useRef<CellState | null>(null);
+    const startTimeRef = useRef<number>(Date.now());
 
-    // Timer Effect
+    // Timer Effect: Use Date.now() delta to be robust against browser throttling
     useEffect(() => {
         let interval: number | undefined;
         if (gameState.status === 'playing') {
+            // Sync start time with current timer (handles reset and potential resumes)
+            startTimeRef.current = Date.now() - (timer * 1000);
+
             interval = window.setInterval(() => {
-                setTimer(prev => prev + 1);
-            }, 1000);
+                const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+                setTimer(elapsed);
+            }, 500);
         }
         return () => {
             if (interval) clearInterval(interval);
         };
     }, [gameState.status]);
+    // We omit 'timer' from deps to avoid re-triggering the effect on every tick, 
+    // it's only for initialization when status becomes 'playing'.
 
     // Apply theme class to html element and save to localStorage
     useEffect(() => {
