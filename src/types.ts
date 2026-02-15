@@ -10,6 +10,7 @@ export interface PuzzleData {
   grid: number[][]; // 0 or 1
   size: number;
   seed: number;
+  difficulty: DifficultyLevel;
 }
 
 export interface GameState {

@@ -173,9 +173,9 @@ export const useGameLogic = () => {
         setLastCorrectCell(null); // Reset last correct cell tracking
         setHistory([]); // Reset history
 
-        // Direct Access Prevention: If daily already solved, redirect to normal random game
+        // Direct Access Prevention: If daily already solved, redirect to normal random game (Skip in DEV)
         const params = new URLSearchParams(window.location.search);
-        if (params.get('mode') === 'daily') {
+        if (params.get('mode') === 'daily' && !import.meta.env.DEV) {
             const today = new Date().getUTCFullYear() + '-' + (new Date().getUTCMonth() + 1) + '-' + new Date().getUTCDate();
             if (localStorage.getItem('lastDailySolved') === today) {
                 params.delete('mode');
@@ -223,7 +223,7 @@ export const useGameLogic = () => {
             const finalDiff: DifficultyLevel = isDaily ? DAILY_PUZZLE_CONFIG.DIFFICULTY : selectedDifficulty;
 
             const diffConfig = DIFFICULTY_CONFIG[finalDiff];
-            const newPuzzle = await generatePuzzle(finalSeed, finalSize, diffConfig);
+            const newPuzzle = await generatePuzzle(finalSeed, finalSize, finalDiff, diffConfig);
 
             setPuzzle(newPuzzle);
             setPlayerGrid(createEmptyGrid(newPuzzle.size));

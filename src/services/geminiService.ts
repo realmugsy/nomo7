@@ -1,4 +1,4 @@
-import { PuzzleData, DifficultySettings } from "../types";
+import { PuzzleData, DifficultySettings, DifficultyLevel } from "../types";
 
 // mulberry32 - deterministic 32-bit generator
 const mulberry32 = (seed: number) => {
@@ -33,6 +33,7 @@ class Random {
 export const generatePuzzle = async (
   seed: number,
   size: number,
+  difficultyLevel: DifficultyLevel,
   difficulty: DifficultySettings
 ): Promise<PuzzleData> => {
   // Simulate a very short delay for UI consistency
@@ -108,5 +109,6 @@ export const generatePuzzle = async (
     grid: grid,
     size: size,
     seed: seed,
+    difficulty: difficultyLevel,
   };
 };

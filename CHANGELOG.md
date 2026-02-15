@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.015] - 2026-02-15
+- **Fix**: Improved backend validation logic (sanitized coordinates, relaxed time checks to account for 1s timer resolution).
+- **Feature**: Added "Reset Daily" button in development mode for easier local testing.
+- **Cleanup**: Synchronized version 0.1.015 across all language files.
+
 ## [0.1.014] - 2026-02-15
 - Hid debug information and the "Win" (cheat) button for production builds.
 

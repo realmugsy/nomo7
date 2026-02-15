@@ -190,12 +190,22 @@ const App: React.FC = () => {
                   <span>+</span> New Game
                 </button>
                 {import.meta.env.DEV && (
-                  <button
-                    onClick={cheatWin}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full font-bold shadow-lg shadow-indigo-900/50 transition-all hover:scale-105 text-sm flex items-center gap-2"
-                  >
-                    <span>⚡</span> Win
-                  </button>
+                  <div className="flex gap-2">
+                    {new URLSearchParams(window.location.search).get('mode') === 'daily' && (
+                      <button
+                        onClick={resetDaily}
+                        className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-full font-bold shadow-lg shadow-rose-900/50 transition-all hover:scale-105 text-sm flex items-center gap-2"
+                      >
+                        <span>♻️</span> Reset Daily
+                      </button>
+                    )}
+                    <button
+                      onClick={cheatWin}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full font-bold shadow-lg shadow-indigo-900/50 transition-all hover:scale-105 text-sm flex items-center gap-2"
+                    >
+                      <span>⚡</span> Win
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -352,7 +362,7 @@ const App: React.FC = () => {
             puzzle={puzzle}
             timer={timer}
             history={history}
-            difficulty={selectedDifficulty}
+            difficulty={puzzle.difficulty}
             onPlayAgain={() => startNewGame(undefined, true)}
           />
         )}

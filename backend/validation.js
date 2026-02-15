@@ -123,13 +123,15 @@ async function validateSolution(puzzleId, history) {
 
     const [sizeStr, diffStr, seedStr] = puzzleId.split(':');
     const size = parseInt(sizeStr);
-    const difficulty = diffStr.replace(/\s+/g, '_').toUpperCase(); // Sanitize
+    const difficultyKey = diffStr.replace(/\s+/g, '_').toUpperCase(); // Sanitize
     const seed = parseInt(seedStr);
 
+    console.log(`[VALIDATION] Starting for ${puzzleId} | Moves: ${history.length}`);
+
     // Get difficulty settings
-    const diffSettings = DIFFICULTY_CONFIG[difficulty];
+    const diffSettings = DIFFICULTY_CONFIG[difficultyKey];
     if (!diffSettings) {
-        console.log(`Validation Failed: Unknown difficulty ${difficulty}`);
+        console.warn(`[VALIDATION] Failed: Unknown difficulty ${difficultyKey}`);
         return false;
     }
 
@@ -144,62 +146,119 @@ async function validateSolution(puzzleId, history) {
     for (const move of history) {
         const { r, c, newState, time } = move;
 
-        // 1. Bounds check
         if (r < 0 || r >= size || c < 0 || c >= size) {
-            console.log(`Validation Failed: Out of bounds move [${r},${c}]`);
+            console.warn(`[VALIDATION] Failed: Out of bounds move [${r},${c}]`);
             return false;
         }
 
-        // 2. State validity check
-        if (![CellState.EMPTY, CellState.FILLED, CellState.CROSSED].includes(newState)) {
-            console.log(`Validation Failed: Invalid state ${newState}`);
-            return false;
-        }
-
-        // Track time
         if (startTime === null) startTime = time;
         endTime = time;
 
-        // Apply move
         userGrid[r][c] = newState;
     }
 
-    // 3. Time validation
-    const timeMs = endTime - startTime;
-    if (timeMs < 1000) {
-        console.log(`Validation Failed: Too fast (${timeMs}ms)`);
+    // 1. Time validation (Relaxed)
+    // History timestamps from frontend use timer (1s resolution). 
+    // If a puzzle is solved very quickly or in a single burst, timeMs can be 0.
+    const timeMsHistory = endTime - startTime;
+    if (timeMsHistory < 0) {
+        console.warn(`[VALIDATION] Failed: Negative time (${timeMsHistory}ms)`);
         return false;
     }
 
-    // 4. Reasonable moves validation
+    // 2. Filled count validation
     const filledCount = userGrid.flat().filter(cell => cell === CellState.FILLED).length;
-    const totalCells = size * size;
-    const minReasonableMoves = Math.ceil(totalCells * 0.1); // At least 10% of cells
-    const maxReasonableMoves = totalCells; // Can fill all cells (edge case)
+    const targetFillCount = targetGrid.flat().filter(cell => cell === 1).length;
 
-    if (filledCount < minReasonableMoves || filledCount > maxReasonableMoves) {
-        console.log(`Validation Failed: Unreasonable filled count (${filledCount}/${totalCells})`);
-        return false;
-    }
+    // The user MUST have filled exactly all cells from targetGrid to pass the win check on frontend.
+    // However, they might have made extra moves or left some empty.
+    // If they "won", filledCount MUST match targetFillCount if they haven't made moves AFTER winning.
 
-    // 5. Solution validation - compare grids
+    // 3. Solution validation - compare grids
+    let errors = 0;
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
             const userState = userGrid[r][c];
             const targetState = targetGrid[r][c];
 
-            // User must have FILLED all cells that should be filled
-            // User can have CROSSED or EMPTY cells that should be filled (not optimal but valid)
-            // User must NOT have FILLED cells that should be EMPTY
-            if (userState === CellState.FILLED && targetState === 0) {
-                console.log(`Validation Failed: Incorrectly filled cell at [${r},${c}]`);
-                return false;
+            // Primary check: All target cells must be filled
+            if (targetState === 1 && userState !== CellState.FILLED) {
+                errors++;
+            }
+            // Secondary check: No extra cells should be filled
+            if (targetState === 0 && userState === CellState.FILLED) {
+                errors++;
             }
         }
     }
 
-    console.log(`Validation Passed: ${timeMs}ms, ${filledCount} filled cells`);
+    if (errors > 0) {
+        console.warn(`[VALIDATION] Failed: ${errors} discrepancies found in final grid.`);
+        return false;
+    }
+
+    console.log(`[VALIDATION] Passed: ${timeMsHistory}ms in history, ${filledCount} filled cells.`);
     return true;
+}
+
+function generateTargetGrid(seed, size, difficulty) {
+    const rng = seededRandom(seed);
+    const grid = Array(size).fill(0).map(() => Array(size).fill(0));
+
+    const targetDensity = difficulty.minDensity + (rng() * (difficulty.maxDensity - difficulty.minDensity));
+    const totalCells = size * size;
+    const targetFillCount = Math.floor(totalCells * targetDensity);
+
+    // 1. Initial Noise
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            const val = rng() < targetDensity ? 1 : 0;
+            grid[y][x] = val;
+        }
+    }
+
+    // 2. Density Correction
+    let currentFillCount = 0;
+    grid.forEach(row => row.forEach(val => currentFillCount += val));
+    let diff = currentFillCount - targetFillCount;
+
+    const coords = [];
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            coords.push({ y, x }); // Changed to {y, x} to match frontend geminiService.ts exactly
+        }
+    }
+
+    for (let i = coords.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [coords[i], coords[j]] = [coords[j], coords[i]];
+    }
+
+    if (diff > 0) {
+        for (const { x, y } of coords) {
+            if (diff === 0) break;
+            if (grid[y][x] === 1) {
+                grid[y][x] = 0;
+                diff--;
+            }
+        }
+    } else if (diff < 0) {
+        for (const { x, y } of coords) {
+            if (diff === 0) break;
+            if (grid[y][x] === 0) {
+                grid[y][x] = 1;
+                diff++;
+            }
+        }
+    }
+
+    // 3. Safety Check
+    let finalFillCount = 0;
+    grid.forEach(row => row.forEach(val => finalFillCount += val));
+    if (finalFillCount === 0 && targetFillCount > 0) grid[Math.floor(size / 2)][Math.floor(size / 2)] = 1;
+    if (finalFillCount === totalCells && targetFillCount < totalCells) grid[0][0] = 0;
+
+    return grid;
 }
 
 module.exports = { validateSolution };
