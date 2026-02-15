@@ -9,7 +9,8 @@
         "map": "Expedition (coming soon)",
         "daily": "Daily Puzzle",
         "rules": "Rules",
-        "forum": "Forum"
+        "forum": "Forum",
+        "leaderboard": "Leaderboard"
     },
     "game": {
         "title": "Nonograms: Level 1",
@@ -51,7 +52,7 @@
         "daily_title": "Daily Challenge",
         "daily_reward": "Daily Reward! +{{coins}} 🪙",
         "daily_solved": "Already Solved",
-        "version": "Version: 0.1.015"
+        "version": "Version: 0.1.018"
     },
     "rules_detail": {
         "title": "How to Solve Nonograms",

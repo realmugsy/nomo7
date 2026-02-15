@@ -4,7 +4,7 @@
 
 const HEADER_HTML = `
     <a href="/index.html" class="logo">
-        <span class="logo-icon"></span>
+        <img src="/favicon.png" class="logo-icon" alt="Nonogram World Logo">
         <span data-i18n="header.logo">Nonogram World</span>
     </a>
     <nav>
@@ -16,6 +16,7 @@ const HEADER_HTML = `
             <li><a href="/index.html" data-nav="play" data-i18n="nav.play">Play</a></li>
             <li><a href="/map.html" data-nav="map" data-i18n="nav.map">Map</a></li>
             <li><a href="/rules.html" data-nav="rules" data-i18n="nav.rules">Rules</a></li>
+            <li><a href="/leaderboard.html" data-nav="leaderboard" data-i18n="nav.leaderboard">Leaderboard</a></li>
         </ul>
     </nav>
     <div class="header-actions">
@@ -97,7 +98,7 @@ function injectLayout() {
         }
         else if (path.includes('map.html')) activeNav = 'map';
         else if (path.includes('rules.html')) activeNav = 'rules';
-        // Add more as needed
+        else if (path.includes('leaderboard.html')) activeNav = 'leaderboard';
 
         if (activeNav) {
             const activeLink = header.querySelector(`[data-nav="${activeNav}"]`);
@@ -159,6 +160,7 @@ function injectLayout() {
                 `;
                 updateThemeIcon();
             }
+
 
             // Also attach simple events to selectors to redirect back to index.html with params if needed
             const sizeSel = header.querySelector('#size-selector');

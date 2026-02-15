@@ -186,6 +186,11 @@ export const useGameLogic = () => {
 
         try {
             let finalSeed: number;
+            let finalSize: number;
+            let finalDiff: DifficultyLevel;
+
+            const params = new URLSearchParams(window.location.search);
+            const isDaily = params.get('mode') === 'daily';
 
             // Priority 1: Direct seed input (dev/debug)
             if (seedVal && seedVal.trim().length > 0) {
@@ -194,18 +199,27 @@ export const useGameLogic = () => {
                 } else {
                     finalSeed = stringToSeed(seedVal);
                 }
+                finalSize = selectedSize;
+                finalDiff = selectedDifficulty;
             }
             // Priority 2: Daily mode (Deterministic)
-            else if (new URLSearchParams(window.location.search).get('mode') === 'daily') {
-                finalSeed = getDailySeed();
+            else if (isDaily) {
+                const dailyConfig = DAILY_PUZZLE_CONFIG.get(new Date());
+                finalSeed = dailyConfig.seed;
+                finalSize = dailyConfig.size;
+                finalDiff = dailyConfig.difficulty;
             }
             // Priority 3: Use challenge info from URL if available and NOT force-starting a new random game
             else if (challengeData.current && !forceRandom) {
                 finalSeed = challengeData.current.seed;
+                finalSize = challengeData.current.size;
+                finalDiff = challengeData.current.difficulty;
             }
             // Priority 4: Random seed
             else {
                 finalSeed = Math.floor(Math.random() * 2000000000);
+                finalSize = selectedSize;
+                finalDiff = selectedDifficulty;
 
                 // If we are starting a random game, clear the challenge from URL/state
                 if (typeof window !== 'undefined' && challengeData.current) {
@@ -217,10 +231,6 @@ export const useGameLogic = () => {
                     challengeData.current = null;
                 }
             }
-
-            const isDaily = new URLSearchParams(window.location.search).get('mode') === 'daily';
-            const finalSize = isDaily ? DAILY_PUZZLE_CONFIG.SIZE : selectedSize;
-            const finalDiff: DifficultyLevel = isDaily ? DAILY_PUZZLE_CONFIG.DIFFICULTY : selectedDifficulty;
 
             const diffConfig = DIFFICULTY_CONFIG[finalDiff];
             const newPuzzle = await generatePuzzle(finalSeed, finalSize, finalDiff, diffConfig);

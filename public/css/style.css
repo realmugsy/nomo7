@@ -58,12 +58,11 @@ header {
     /* Hold space for translated name */
 }
 
-/* Иконка логотипа (CSS) */
+/* Иконка логотипа */
 .logo-icon {
     width: 24px;
     height: 24px;
-    background-color: var(--primary-color);
-    border-radius: 4px;
+    object-fit: contain;
     display: inline-block;
 }
 
@@ -82,8 +81,23 @@ nav a {
 }
 
 nav a:hover,
-nav a.active {
+nav a.active,
+.nav-link-style:hover,
+.nav-link-style.active {
     color: var(--primary-color);
+}
+
+.nav-link-style {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+    font-family: inherit;
 }
 
 .header-actions {

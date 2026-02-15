@@ -46,6 +46,7 @@ export default defineConfig({
         contacts: resolve(__dirname, 'contacts.html'),
         privacy: resolve(__dirname, 'privacy.html'),
         terms: resolve(__dirname, 'terms.html'),
+        leaderboard: resolve(__dirname, 'leaderboard.html'),
       },
     },
   },

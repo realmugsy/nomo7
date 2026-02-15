@@ -63,7 +63,26 @@ export const INITIAL_COINS = 20;
 export const BLAST_COST = 3;
 
 // Daily Puzzle Settings
+export const getDailyPuzzleConfig = (date: Date) => {
+  const YYYY = date.getUTCFullYear();
+  const MM = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const DD = String(date.getUTCDate()).padStart(2, '0');
+  const seed = parseInt(`${YYYY}${MM}${DD}`, 10);
+
+  // Deterministic size based on seed to match mockup variety (10, 12, 15, 20)
+  const sizes = [10, 12, 15, 20];
+  // Using a simple hash for size selection
+  const sizeIndex = (seed * 31 + 7) % sizes.length;
+  const size = sizes[sizeIndex];
+
+  return {
+    seed,
+    size,
+    difficulty: 'VERY_EASY' as DifficultyLevel
+  };
+};
+
 export const DAILY_PUZZLE_CONFIG = {
-  SIZE: 15,
+  get: getDailyPuzzleConfig,
   DIFFICULTY: 'VERY_EASY' as DifficultyLevel
 };

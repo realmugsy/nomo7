@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ToolType, DifficultyLevel } from './types';
 import {
@@ -62,7 +62,21 @@ const App: React.FC = () => {
   const colHints = puzzle ? Array(puzzle.size).fill(0).map((_, c) => puzzle.grid.map(row => row[c])) : [];
   const rowHints = puzzle ? puzzle.grid : [];
 
+  const headerPortals = (
+    <>
 
+      {document.getElementById('theme-toggle-root') && createPortal(
+        <button
+          onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+          className="theme-toggle-btn"
+          title={theme === 'dark' ? 'Переключить на светлую тему' : 'Переключить на темную тему'}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>,
+        document.getElementById('theme-toggle-root')!
+      )}
+    </>
+  );
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
@@ -123,7 +137,7 @@ const App: React.FC = () => {
               <div className="flex gap-2">
                 {/* Size Selector */}
                 <select
-                  value={new URLSearchParams(window.location.search).get('mode') === 'daily' ? DAILY_PUZZLE_CONFIG.SIZE : selectedSize}
+                  value={new URLSearchParams(window.location.search).get('mode') === 'daily' ? DAILY_PUZZLE_CONFIG.get(new Date()).size : selectedSize}
                   onChange={(e) => {
                     const val = Number(e.target.value);
                     const url = new URL(window.location.href);
@@ -167,7 +181,7 @@ const App: React.FC = () => {
                 <div className="bg-amber-100 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700/50 px-4 py-2 rounded-lg text-amber-800 dark:text-amber-200 font-bold flex items-center gap-2 mb-2">
                   <span>📅</span>
                   <span>
-                    <span data-i18n="footer.daily_title">Daily Challenge</span>: {new Date().toLocaleDateString()}
+                    <span data-i18n="footer.daily_title">Daily Challenge</span>: {new Date().toISOString().split('T')[0]}
                   </span>
                 </div>
               )}
@@ -369,16 +383,7 @@ const App: React.FC = () => {
 
       </div>
 
-      {document.getElementById('theme-toggle-root') && createPortal(
-        <button
-          onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
-          className="theme-toggle-btn"
-          title={theme === 'dark' ? 'Переключить на светлую тему' : 'Переключить на темную тему'}
-        >
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </button>,
-        document.getElementById('theme-toggle-root')!
-      )}
+      {headerPortals}
     </div>
   );
 };

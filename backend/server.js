@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -39,8 +38,6 @@ app.get('/api/health', (req, res) => {
     res.json({ ok: true, message: 'Server is running', timestamp: new Date() });
 });
 
-// API Routes
-
 // GET /api/records/top - Get top records for a puzzle
 app.get('/api/records/top', async (req, res) => {
     try {
@@ -62,6 +59,40 @@ app.get('/api/records/top', async (req, res) => {
     }
 });
 
+// GET /api/records/daily-archive - Get top records for multiple puzzles (for archive view)
+app.get('/api/records/daily-archive', async (req, res) => {
+    try {
+        const { puzzleIds } = req.query;
+        if (!puzzleIds) {
+            return res.status(400).json({ ok: false, error: 'puzzleIds is required' });
+        }
+
+        const ids = puzzleIds.split(',');
+
+        // Find best time for each verified record for requested puzzleIds
+        const results = await Record.aggregate([
+            { $match: { puzzleId: { $in: ids }, verified: true } },
+            { $sort: { timeMs: 1 } },
+            {
+                $group: {
+                    _id: "$puzzleId",
+                    bestTime: { $first: "$timeMs" }
+                }
+            }
+        ]);
+
+        const archiveMap = {};
+        results.forEach(item => {
+            archiveMap[item._id] = item.bestTime;
+        });
+
+        res.json({ ok: true, results: archiveMap });
+    } catch (error) {
+        console.error('Error fetching daily archive:', error);
+        res.status(500).json({ ok: false, error: 'Internal Server Error', message: error.message });
+    }
+});
+
 // POST /api/records - Save a new record
 app.post('/api/records', async (req, res) => {
     try {
@@ -77,8 +108,6 @@ app.post('/api/records', async (req, res) => {
             isVerified = await validateSolution(puzzleId, history);
             if (!isVerified) {
                 console.warn(`Validation failed for player ${playerName} on puzzle ${puzzleId}`);
-                // Optional: Reject record logic
-                // return res.status(400).json({ ok: false, error: 'Validation failed' });
             }
         }
 
