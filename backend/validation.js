@@ -5,7 +5,6 @@ const ToolType = {
     FILL: 'FILL',
     CROSS: 'CROSS'
 };
-
 const CellState = {
     EMPTY: 0,
     FILLED: 1,
@@ -17,7 +16,8 @@ const DIFFICULTY_CONFIG = {
     EASY: { minDensity: 0.55, maxDensity: 0.60 },
     MEDIUM: { minDensity: 0.53, maxDensity: 0.58 },
     HARD: { minDensity: 0.4, maxDensity: 0.50 },
-    VERY_HARD: { minDensity: 0.10, maxDensity: 0.30 }
+    VERY_HARD: { minDensity: 0.10, maxDensity: 0.30 },
+    DAILY: { minDensity: 0.52, maxDensity: 0.58 }
 };
 
 // Simplified seed calculation (Mulberry32 - matches frontend)
@@ -30,23 +30,33 @@ const mulberry32 = (seed) => {
     };
 };
 
-function seededRandom(seed) {
-    return mulberry32(seed);
+class Random {
+    constructor(seed) {
+        this.nextFloat = mulberry32(seed);
+    }
+    next() {
+        return this.nextFloat();
+    }
+    bool(chance = 0.5) {
+        return this.next() < chance;
+    }
 }
 
 // Replicating basic grid generation structure to match frontend geminiService.ts exactly
 function generateTargetGrid(seed, size, difficulty) {
-    const rng = seededRandom(seed);
+    const rng = new Random(seed);
     const grid = Array(size).fill(0).map(() => Array(size).fill(0));
 
-    const targetDensity = difficulty.minDensity + (rng() * (difficulty.maxDensity - difficulty.minDensity));
+    const targetDensity = difficulty.minDensity + (rng.next() * (difficulty.maxDensity - difficulty.minDensity));
     const totalCells = size * size;
     const targetFillCount = Math.floor(totalCells * targetDensity);
+
+    // console.log(`[GENERATOR] Seed: ${seed}, Size: ${size}, Density: ${targetDensity}, Target Fill: ${targetFillCount}`);
 
     // 1. Initial Noise
     for (let y = 0; y < size; y++) {
         for (let x = 0; x < size; x++) {
-            const val = rng() < targetDensity ? 1 : 0;
+            const val = rng.bool(targetDensity) ? 1 : 0;
             grid[y][x] = val;
         }
     }
@@ -65,7 +75,7 @@ function generateTargetGrid(seed, size, difficulty) {
 
     // Shuffle coordinates deterministicly
     for (let i = coords.length - 1; i > 0; i--) {
-        const j = Math.floor(rng() * (i + 1));
+        const j = Math.floor(rng.next() * (i + 1));
         [coords[i], coords[j]] = [coords[j], coords[i]];
     }
 
@@ -171,11 +181,11 @@ async function validateSolution(puzzleId, history) {
     }
 
     if (errors > 0) {
-        console.warn(`[VALIDATION] Failed: ${errors} discrepancies found in final grid.`);
+        console.warn(`[VALIDATION] Failed: ${errors} discrepancies found in final grid for ${puzzleId}`);
         return false;
     }
 
-    console.log(`[VALIDATION] Passed: ${timeMsHistory}ms in history.`);
+    console.log(`[VALIDATION] Passed: ${timeMsHistory}ms in history for ${puzzleId}`);
     return true;
 }
 

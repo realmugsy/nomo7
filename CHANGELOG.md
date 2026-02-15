@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.021] - 2026-02-15
+### Fixed
+- Fixed **Puzzle Verification** failure by synchronizing the RNG consumption pattern between frontend and backend. The server now uses an identical `Random` class wrapper to ensure 100% deterministic grid generation.
+
+## [0.1.020] - 2026-02-15
+### Fixed
+- Synchronized **Daily Puzzle** difficulty ranges with the backend validation logic. This ensures daily puzzle results are correctly verified on the server.
+
+## [0.1.019] - 2026-02-15
+### Changed
+- Decoupled **Daily Puzzle** difficulty from regular puzzle settings. It now has its own dedicated configuration in `gameConfig.ts`.
+
 ## [0.1.018] - 2026-02-15
 ### Fixed
 - Fixed missing "Leaderboard" link on the dedicated leaderboard page by making it a static part of the header.

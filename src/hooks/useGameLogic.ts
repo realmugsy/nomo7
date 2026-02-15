@@ -232,7 +232,8 @@ export const useGameLogic = () => {
                 }
             }
 
-            const diffConfig = DIFFICULTY_CONFIG[finalDiff];
+            // Decouple difficulty config: use daily settings if in daily mode
+            const diffConfig = isDaily ? DAILY_PUZZLE_CONFIG.SETTINGS : DIFFICULTY_CONFIG[finalDiff];
             const newPuzzle = await generatePuzzle(finalSeed, finalSize, finalDiff, diffConfig);
 
             setPuzzle(newPuzzle);

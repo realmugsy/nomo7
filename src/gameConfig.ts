@@ -63,6 +63,12 @@ export const INITIAL_COINS = 20;
 export const BLAST_COST = 3;
 
 // Daily Puzzle Settings
+export const DAILY_DIFFICULTY_CONFIG: DifficultySettings = {
+  label: 'Daily Special',
+  minDensity: 0.52,
+  maxDensity: 0.58
+};
+
 export const getDailyPuzzleConfig = (date: Date) => {
   const YYYY = date.getUTCFullYear();
   const MM = String(date.getUTCMonth() + 1).padStart(2, '0');
@@ -78,11 +84,12 @@ export const getDailyPuzzleConfig = (date: Date) => {
   return {
     seed,
     size,
-    difficulty: 'VERY_EASY' as DifficultyLevel
+    difficulty: 'DAILY' as DifficultyLevel // Use a special marker or just ignore it in logic
   };
 };
 
 export const DAILY_PUZZLE_CONFIG = {
   get: getDailyPuzzleConfig,
-  DIFFICULTY: 'VERY_EASY' as DifficultyLevel
+  DIFFICULTY: 'DAILY' as DifficultyLevel,
+  SETTINGS: DAILY_DIFFICULTY_CONFIG
 };

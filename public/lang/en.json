@@ -52,7 +52,7 @@
         "daily_title": "Daily Challenge",
         "daily_reward": "Daily Reward! +{{coins}} 🪙",
         "daily_solved": "Already Solved",
-        "version": "Version: 0.1.018"
+        "version": "Version: 0.1.021"
     },
     "rules_detail": {
         "title": "How to Solve Nonograms",
