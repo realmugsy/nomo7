@@ -49,7 +49,7 @@ app.get('/api/records/top', async (req, res) => {
             return res.status(400).json({ ok: false, error: 'puzzleId is required' });
         }
 
-        const records = await Record.find({ puzzleId })
+        const records = await Record.find({ puzzleId, verified: true })
             .sort({ timeMs: 1 }) // Ascending order (lower time is better)
             .skip(parseInt(offset))
             .limit(parseInt(limit))
