@@ -9,6 +9,7 @@ import {
     BLAST_COST,
     DAILY_PUZZLE_CONFIG,
 } from '../gameConfig';
+import validSeeds from '../data/valid_seeds.json';
 import { INITIAL_GRIND_STATE, completeLevel } from '../grind';
 
 // Helper to create empty grid
@@ -222,9 +223,20 @@ export const useGameLogic = () => {
                 finalSize = challengeData.current.size;
                 finalDiff = challengeData.current.difficulty;
             }
-            // Priority 4: Random seed
+            // Priority 4: Random seed from pool
             else {
-                finalSeed = Math.floor(Math.random() * 2000000000);
+                const configKey = `${selectedSize}:${selectedDifficulty}`;
+                const pool = (validSeeds as Record<string, number[]>)[configKey];
+
+                if (pool && pool.length > 0) {
+                    // Pick random from pool
+                    const randomIndex = Math.floor(Math.random() * pool.length);
+                    finalSeed = pool[randomIndex];
+                } else {
+                    // Fallback to purely random if pool is empty
+                    finalSeed = Math.floor(Math.random() * 2000000000);
+                }
+
                 finalSize = selectedSize;
                 finalDiff = selectedDifficulty;
 

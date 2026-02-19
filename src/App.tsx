@@ -293,7 +293,7 @@ const App: React.FC = () => {
 
                 return (
                   <div key={`col-hint-${i}`} className={classes}>
-                    <Hints line={col} type="col" isComplete={false} />
+                    <Hints line={col} type="col" isComplete={isColCorrect} />
                   </div>
                 );
               })}

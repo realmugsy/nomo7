@@ -24,15 +24,15 @@ const Hints: React.FC<HintsProps> = ({ line, type, isComplete }) => {
   }, [line]);
 
   const textColor = isComplete ? "text-emerald-400" : "text-slate-400";
-  
-  const containerClass = type === 'row' 
+
+  const containerClass = type === 'row'
     ? `flex flex-row justify-end items-center gap-1 md:gap-2 pr-2 h-full text-sm md:text-base font-bold ${textColor} transition-colors duration-300`
     : `flex flex-col justify-end items-center gap-1 md:gap-2 pb-2 w-full text-sm md:text-base font-bold ${textColor} transition-colors duration-300`;
 
   return (
     <div className={containerClass}>
       {hints.map((hint, i) => (
-        <span key={i} className={type === 'col' ? "writing-mode-vertical" : ""}>{hint}</span>
+        <span key={i}>{hint}</span>
       ))}
     </div>
   );

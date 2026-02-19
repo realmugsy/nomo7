@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.023] - 2026-02-18
+### Fixed
+- Fixed **Vertical Hints** issue where column hints wouldn't turn green when the column was completed.
+- Optimized hint rendering by removing unused CSS classes.
+
 ## [0.1.022] - 2026-02-15
 ### Fixed
 - Improved **Timer Robustness**: The game timer now uses `Date.now()` delta calculation to remain accurate even when the browser throttles the tab due to user inactivity or background mode.
