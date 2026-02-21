@@ -1,5 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // --- Types & Constants (Replicated from project) ---
 const CellState = { EMPTY: 0, FILLED: 1, CROSSED: 2 };
@@ -10,7 +14,7 @@ const DIFFICULTY_CONFIG = {
     HARD: { minDensity: 0.48, maxDensity: 0.52 },
     VERY_HARD: { minDensity: 0.40, maxDensity: 0.48 }
 };
-const GRID_SIZES = [5, 7, 8, 10];
+const GRID_SIZES = [12, 15, 16];
 
 // --- Deterministic Random (Mulberry32) ---
 const mulberry32 = (seed) => {

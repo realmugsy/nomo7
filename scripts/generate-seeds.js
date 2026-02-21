@@ -4,13 +4,13 @@ const path = require('path');
 // --- Types & Constants (Replicated from project) ---
 const CellState = { EMPTY: 0, FILLED: 1, CROSSED: 2 };
 const DIFFICULTY_CONFIG = {
-    VERY_EASY: { minDensity: 0.60, maxDensity: 0.79 },
-    EASY: { minDensity: 0.55, maxDensity: 0.60 },
+    VERY_EASY: { minDensity: 0.63, maxDensity: 0.70 },
+    EASY: { minDensity: 0.57, maxDensity: 0.62 },
     MEDIUM: { minDensity: 0.53, maxDensity: 0.58 },
-    HARD: { minDensity: 0.4, maxDensity: 0.50 },
-    VERY_HARD: { minDensity: 0.10, maxDensity: 0.30 }
+    HARD: { minDensity: 0.48, maxDensity: 0.52 },
+    VERY_HARD: { minDensity: 0.40, maxDensity: 0.48 }
 };
-const GRID_SIZES = [5, 10, 15, 20];
+const GRID_SIZES = [5, 7, 8, 10];
 
 // --- Deterministic Random (Mulberry32) ---
 const mulberry32 = (seed) => {
@@ -166,7 +166,7 @@ class Solver {
 // --- Main Generation Loop ---
 async function run() {
     const pool = {};
-    const SEEDS_PER_CONFIG = 50;
+    const SEEDS_PER_CONFIG = 200;
 
     for (const size of GRID_SIZES) {
         for (const [diffKey, diffConfig] of Object.entries(DIFFICULTY_CONFIG)) {
@@ -175,8 +175,11 @@ async function run() {
             pool[configKey] = [];
 
             let attempts = 0;
-            while (pool[configKey].length < SEEDS_PER_CONFIG && attempts < 2000) {
+            let seedStartTime = Date.now();
+            let seedAttempts = 0;
+            while (pool[configKey].length < SEEDS_PER_CONFIG && attempts < 20000) {
                 attempts++;
+                seedAttempts++;
                 const seed = Math.floor(Math.random() * 2000000000);
                 const grid = generateGrid(seed, size, diffConfig);
                 const rHints = grid.map(r => calculateHints(r));
@@ -185,7 +188,10 @@ async function run() {
                 const solver = new Solver(size, rHints, cHints);
                 if (solver.solve()) {
                     pool[configKey].push(seed);
-                    if (pool[configKey].length % 10 === 0) console.log(`  Progress: ${pool[configKey].length}/${SEEDS_PER_CONFIG}`);
+                    const elapsed = Date.now() - seedStartTime;
+                    console.log(`  Seed ${pool[configKey].length}/${SEEDS_PER_CONFIG} found in ${elapsed}ms (${seedAttempts} attempts)`);
+                    seedStartTime = Date.now();
+                    seedAttempts = 0;
                 }
             }
         }
@@ -193,9 +199,23 @@ async function run() {
 
     const outputDir = path.join(__dirname, '..', 'src', 'data');
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-
     const outputPath = path.join(outputDir, 'valid_seeds.json');
-    fs.writeFileSync(outputPath, JSON.stringify(pool, null, 2));
+
+    let existingPool = {};
+    if (fs.existsSync(outputPath)) {
+        try {
+            existingPool = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+        } catch (e) {
+            console.error("Error reading existing valid_seeds.json, starting fresh.");
+        }
+    }
+
+    // Merge generated seeds
+    for (const [key, seeds] of Object.entries(pool)) {
+        existingPool[key] = seeds;
+    }
+
+    fs.writeFileSync(outputPath, JSON.stringify(existingPool, null, 2));
     console.log(`\nSuccessfully generated seeds! Saved to ${outputPath}`);
 }
 

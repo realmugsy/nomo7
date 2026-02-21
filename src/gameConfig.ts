@@ -2,33 +2,33 @@ import { DifficultyLevel, DifficultySettings } from './types';
 
 export const DIFFICULTY_CONFIG: Record<DifficultyLevel, DifficultySettings> = {
   VERY_EASY: {
-    label: 'Very Easy (90-99%)',
-    minDensity: 0.60,
-    maxDensity: 0.79
+    label: 'Very Easy (64-70%)',
+    minDensity: 0.63,
+    maxDensity: 0.70
   },
   EASY: {
-    label: 'Easy (70-90%)',
-    minDensity: 0.55,
-    maxDensity: 0.60
+    label: 'Easy (58-62%)',
+    minDensity: 0.57,
+    maxDensity: 0.62
   },
   MEDIUM: {
-    label: 'Medium (50-70%)',
+    label: 'Medium (53-58%)',
     minDensity: 0.53,
     maxDensity: 0.58
   },
   HARD: {
-    label: 'Hard (30-50%)',
-    minDensity: 0.4,
-    maxDensity: 0.50
+    label: 'Hard (48-52%)',
+    minDensity: 0.48,
+    maxDensity: 0.52
   },
   VERY_HARD: {
-    label: 'Very Hard (10-30%)',
-    minDensity: 0.10,
-    maxDensity: 0.30
+    label: 'Very Hard (40-48%)',
+    minDensity: 0.40,
+    maxDensity: 0.48
   }
 };
 
-export const GRID_SIZES = [5, 8, 10, 15, 20];
+export const GRID_SIZES = [5, 7, 8, 10, 12, 15, 16, 20, 25];
 
 // Meta layer settings
 export const META_LAYER_MAP_IMAGES_COUNT = 3; // Number of map images to stitch together

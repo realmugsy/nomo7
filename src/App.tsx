@@ -115,12 +115,15 @@ const App: React.FC = () => {
             >
               <span>♻️</span> Reset Daily
             </button>
-            <button
-              onClick={cheatWin}
-              className="bg-indigo-900/40 hover:bg-indigo-900/60 text-indigo-300 px-2 py-1 rounded border border-indigo-800/50 flex items-center gap-1.5 transition-all active:scale-95 text-[9px] font-bold"
-            >
-              <span>⚡</span> Win
-            </button>
+            <div className="flex flex-col items-center">
+              <button
+                onClick={cheatWin}
+                className="bg-indigo-900/40 hover:bg-indigo-900/60 text-indigo-300 px-2 py-1 rounded border border-indigo-800/50 flex items-center gap-1.5 transition-all active:scale-95 text-[9px] font-bold"
+              >
+                <span>⚡</span> Win
+              </button>
+              {puzzle && <span className="text-[9px] text-slate-500 font-mono mt-0.5" title="Copy seed" onClick={() => navigator.clipboard.writeText(puzzle.seed.toString())} style={{ cursor: 'pointer' }}>Seed: {puzzle.seed}</span>}
+            </div>
           </div>
         </div>
       )}
@@ -213,12 +216,15 @@ const App: React.FC = () => {
                         <span>♻️</span> Reset Daily
                       </button>
                     )}
-                    <button
-                      onClick={cheatWin}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full font-bold shadow-lg shadow-indigo-900/50 transition-all hover:scale-105 text-sm flex items-center gap-2"
-                    >
-                      <span>⚡</span> Win
-                    </button>
+                    <div className="flex flex-col items-center">
+                      <button
+                        onClick={cheatWin}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full font-bold shadow-lg shadow-indigo-900/50 transition-all hover:scale-105 text-sm flex items-center gap-2"
+                      >
+                        <span>⚡</span> Win
+                      </button>
+                      {puzzle && <span className="text-[10px] text-slate-500 font-mono mt-1 opacity-60">Seed: {puzzle.seed}</span>}
+                    </div>
                   </div>
                 )}
               </div>
