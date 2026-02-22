@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.024] - 2026-02-22
+### Added
+- Added **Survival 2 (Mystery Hints)** game mode where hints are randomly hidden with '?' marks.
+- Added **Error indication** via a customizable red glowing border flash when making a mistake in Survival modes.
+
+### Changed
+- Removed the heavy box-shadow from beneath the main game grid.
+
 ## [0.1.023] - 2026-02-18
 ### Fixed
 - Fixed **Vertical Hints** issue where column hints wouldn't turn green when the column was completed.

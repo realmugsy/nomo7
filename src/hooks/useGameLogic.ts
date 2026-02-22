@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { generatePuzzle } from '../services/geminiService';
-import { CellState, GameState, PuzzleData, ToolType, DifficultyLevel, Move } from '../types';
+import { CellState, GameState, PuzzleData, ToolType, DifficultyLevel, Move, GameMode } from '../types';
 import {
     DIFFICULTY_CONFIG,
     GRID_SIZES,
@@ -8,6 +8,9 @@ import {
     INITIAL_COINS,
     BLAST_COST,
     DAILY_PUZZLE_CONFIG,
+    SURVIVAL_LIVES,
+    DEFAULT_MYSTERY_HINTS_COUNT,
+    ERROR_FLASH_DURATION_MS,
 } from '../gameConfig';
 import validSeeds from '../data/valid_seeds.json';
 import { INITIAL_GRIND_STATE, completeLevel } from '../grind';
@@ -34,6 +37,21 @@ const stringToSeed = (str: string): number => {
         hash |= 0; // Convert to 32bit integer
     }
     return Math.abs(hash);
+};
+
+const getHintCountForLine = (line: number[]) => {
+    let count = 0;
+    let current = 0;
+    for (const cell of line) {
+        if (cell === 1) {
+            current++;
+        } else if (current > 0) {
+            count++;
+            current = 0;
+        }
+    }
+    if (current > 0) count++;
+    return count === 0 ? 1 : count; // 0 hints returns [0] which is length 1.
 };
 
 const DIFFICULTY_LEVELS: DifficultyLevel[] = ['VERY_EASY', 'EASY', 'MEDIUM', 'HARD', 'VERY_HARD'];
@@ -81,10 +99,15 @@ export const useGameLogic = () => {
     const [puzzle, setPuzzle] = useState<PuzzleData | null>(null);
     const [playerGrid, setPlayerGrid] = useState<CellState[][]>([]);
     const [gameState, setGameState] = useState<GameState>({ status: 'loading' });
+    const [gameMode, setGameMode] = useState<GameMode>('classic');
+    const [lives, setLives] = useState<number>(SURVIVAL_LIVES);
+    const [mysteryHintsCount, setMysteryHintsCount] = useState<number>(DEFAULT_MYSTERY_HINTS_COUNT);
+    const [hiddenHintsMap, setHiddenHintsMap] = useState<Record<string, Set<number>>>({});
     const [isDebugVisible, setIsDebugVisible] = useState<boolean>(false);
     const [isCheckHintsActive, setIsCheckHintsActive] = useState<boolean>(false);
     const [winCorner, setWinCorner] = useState<number | null>(null); // 0:TL, 1:TR, 2:BL, 3:BR
     const [lastCorrectCell, setLastCorrectCell] = useState<{ r: number, c: number } | null>(null); // Track last correctly placed cell
+    const [isErrorFlashing, setIsErrorFlashing] = useState<boolean>(false);
 
     const [grindState, setGrindState] = useState(INITIAL_GRIND_STATE); // Grind system state
     // const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null); // Unused in logic but kept if needed
@@ -175,6 +198,8 @@ export const useGameLogic = () => {
     const startNewGame = useCallback(async (seedVal?: string, forceRandom: boolean = false) => {
         setGameState({ status: 'loading' });
         setTimer(0); // Reset timer
+        setLives(SURVIVAL_LIVES); // Reset lives
+        setHiddenHintsMap({}); // Reset hidden hints
         setIsDebugVisible(false); // Reset debug on new game
         setIsCheckHintsActive(false); // Reset hint checking
         setWinCorner(null); // Reset win animation
@@ -258,10 +283,39 @@ export const useGameLogic = () => {
             setPuzzle(newPuzzle);
             setPlayerGrid(createEmptyGrid(newPuzzle.size));
             setGameState({ status: 'playing' });
+
+            // Generate mystery hints for survival2 mode
+            if (gameMode === 'survival2') {
+                const allHints: { key: string, idx: number }[] = [];
+                for (let r = 0; r < newPuzzle.size; r++) {
+                    const count = getHintCountForLine(newPuzzle.grid[r]);
+                    for (let i = 0; i < count; i++) allHints.push({ key: `row-${r}`, idx: i });
+                }
+                for (let c = 0; c < newPuzzle.size; c++) {
+                    const col = newPuzzle.grid.map(row => row[c]);
+                    const count = getHintCountForLine(col);
+                    for (let i = 0; i < count; i++) allHints.push({ key: `col-${c}`, idx: i });
+                }
+
+                // Shuffle
+                for (let i = allHints.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [allHints[i], allHints[j]] = [allHints[j], allHints[i]];
+                }
+
+                const picked = allHints.slice(0, mysteryHintsCount);
+                const map: Record<string, Set<number>> = {};
+                picked.forEach(p => {
+                    if (!map[p.key]) map[p.key] = new Set();
+                    map[p.key].add(p.idx);
+                });
+                setHiddenHintsMap(map);
+            }
+
         } catch (e) {
             setGameState({ status: 'error', errorMessage: 'Failed to generate puzzle.' });
         }
-    }, [selectedSize, selectedDifficulty]);
+    }, [selectedSize, selectedDifficulty, gameMode, mysteryHintsCount]);
 
     // Update unlocked markers and award daily coins when a game is won
     useEffect(() => {
@@ -323,6 +377,28 @@ export const useGameLogic = () => {
             // Track the last cell that was changed
             if (puzzle && gameState.status === 'playing') {
                 const target = puzzle.grid[r][c];
+
+                // Mistake checking for Survival Mode
+                if (gameMode === 'survival' || gameMode === 'survival2') {
+                    // Mistake: user uses FILL on an actually empty cell
+                    if (target === 0 && newState === CellState.FILLED) {
+                        // Flash grid red
+                        setIsErrorFlashing(true);
+                        setTimeout(() => setIsErrorFlashing(false), ERROR_FLASH_DURATION_MS);
+
+                        setLives(prev => {
+                            const newLives = prev - 1;
+                            if (newLives <= 0) {
+                                setGameState({ status: 'game_over' });
+                            }
+                            return newLives;
+                        });
+                        // Auto-correct a mistake to prevent immediate re-click
+                        newState = CellState.CROSSED;
+                        newGrid[r][c] = newState;
+                    }
+                }
+
                 // If this cell is now correct, update lastCorrectCell
                 if ((target === 1 && newState === CellState.FILLED) ||
                     (target === 0 && newState !== CellState.FILLED)) {
@@ -439,15 +515,17 @@ export const useGameLogic = () => {
         if (!puzzle) return;
         setPlayerGrid(createEmptyGrid(puzzle.size));
         setTimer(0);
+        setLives(SURVIVAL_LIVES);
         setGameState({ status: 'playing' });
         setWinCorner(null);
         setLastCorrectCell(null);
-    }, [puzzle]);
+        startNewGame(puzzle.seed.toString(), false); // Re-run generation logic to re-roll hidden hints if in survival2 mode, or just restart
+    }, [puzzle, startNewGame]);
 
     // Auto-start or restart game when settings change
     useEffect(() => {
         startNewGame();
-    }, [selectedSize, selectedDifficulty, startNewGame]);
+    }, [selectedSize, selectedDifficulty, gameMode, mysteryHintsCount, startNewGame]);
 
 
     // Stats calculation
@@ -495,6 +573,11 @@ export const useGameLogic = () => {
         history,
         playerGrid,
         gameState,
+        gameMode,
+        lives,
+        mysteryHintsCount,
+        hiddenHintsMap,
+        isErrorFlashing,
         timer,
         coins,
         theme,
@@ -510,6 +593,8 @@ export const useGameLogic = () => {
         showCopyMessage,
 
         // Setters (if needed directly)
+        setGameMode,
+        setMysteryHintsCount,
         setActiveTool,
         setSelectedSize,
         setSelectedDifficulty,

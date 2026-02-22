@@ -93,3 +93,9 @@ export const DAILY_PUZZLE_CONFIG = {
   DIFFICULTY: 'DAILY' as DifficultyLevel,
   SETTINGS: DAILY_DIFFICULTY_CONFIG
 };
+export const SURVIVAL_LIVES = 3;
+export const DEFAULT_MYSTERY_HINTS_COUNT = 3;
+
+// Survival mode error indication
+export const ERROR_FLASH_DURATION_MS = 400;
+export const ERROR_FLASH_CLASSES = "ring-4 ring-rose-500 shadow-[0_0_40px_15px_rgba(225,29,72,0.8)] dark:shadow-[0_0_40px_15px_rgba(225,29,72,0.9)] z-50 relative scale-[1.01]";

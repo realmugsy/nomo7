@@ -6,6 +6,8 @@ import {
   GRID_SIZES,
   WIN_ANIMATION_DURATION_MS,
   DAILY_PUZZLE_CONFIG,
+  SURVIVAL_LIVES,
+  ERROR_FLASH_CLASSES,
 } from './gameConfig';
 import GridCell from './components/GridCell';
 import Hints from './components/Hints';
@@ -24,6 +26,11 @@ const App: React.FC = () => {
     activeTool,
     selectedSize,
     selectedDifficulty,
+    gameMode,
+    lives,
+    mysteryHintsCount,
+    hiddenHintsMap,
+    isErrorFlashing,
     isMobile,
     isCheckHintsActive,
     isDebugVisible,
@@ -34,6 +41,8 @@ const App: React.FC = () => {
     setActiveTool,
     setSelectedSize,
     setSelectedDifficulty,
+    setGameMode,
+    setMysteryHintsCount,
     setTheme,
     setIsCheckHintsActive,
     startNewGame,
@@ -150,6 +159,28 @@ const App: React.FC = () => {
             {/* Settings Row - Moved to Portal */}
             {document.getElementById('game-selectors-root') && createPortal(
               <div className="flex gap-2">
+                {/* Game Mode Selector */}
+                <select
+                  value={gameMode}
+                  onChange={(e) => setGameMode(e.target.value as any)}
+                >
+                  <option value="classic">Classic</option>
+                  <option value="survival">Survival</option>
+                  <option value="survival2">Survival 2</option>
+                </select>
+
+                {/* Mystery Hints Count Selector (Only Survival 2) */}
+                {gameMode === 'survival2' && (
+                  <select
+                    value={mysteryHintsCount}
+                    onChange={(e) => setMysteryHintsCount(Number(e.target.value))}
+                  >
+                    {[1, 3, 5, 8, 10, 15, 20, 30].map(n => (
+                      <option key={n} value={n}>{n} ?'s</option>
+                    ))}
+                  </select>
+                )}
+
                 {/* Size Selector */}
                 <select
                   value={new URLSearchParams(window.location.search).get('mode') === 'daily' ? DAILY_PUZZLE_CONFIG.get(new Date()).size : selectedSize}
@@ -242,15 +273,23 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Timer Display */}
-            {puzzle && (gameState.status === 'playing' || gameState.status === 'won') ? (
-              <div className="flex flex-col items-center gap-1">
-                <div className="text-2xl text-slate-300 font-mono flex items-center gap-2 mb-2" title="Time elapsed">
-                  <span className="text-xl">⏱️</span>
-                  <span className="font-bold tracking-wider">{formatTime(timer)}</span>
-                </div>
+            {/* Timer / Lives Display */}
+            {puzzle && (gameState.status === 'playing' || gameState.status === 'won' || gameState.status === 'game_over') ? (
+              <div className="flex flex-col items-center gap-1 h-8">
+                {gameMode === 'classic' ? (
+                  <div className="text-2xl text-slate-300 font-mono flex items-center gap-2 mb-2" title="Time elapsed">
+                    <span className="text-xl">⏱️</span>
+                    <span className="font-bold tracking-wider">{formatTime(timer)}</span>
+                  </div>
+                ) : (
+                  <div className="flex gap-2 text-2xl mb-2" title={`${lives} out of ${SURVIVAL_LIVES} lives remaining`}>
+                    {[...Array(SURVIVAL_LIVES)].map((_, i) => (
+                      <span key={i} className={`transition-all duration-300 ${i < lives ? 'text-rose-500 scale-110 drop-shadow-md' : 'text-slate-600 scale-90 grayscale opacity-50'}`}>❤️</span>
+                    ))}
+                  </div>
+                )}
               </div>
-            ) : <div className="h-4"></div>}
+            ) : <div className="h-8"></div>}
           </div>
         )}
 
@@ -278,12 +317,26 @@ const App: React.FC = () => {
           </div>
         )}
 
+        {gameState.status === 'game_over' && (
+          <div className="text-rose-400 bg-rose-950/30 p-6 rounded-xl border border-rose-800 shadow-2xl shadow-rose-900/50 mb-4 text-center justify-center w-full flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
+            <div className="text-4xl">💔</div>
+            <h2 className="text-2xl font-bold text-white tracking-widest uppercase">Game Over</h2>
+            <p className="text-rose-200">You ran out of lives!</p>
+            <button
+              onClick={() => startNewGame(undefined, true)}
+              className="mt-2 bg-rose-600 hover:bg-rose-500 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-rose-900/50 transition-all hover:scale-105 active:scale-95 text-lg"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+
         {/* The Grid Container */}
         {puzzle && (gameState.status === 'playing' || gameState.status === 'won') && (
           <div className="max-w-full overflow-auto p-1">
 
             <div
-              className="grid gap-0 select-none bg-slate-300 dark:bg-slate-900 p-2 rounded-xl border border-slate-300 dark:border-slate-800 shadow-2xl touch-none mx-auto"
+              className={`grid gap-0 select-none bg-slate-300 dark:bg-slate-900 p-2 rounded-xl border border-slate-300 dark:border-slate-800 touch-none mx-auto transition-all duration-150 ${isErrorFlashing ? ERROR_FLASH_CLASSES : ''}`}
               style={{
                 gridTemplateColumns: `auto repeat(${puzzle.size}, min-content)`,
               }}
@@ -311,7 +364,7 @@ const App: React.FC = () => {
 
                 return (
                   <div key={`col-hint-${i}`} className={classes}>
-                    <Hints line={col} type="col" isComplete={isColCorrect} puzzleSize={puzzle.size} />
+                    <Hints line={col} type="col" isComplete={isColCorrect} puzzleSize={puzzle.size} hiddenIndices={hiddenHintsMap[`col-${i}`]} />
                   </div>
                 );
               })}
@@ -330,7 +383,7 @@ const App: React.FC = () => {
                 return (
                   <React.Fragment key={`row-${r}`}>
                     <div className={hintClasses}>
-                      <Hints line={row} type="row" isComplete={isRowCorrect} puzzleSize={puzzle.size} />
+                      <Hints line={row} type="row" isComplete={isRowCorrect} puzzleSize={puzzle.size} hiddenIndices={hiddenHintsMap[`row-${r}`]} />
                     </div>
 
                     {playerGrid[r].map((cellState, c) => {

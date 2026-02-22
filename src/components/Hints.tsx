@@ -5,9 +5,10 @@ interface HintsProps {
   type: 'row' | 'col';
   isComplete?: boolean;
   puzzleSize: number;
+  hiddenIndices?: Set<number>;
 }
 
-const Hints: React.FC<HintsProps> = ({ line, type, isComplete, puzzleSize }) => {
+const Hints: React.FC<HintsProps> = ({ line, type, isComplete, puzzleSize, hiddenIndices }) => {
   const hints = useMemo(() => {
     const calculatedHints: number[] = [];
     let count = 0;
@@ -38,7 +39,9 @@ const Hints: React.FC<HintsProps> = ({ line, type, isComplete, puzzleSize }) => 
   return (
     <div className={containerClass}>
       {hints.map((hint, i) => (
-        <span key={i}>{hint}</span>
+        <span key={i} className={hiddenIndices?.has(i) ? "text-rose-400 dark:text-rose-400" : ""}>
+          {hiddenIndices?.has(i) ? '?' : hint}
+        </span>
       ))}
     </div>
   );

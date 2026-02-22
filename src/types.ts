@@ -12,9 +12,10 @@ export interface PuzzleData {
   seed: number;
   difficulty: DifficultyLevel;
 }
+export type GameMode = 'classic' | 'survival' | 'survival2';
 
 export interface GameState {
-  status: 'idle' | 'playing' | 'won' | 'loading' | 'error';
+  status: 'idle' | 'playing' | 'won' | 'loading' | 'error' | 'game_over';
   errorMessage?: string;
 }
 
