@@ -35,7 +35,7 @@ const GridCell: React.FC<GridCellProps> = ({
 }) => {
 
   // Base classes
-  let classes = "w-full h-full border border-slate-300 dark:border-slate-700 transition-all duration-100 cursor-pointer flex items-center justify-center box-border select-none";
+  let classes = "w-full h-full border-b border-r border-slate-300 dark:border-slate-700 transition-all duration-100 cursor-pointer flex items-center justify-center box-border select-none";
 
   // Thick borders for visual separation of 5x5 blocks
   if (borderRightThick) classes += " border-r-2 border-r-slate-400 dark:border-r-slate-400";

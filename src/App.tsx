@@ -59,6 +59,18 @@ const App: React.FC = () => {
     return "w-2 h-2 md:w-4 md:h-4"; // Expert ~18x18
   };
 
+  // Detect portrait mode
+  const [isPortrait, setIsPortrait] = useState<boolean>(window.innerHeight > window.innerWidth);
+  React.useEffect(() => {
+    const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const availableGridSizes = isMobile && isPortrait
+    ? GRID_SIZES.filter(size => [5, 7, 8, 10].includes(size))
+    : GRID_SIZES;
+
   const colHints = puzzle ? Array(puzzle.size).fill(0).map((_, c) => puzzle.grid.map(row => row[c])) : [];
   const rowHints = puzzle ? puzzle.grid : [];
 
@@ -151,7 +163,7 @@ const App: React.FC = () => {
                     setSelectedSize(val);
                   }}
                 >
-                  {GRID_SIZES.map(size => (
+                  {availableGridSizes.map(size => (
                     <option key={size} value={size}>{size}x{size}</option>
                   ))}
                 </select>
@@ -279,7 +291,7 @@ const App: React.FC = () => {
             >
 
               {/* Top-Left Corner */}
-              <div className="border-b border-r border-slate-300 dark:border-slate-800 bg-slate-200/50 dark:bg-slate-900/50"></div>
+              <div className="border border-slate-300 dark:border-slate-800 rounded-tl-xl bg-slate-200/50 dark:bg-slate-900/50"></div>
 
               {/* Column Hints */}
               {colHints.map((col, i) => {
@@ -293,13 +305,13 @@ const App: React.FC = () => {
                 // I know I returned it. So I should destructure it.
                 const isColCorrect = isCheckHintsActive && isColComplete(i);
 
-                let classes = "bg-slate-200/50 dark:bg-slate-900/50 border-b border-slate-300 dark:border-slate-800 pb-1 flex flex-col justify-end";
+                let classes = "bg-slate-200/50 dark:bg-slate-900/50 border-t border-b border-r border-slate-300 dark:border-slate-800 pb-1 flex flex-col justify-end";
                 if (isThickRight) classes += " border-r-2 border-r-slate-400 dark:border-r-slate-400";
-                else classes += " border-r border-slate-300 dark:border-slate-800";
+                if (i === puzzle.size - 1) classes += " rounded-tr-xl";
 
                 return (
                   <div key={`col-hint-${i}`} className={classes}>
-                    <Hints line={col} type="col" isComplete={isColCorrect} />
+                    <Hints line={col} type="col" isComplete={isColCorrect} puzzleSize={puzzle.size} />
                   </div>
                 );
               })}
@@ -310,15 +322,15 @@ const App: React.FC = () => {
                 const isThickBottom = (r + 1) % dividerInterval === 0 && r !== puzzle.size - 1;
                 const isRowCorrect = isCheckHintsActive && isRowComplete(r);
 
-                let hintClasses = "border-r border-slate-300 dark:border-slate-800 pr-1 flex items-center justify-end bg-slate-200/50 dark:bg-slate-900/50";
+                let hintClasses = "border-l border-r border-b border-slate-300 dark:border-slate-800 pr-1 flex items-center justify-end bg-slate-200/50 dark:bg-slate-900/50";
 
                 if (isThickBottom) hintClasses += " border-b-2 border-b-slate-400 dark:border-b-slate-400";
-                else hintClasses += " border-b border-slate-300 dark:border-slate-800";
+                if (r === puzzle.size - 1) hintClasses += " rounded-bl-xl";
 
                 return (
                   <React.Fragment key={`row-${r}`}>
                     <div className={hintClasses}>
-                      <Hints line={row} type="row" isComplete={isRowCorrect} />
+                      <Hints line={row} type="row" isComplete={isRowCorrect} puzzleSize={puzzle.size} />
                     </div>
 
                     {playerGrid[r].map((cellState, c) => {

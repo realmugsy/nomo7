@@ -4,9 +4,10 @@ interface HintsProps {
   line: number[];
   type: 'row' | 'col';
   isComplete?: boolean;
+  puzzleSize: number;
 }
 
-const Hints: React.FC<HintsProps> = ({ line, type, isComplete }) => {
+const Hints: React.FC<HintsProps> = ({ line, type, isComplete, puzzleSize }) => {
   const hints = useMemo(() => {
     const calculatedHints: number[] = [];
     let count = 0;
@@ -25,9 +26,14 @@ const Hints: React.FC<HintsProps> = ({ line, type, isComplete }) => {
 
   const textColor = isComplete ? "text-emerald-400" : "text-slate-400";
 
+  let textSizeClass = "text-sm md:text-base";
+  if (puzzleSize > 15) textSizeClass = "text-[8px] leading-[8px] md:text-xs md:leading-none";
+  else if (puzzleSize > 10) textSizeClass = "text-[10px] leading-[10px] md:text-sm md:leading-tight";
+  else if (puzzleSize > 5) textSizeClass = "text-xs md:text-sm";
+
   const containerClass = type === 'row'
-    ? `flex flex-row justify-end items-center gap-1 md:gap-2 pr-2 h-full text-sm md:text-base font-bold ${textColor} transition-colors duration-300`
-    : `flex flex-col justify-end items-center gap-1 md:gap-2 pb-2 w-full text-sm md:text-base font-bold ${textColor} transition-colors duration-300`;
+    ? `flex flex-row justify-end items-center gap-0.5 md:gap-1.5 pr-1 md:pr-2 h-full font-bold ${textSizeClass} ${textColor} transition-colors duration-300`
+    : `flex flex-col justify-end items-center gap-0.5 md:gap-1.5 pb-1 md:pb-2 w-full font-bold ${textSizeClass} ${textColor} transition-colors duration-300`;
 
   return (
     <div className={containerClass}>
