@@ -21,7 +21,7 @@ mongoose.connect(MONGO_URI)
 // Schema Definition
 const recordSchema = new mongoose.Schema({
     puzzleId: { type: String, required: true }, // Format: size:difficulty:seed
-    playerName: { type: String, required: true },
+    playerName: { type: String, default: 'Anonymous' },
     timeMs: { type: Number, required: true },
     createdAt: { type: Date, default: Date.now },
     history: { type: Array, select: false }, // Store history but don't return it by default
@@ -98,7 +98,7 @@ app.post('/api/records', async (req, res) => {
     try {
         const { puzzleId, playerName, timeMs, history } = req.body;
 
-        if (!puzzleId || !playerName || timeMs === undefined) {
+        if (!puzzleId || timeMs === undefined) {
             return res.status(400).json({ ok: false, error: 'Missing required fields' });
         }
 
@@ -107,23 +107,48 @@ app.post('/api/records', async (req, res) => {
         if (history && Array.isArray(history)) {
             isVerified = await validateSolution(puzzleId, history);
             if (!isVerified) {
-                console.warn(`Validation failed for player ${playerName} on puzzle ${puzzleId}`);
+                console.warn(`Validation failed for player ${playerName || 'Anonymous'} on puzzle ${puzzleId}`);
             }
         }
 
         const newRecord = new Record({
             puzzleId,
-            playerName,
+            playerName: playerName || 'Anonymous',
             timeMs,
             history,
             verified: isVerified
         });
 
         const savedRecord = await newRecord.save();
-        console.log(`[RECORD] Saved new record: ${playerName} - ${timeMs}ms (Puzzle: ${puzzleId}) | Verified: ${isVerified ? '✅' : '❌'}`);
+        console.log(`[RECORD] Saved new record: ${savedRecord.playerName} - ${timeMs}ms (Puzzle: ${puzzleId}) | Verified: ${isVerified ? '✅' : '❌'}`);
         res.status(201).json({ ok: true, id: savedRecord._id });
     } catch (error) {
         console.error('Error saving record:', error);
+        res.status(500).json({ ok: false, error: 'Internal Server Error', message: error.message });
+    }
+});
+
+// PATCH /api/records/:id - Update existing record's player name
+app.patch('/api/records/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { playerName } = req.body;
+
+        if (!playerName) {
+            return res.status(400).json({ ok: false, error: 'playerName is required' });
+        }
+
+        const record = await Record.findById(id);
+        if (!record) {
+            return res.status(404).json({ ok: false, error: 'Record not found' });
+        }
+
+        record.playerName = playerName;
+        await record.save();
+
+        res.json({ ok: true, id: record._id });
+    } catch (error) {
+        console.error('Error updating record:', error);
         res.status(500).json({ ok: false, error: 'Internal Server Error', message: error.message });
     }
 });

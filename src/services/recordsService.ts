@@ -65,3 +65,31 @@ export const getTopRecords = async (puzzleId: string, limit: number = 10, offset
         return [];
     }
 };
+
+/**
+ * Update an existing record's player name.
+ */
+export const updateRecordName = async (
+    recordId: string,
+    playerName: string
+): Promise<{ ok: boolean; id?: string; error?: string }> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/records/${recordId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ playerName }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to update record name:', error);
+        return { ok: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+};

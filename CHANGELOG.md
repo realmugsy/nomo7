@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.026] - 2026-03-11
+### Added
+- Implemented **Auto-Save Game Records**: game results are now automatically saved to the backend database as "Anonymous" as soon as a player wins.
+- Added ability to update a previously auto-saved record with the player's name if they choose to submit one.
+
+## [0.1.025] - 2026-03-11
+### Fixed
+- Fixed IDE problems: added `@types/node` dependency to resolve `vite.config.ts` errors, and configured VS Code to ignore `@tailwind` warnings in CSS.
+
 ## [0.1.024] - 2026-02-22
 ### Added
 - Added **Survival 2 (Mystery Hints)** game mode where hints are randomly hidden with '?' marks.

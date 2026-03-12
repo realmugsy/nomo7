@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PuzzleData, RecordData, DifficultyLevel, Move } from '../types';
-import { getPuzzleId, saveRecord, getTopRecords } from '../services/recordsService';
+import { getPuzzleId, saveRecord, getTopRecords, updateRecordName } from '../services/recordsService';
 import { formatTime } from '../utils/time';
 
 interface LeaderboardProps {
@@ -18,6 +18,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, hi
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [offset, setOffset] = useState<number>(0);
     const [highlightRecordId, setHighlightRecordId] = useState<string | null>(null);
+    const lastSavedPuzzleRef = useRef<string | null>(null);
 
     const PAGE_SIZE = 10;
 
@@ -27,12 +28,35 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, hi
         getTopRecords(pid, PAGE_SIZE, offset).then(records => setTopRecords(records));
     }, [puzzle, difficulty, offset]);
 
-    // Reset state on new puzzle
+    // Reset state on new puzzle and trigger auto-save
     useEffect(() => {
         setIsRecordSubmitted(false);
         setHighlightRecordId(null);
         setOffset(0);
-    }, [puzzle, difficulty]);
+
+        const autoSave = async () => {
+            const pid = getPuzzleId(puzzle.size, difficulty, puzzle.seed);
+            
+            // Prevent duplicate saving for the exact same instance
+            if (lastSavedPuzzleRef.current === pid) return;
+            lastSavedPuzzleRef.current = pid;
+
+            const savedName = localStorage.getItem('nomo7-player-name') || '';
+            const result = await saveRecord(pid, savedName || 'Anonymous', timer * 1000, history);
+
+            if (result.ok && result.id) {
+                setHighlightRecordId(result.id);
+                // If they already have a name, consider it submitted so the form hids
+                if (savedName) setIsRecordSubmitted(true);
+                
+                // Refresh list right away
+                const records = await getTopRecords(pid, PAGE_SIZE, 0);
+                setTopRecords(records);
+            }
+        };
+
+        autoSave();
+    }, [puzzle, difficulty]); // Run when puzzle changes
 
     const handleRecordSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -43,27 +67,31 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, hi
 
         const pid = getPuzzleId(puzzle.size, difficulty, puzzle.seed);
 
-        // Debug logging
-        console.log('Submitting record:');
-        console.log('  Puzzle ID:', pid);
-        console.log('  Player Name:', playerName);
-        console.log('  Time:', timer * 1000, 'ms');
-        console.log('  History length:', history.length);
-        console.log('  First few moves:', history.slice(0, 3));
-
-        const result = await saveRecord(pid, playerName, timer * 1000, history);
-
-        if (result.ok && result.id) {
-            setIsRecordSubmitted(true);
-            setHighlightRecordId(result.id);
-            // Reset offset to 0 to see if we made it to top, or just refresh current view
-            setOffset(0);
-            // Refresh top records
-            const records = await getTopRecords(pid, PAGE_SIZE, 0);
-            setTopRecords(records);
+        if (highlightRecordId) {
+             // We already auto-aved, so we just update the name
+             const result = await updateRecordName(highlightRecordId, playerName);
+             if (result.ok) {
+                 setIsRecordSubmitted(true);
+                 setOffset(0);
+                 const records = await getTopRecords(pid, PAGE_SIZE, 0);
+                 setTopRecords(records);
+             } else {
+                 alert('Failed to update record: ' + (result.error || 'Unknown error'));
+             }
         } else {
-            alert('Failed to save record: ' + (result.error || 'Unknown error'));
+             // Fallback if auto-save failed somehow
+             const result = await saveRecord(pid, playerName, timer * 1000, history);
+             if (result.ok && result.id) {
+                 setIsRecordSubmitted(true);
+                 setHighlightRecordId(result.id);
+                 setOffset(0);
+                 const records = await getTopRecords(pid, PAGE_SIZE, 0);
+                 setTopRecords(records);
+             } else {
+                 alert('Failed to save record: ' + (result.error || 'Unknown error'));
+             }
         }
+
         setIsSubmitting(false);
     };
 
@@ -85,7 +113,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, hi
                             type="text"
                             value={playerName}
                             onChange={(e) => setPlayerName(e.target.value)}
-                            placeholder="Enter your name"
+                            placeholder="Enter your name to save score"
                             className="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-3 py-1 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400"
                             maxLength={24}
                             required
@@ -112,7 +140,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, hi
                             return (
                                 <div key={idx} className={`flex justify-between text-sm p-1 rounded ${isMe ? 'bg-amber-100 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-700 font-bold ring-1 ring-amber-400' : 'odd:bg-slate-100 dark:odd:bg-slate-800/50'}`}>
                                     <span className="truncate max-w-[160px] text-slate-700 dark:text-slate-300">
-                                        {rank}. {rec.playerName} {isMe && ' (You)'}
+                                        {rank}. {rec.playerName} {isMe && rec.playerName === 'Anonymous' ? '(You)' : isMe ? '(You)' : ''}
                                     </span>
                                     <span className="font-mono text-slate-500 dark:text-slate-400">{formatTime(Math.floor(rec.timeMs / 1000))}</span>
                                 </div>

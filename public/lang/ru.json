@@ -52,7 +52,7 @@
         "daily_title": "Вызов дня",
         "daily_reward": "Бонус дня! +{{coins}} 🪙",
         "daily_solved": "Уже пройдено",
-        "version": "Версия: 0.1.023"
+        "version": "Версия: 0.1.026"
     },
     "rules_detail": {
         "title": "Как разгадывать нонограммы",
