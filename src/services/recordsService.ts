@@ -19,6 +19,7 @@ export const saveRecord = async (
     puzzleId: string,
     playerName: string,
     timeMs: number,
+    gameMode: string,
     history?: Move[],
 ): Promise<{ ok: boolean; id?: string; error?: string }> => {
     try {
@@ -31,6 +32,7 @@ export const saveRecord = async (
                 puzzleId,
                 playerName,
                 timeMs,
+                gameMode,
                 history,
             }),
         });

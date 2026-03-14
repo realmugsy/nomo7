@@ -24,6 +24,7 @@ const recordSchema = new mongoose.Schema({
     playerName: { type: String, default: 'Anonymous' },
     timeMs: { type: Number, required: true },
     createdAt: { type: Date, default: Date.now },
+    gameMode: { type: String, default: 'classic' },
     history: { type: Array, select: false }, // Store history but don't return it by default
     verified: { type: Boolean, default: false }
 });
@@ -114,13 +115,14 @@ app.post('/api/records', async (req, res) => {
         const newRecord = new Record({
             puzzleId,
             playerName: playerName || 'Anonymous',
+            gameMode: req.body.gameMode || 'classic',
             timeMs,
             history,
             verified: isVerified
         });
 
         const savedRecord = await newRecord.save();
-        console.log(`[RECORD] Saved new record: ${savedRecord.playerName} - ${timeMs}ms (Puzzle: ${puzzleId}) | Verified: ${isVerified ? '✅' : '❌'}`);
+        console.log(`[RECORD] Saved new record: ${savedRecord.playerName} (${savedRecord.gameMode}) - ${timeMs}ms (Puzzle: ${puzzleId}) | Verified: ${isVerified ? '✅' : '❌'}`);
         res.status(201).json({ ok: true, id: savedRecord._id });
     } catch (error) {
         console.error('Error saving record:', error);

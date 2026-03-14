@@ -448,6 +448,7 @@ const App: React.FC = () => {
             timer={timer}
             history={history}
             difficulty={puzzle.difficulty}
+            gameMode={gameMode}
             onPlayAgain={() => startNewGame(undefined, true)}
           />
         )}

@@ -7,11 +7,12 @@ interface LeaderboardProps {
     puzzle: PuzzleData;
     timer: number;
     difficulty: DifficultyLevel;
+    gameMode: string;
     history: Move[];
     onPlayAgain: () => void;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, history, onPlayAgain }) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, gameMode, history, onPlayAgain }) => {
     const [playerName, setPlayerName] = useState<string>(() => localStorage.getItem('nomo7-player-name') || '');
     const [topRecords, setTopRecords] = useState<RecordData[]>([]);
     const [isRecordSubmitted, setIsRecordSubmitted] = useState<boolean>(false);
@@ -42,7 +43,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, hi
             lastSavedPuzzleRef.current = pid;
 
             const savedName = localStorage.getItem('nomo7-player-name') || '';
-            const result = await saveRecord(pid, savedName || 'Anonymous', timer * 1000, history);
+            const result = await saveRecord(pid, savedName || 'Anonymous', timer * 1000, gameMode, history);
 
             if (result.ok && result.id) {
                 setHighlightRecordId(result.id);
@@ -80,7 +81,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ puzzle, timer, difficulty, hi
              }
         } else {
              // Fallback if auto-save failed somehow
-             const result = await saveRecord(pid, playerName, timer * 1000, history);
+             const result = await saveRecord(pid, playerName, timer * 1000, gameMode, history);
              if (result.ok && result.id) {
                  setIsRecordSubmitted(true);
                  setHighlightRecordId(result.id);

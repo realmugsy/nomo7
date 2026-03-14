@@ -45,6 +45,7 @@ export interface RecordData {
   playerName: string;
   timeMs: number;
   createdAt?: string;
+  gameMode: string; // Add game mode
   history?: Move[];
 }
 

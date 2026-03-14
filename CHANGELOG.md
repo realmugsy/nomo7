@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.027] - 2026-03-12
+### Added
+- Added **Game Mode tracking** to leaderboard records: the system now saves whether the game was played in Classic, Survival, or Survival 2 mode.
+- Updated backend schema and frontend record submission logic to support the new `gameMode` field.
+
+
 ## [0.1.026] - 2026-03-11
 ### Added
 - Implemented **Auto-Save Game Records**: game results are now automatically saved to the backend database as "Anonymous" as soon as a player wins.
