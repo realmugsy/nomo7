@@ -94,6 +94,28 @@ app.get('/api/records/daily-archive', async (req, res) => {
     }
 });
 
+// GET /api/admin/records - Get all records for analytics dashboard (Protected)
+app.get('/api/admin/records', async (req, res) => {
+    try {
+        const adminToken = process.env.ADMIN_TOKEN || 'dashboard_secret_2026';
+        const providedToken = req.headers['authorization'];
+        
+        if (!providedToken || providedToken !== `Bearer ${adminToken}`) {
+            return res.status(403).json({ ok: false, error: 'Unauthorized or missing token' });
+        }
+
+        // Fetch all verified records without their history field
+        const records = await Record.find({ verified: true })
+            .select('-history')
+            .sort({ createdAt: -1 });
+
+        res.json({ ok: true, count: records.length, records });
+    } catch (error) {
+        console.error('Error fetching admin records:', error);
+        res.status(500).json({ ok: false, error: 'Internal Server Error', message: error.message });
+    }
+});
+
 // POST /api/records - Save a new record
 app.post('/api/records', async (req, res) => {
     try {

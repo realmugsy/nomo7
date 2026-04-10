@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.029] - 2026-04-10
+### Added
+- Created a locally-run Analytics Dashboard (`/dashboard`) using Vite, React, Recharts, and TailwindCSS.
+- Added a secure admin API endpoint (`/api/admin/records`) to `backend/server.js` (listening on port 3100 via Nginx proxy) to serve analytics data.
+
 ## [0.1.028] - 2026-04-09
 ### Fixed
 - Synchronized difficulty config values between frontend and backend to fix validation rejections for `VERY_EASY`, `EASY`, `HARD`, and `VERY_HARD` modes.
