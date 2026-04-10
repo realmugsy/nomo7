@@ -209,11 +209,15 @@ export const useGameLogic = () => {
         // Direct Access Prevention: If daily already solved, redirect to normal random game (Skip in DEV)
         const params = new URLSearchParams(window.location.search);
         if (params.get('mode') === 'daily' && !import.meta.env.DEV) {
-            const today = new Date().getUTCFullYear() + '-' + (new Date().getUTCMonth() + 1) + '-' + new Date().getUTCDate();
-            if (localStorage.getItem('lastDailySolved') === today) {
-                params.delete('mode');
-                window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
-                // Continue but it won't be in daily mode anymore
+            const dateParam = params.get('date');
+            // If they are explicitly specifying a date (e.g. from archive), let them play. Otherwise prevent replay of today.
+            if (!dateParam) {
+                const today = new Date().getUTCFullYear() + '-' + (new Date().getUTCMonth() + 1) + '-' + new Date().getUTCDate();
+                if (localStorage.getItem('lastDailySolved') === today) {
+                    params.delete('mode');
+                    window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+                    // Continue but it won't be in daily mode anymore
+                }
             }
         }
 
@@ -237,7 +241,9 @@ export const useGameLogic = () => {
             }
             // Priority 2: Daily mode (Deterministic)
             else if (isDaily) {
-                const dailyConfig = DAILY_PUZZLE_CONFIG.get(new Date());
+                const dateParam = params.get('date');
+                const targetDate = dateParam ? new Date(dateParam) : new Date();
+                const dailyConfig = DAILY_PUZZLE_CONFIG.get(targetDate);
                 finalSeed = dailyConfig.seed;
                 finalSize = dailyConfig.size;
                 finalDiff = dailyConfig.difficulty;

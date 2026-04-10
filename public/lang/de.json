@@ -51,7 +51,7 @@
         "daily_title": "Tägliche Herausforderung",
         "daily_reward": "Tägliche Belohnung! +{{coins}} 🪙",
         "daily_solved": "Bereits gelöst",
-        "version": "Version: 0.1.015"
+        "version": "Version: 0.1.028"
     },
     "rules_detail": {
         "title": "Nonogramme lösen",
@@ -101,5 +101,8 @@
         "email_label": "E-Mail:",
         "github_label": "GitHub:",
         "feedback_time": "Wir bemühen uns, alle Anfragen innerhalb von 24 Stunden zu beantworten."
+    },
+    "leaderboard_api": {
+        "play_record": "Spielen / Rekord schlagen"
     }
 }

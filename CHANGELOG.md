@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.028] - 2026-04-09
+### Fixed
+- Synchronized difficulty config values between frontend and backend to fix validation rejections for `VERY_EASY`, `EASY`, `HARD`, and `VERY_HARD` modes.
+
+### Added
+- Added a "Play / Beat Record" button to the daily leaderboard modal to allow replaying historical daily puzzles.
+- Added localization for the new leaderboard button across all supported languages.
+
 ## [0.1.027] - 2026-03-12
 ### Added
 - Added **Game Mode tracking** to leaderboard records: the system now saves whether the game was played in Classic, Survival, or Survival 2 mode.

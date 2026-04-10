@@ -74,7 +74,17 @@ const LeaderboardModal: React.FC<{ puzzleId: string, date: Date, onClose: () => 
                         </table>
                     )}
                 </div>
-                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
+                    <button
+                        onClick={() => {
+                            const dateStr = date.toISOString().split('T')[0];
+                            window.location.href = `/?mode=daily&date=${dateStr}`;
+                        }}
+                        className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold transition-all shadow-md"
+                    >
+                        {/* @ts-ignore */}
+                        {window.i18n?.getValue?.(window.i18n.translations, 'leaderboard_api.play_record') || 'Play / Beat Record'}
+                    </button>
                     <button
                         onClick={onClose}
                         className="px-6 py-2 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white rounded-lg font-bold transition-all"

@@ -12,11 +12,11 @@ const CellState = {
 };
 
 const DIFFICULTY_CONFIG = {
-    VERY_EASY: { minDensity: 0.60, maxDensity: 0.79 },
-    EASY: { minDensity: 0.55, maxDensity: 0.60 },
+    VERY_EASY: { minDensity: 0.63, maxDensity: 0.70 },
+    EASY: { minDensity: 0.57, maxDensity: 0.62 },
     MEDIUM: { minDensity: 0.53, maxDensity: 0.58 },
-    HARD: { minDensity: 0.4, maxDensity: 0.50 },
-    VERY_HARD: { minDensity: 0.10, maxDensity: 0.30 },
+    HARD: { minDensity: 0.48, maxDensity: 0.52 },
+    VERY_HARD: { minDensity: 0.40, maxDensity: 0.48 },
     DAILY: { minDensity: 0.52, maxDensity: 0.58 }
 };
 

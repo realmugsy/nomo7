@@ -51,7 +51,7 @@
         "daily_title": "Défi quotidien",
         "daily_reward": "Récompense quotidienne ! +{{coins}} 🪙",
         "daily_solved": "Déjà résolu",
-        "version": "Version: 0.1.015"
+        "version": "Version: 0.1.028"
     },
     "rules_detail": {
         "title": "Comment résoudre les Nonogrammes",
@@ -101,5 +101,8 @@
         "email_label": "E-mail :",
         "github_label": "GitHub :",
         "feedback_time": "Nous essayons de répondre à toutes les demandes dans les 24 heures."
+    },
+    "leaderboard_api": {
+        "play_record": "Jouer / Battre le record"
     }
 }
