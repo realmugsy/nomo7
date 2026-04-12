@@ -104,5 +104,17 @@
     },
     "leaderboard_api": {
         "play_record": "Spielen / Rekord schlagen"
+    },
+    "mobile": {
+        "portrait_required": "Hochformat erforderlich",
+        "portrait_desc": "Bitte drehen Sie Ihr Gerät in das Hochformat für das beste Spielerlebnis."
+    },
+    "menu": {
+        "title": "Einstellungen",
+        "size": "Spielfeldgröße",
+        "difficulty": "Schwierigkeit",
+        "language": "Sprache",
+        "theme": "Design",
+        "close": "Schließen"
     }
 }

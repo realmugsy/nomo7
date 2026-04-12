@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.1.038] - 2026-04-12
+### Fixed
+- Mobile Support: Fixed an issue where the hamburger menu was obstructed by desktop header elements.
+- Mobile Support: Improved mobile detection by updating the breakpoint to include 768px (width <= 768).
+- UI: Hidden redundant desktop navigation and language selectors on mobile to clear space for the burger menu and logo.
+- UI: Repositioned the burger button and centered the logo icon on mobile for a cleaner look.
+
+## [0.1.037] - 2026-04-12
+### Added
+- Mobile Support: Implemented a premium hamburger menu (top-left) for mobile devices.
+- Mobile Support: Integrated Size, Difficulty, Language, and Theme settings into the mobile menu with glassmorphism design.
+- UI: Added backdrop-blur and slide-up animations for the mobile settings overlay.
+
+## [0.1.036] - 2026-04-12
+### Added
+- Mobile Support: Enforced Portrait Mode for mobile devices with a localized orientation lockdown screen.
+- Mobile Support: Strictly limited puzzle sizes to 10x10 and below on mobile viewports (< 768px).
+- Mobile Support: Added translation keys for orientation alerts in all 6 supported languages.
+
 ## [0.1.035] - 2026-04-10
 ### Fixed
 - Backend: Fixed a bug where activity records were not being fetched correctly due to an incorrect filter (`verified: true`) which doesn't exist in the Activity schema. This was causing the Win Rate charts to appear empty.

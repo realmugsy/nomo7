@@ -180,11 +180,18 @@ export const useGameLogic = () => {
 
     // Check viewport for mobile helper
     useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        const checkMobile = () => setIsMobile(window.innerWidth <= 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
+
+    // Enforce mobile size limit
+    useEffect(() => {
+        if (isMobile && selectedSize > 10) {
+            setSelectedSize(10);
+        }
+    }, [isMobile, selectedSize, setSelectedSize]);
 
     // Global MouseUp to stop dragging
     useEffect(() => {

@@ -182,3 +182,108 @@
 .animate-cross-pop {
   animation: cross-pop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
+
+/* Mobile Menu Styles */
+.burger-menu-btn {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1000;
+  padding: 0.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(8px);
+  color: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.burger-menu-btn:hover {
+  background: rgba(15, 23, 42, 0.8);
+  transform: scale(1.05);
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: menu-fade-in 0.4s cubic-bezier(0, 0, 0.2, 1);
+}
+
+@keyframes menu-fade-in {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(20px); }
+}
+
+.mobile-menu-content {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transform: translateY(0);
+  animation: menu-slide-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes menu-slide-up {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.menu-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-setting-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.menu-setting-control {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  color: white;
+  font-size: 1rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.menu-setting-control:focus {
+  border-color: #6366f1;
+}
+
+.menu-close-btn {
+  margin-top: 1rem;
+  padding: 1rem;
+  width: 100%;
+  background: #6366f1;
+  color: white;
+  border-radius: 1rem;
+  font-weight: 700;
+  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s ease;
+}
+
+.menu-close-btn:active {
+  transform: scale(0.98);
+}

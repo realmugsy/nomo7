@@ -104,5 +104,17 @@
     },
     "leaderboard_api": {
         "play_record": "Jugar / Batir récord"
+    },
+    "mobile": {
+        "portrait_required": "Modo Retrato Requerido",
+        "portrait_desc": "Por favor, gire su dispositivo a la orientación vertical para una mejor experiencia."
+    },
+    "menu": {
+        "title": "Ajustes",
+        "size": "Tamaño del tablero",
+        "difficulty": "Dificultad",
+        "language": "Idioma",
+        "theme": "Tema",
+        "close": "Cerrar"
     }
 }

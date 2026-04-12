@@ -52,7 +52,7 @@
         "daily_title": "Daily Challenge",
         "daily_reward": "Daily Reward! +{{coins}} 🪙",
         "daily_solved": "Already Solved",
-        "version": "Version: 0.1.035"
+        "version": "Version: 0.1.038"
     },
     "rules_detail": {
         "title": "How to Solve Nonograms",
@@ -144,5 +144,17 @@
     },
     "leaderboard_api": {
         "play_record": "Play / Beat Record"
+    },
+    "mobile": {
+        "portrait_required": "Portrait Mode Required",
+        "portrait_desc": "Please rotate your device to portrait orientation for the best experience."
+    },
+    "menu": {
+        "title": "Settings",
+        "size": "Grid Size",
+        "difficulty": "Difficulty",
+        "language": "Language",
+        "theme": "Theme",
+        "close": "Close"
     }
 }

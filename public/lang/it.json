@@ -104,5 +104,17 @@
     },
     "leaderboard_api": {
         "play_record": "Gioca / Batti il record"
+    },
+    "mobile": {
+        "portrait_required": "Modalità Ritratto Richiesta",
+        "portrait_desc": "Si prega di ruotare il dispositivo in orientamento verticale per la migliore esperienza."
+    },
+    "menu": {
+        "title": "Impostazioni",
+        "size": "Dimensione campo",
+        "difficulty": "Difficoltà",
+        "language": "Lingua",
+        "theme": "Tema",
+        "close": "Chiudi"
     }
 }

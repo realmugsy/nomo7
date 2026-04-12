@@ -58,6 +58,8 @@ const App: React.FC = () => {
     history,
   } = useGameLogic();
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
 
   // Dynamic sizing for cells based on difficulty
   const getCellSizeClass = (size: number) => {
@@ -76,8 +78,8 @@ const App: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const availableGridSizes = isMobile && isPortrait
-    ? GRID_SIZES.filter(size => [5, 7, 8, 10].includes(size))
+  const availableGridSizes = isMobile
+    ? GRID_SIZES.filter(size => size <= 10)
     : GRID_SIZES;
 
   const colHints = puzzle ? Array(puzzle.size).fill(0).map((_, c) => puzzle.grid.map(row => row[c])) : [];
@@ -86,7 +88,7 @@ const App: React.FC = () => {
   const headerPortals = (
     <>
 
-      {document.getElementById('theme-toggle-root') && createPortal(
+      {!isMobile && document.getElementById('theme-toggle-root') && createPortal(
         <button
           onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
           className="theme-toggle-btn"
@@ -156,10 +158,10 @@ const App: React.FC = () => {
         {(gameState.status === 'playing' || gameState.status === 'won') && (
           <div className="flex flex-col items-center gap-4 w-full mb-4">
 
-            {/* Settings Row - Moved to Portal */}
-            {document.getElementById('game-selectors-root') && createPortal(
+            {/* Settings Row - Moved to Portal - Only on Desktop */}
+            {!isMobile && document.getElementById('game-selectors-root') && createPortal(
               <div className="flex gap-2">
-                {/* Game Mode Selector */}
+                {/* ... existing selectors ... */}
                 <select
                   value={gameMode}
                   onChange={(e) => setGameMode(e.target.value as any)}
@@ -169,7 +171,6 @@ const App: React.FC = () => {
                   <option value="survival2">Survival 2</option>
                 </select>
 
-                {/* Mystery Hints Count Selector (Only Survival 2) */}
                 {gameMode === 'survival2' && (
                   <select
                     value={mysteryHintsCount}
@@ -181,7 +182,6 @@ const App: React.FC = () => {
                   </select>
                 )}
 
-                {/* Size Selector */}
                 <select
                   value={new URLSearchParams(window.location.search).get('mode') === 'daily' ? DAILY_PUZZLE_CONFIG.get(new Date()).size : selectedSize}
                   onChange={(e) => {
@@ -199,7 +199,6 @@ const App: React.FC = () => {
                   ))}
                 </select>
 
-                {/* Difficulty Selector */}
                 <select
                   value={new URLSearchParams(window.location.search).get('mode') === 'daily' ? DAILY_PUZZLE_CONFIG.DIFFICULTY : selectedDifficulty}
                   onChange={(e) => {
@@ -455,7 +454,113 @@ const App: React.FC = () => {
 
       </div>
 
-      {headerPortals}
+      {/* Mobile Settings Burger Button */}
+      {isMobile && (
+        <button 
+          onClick={() => setIsMenuOpen(true)}
+          className="burger-menu-btn"
+          title="Open Settings"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      )}
+
+      {/* Mobile Premium Menu Overlay */}
+      {isMobile && isMenuOpen && (
+        <div className="mobile-menu-overlay">
+          {/* ... existing menu content ... */}
+          <div className="mobile-menu-content">
+            <h2 className="text-2xl font-bold text-white mb-2" data-i18n="menu.title">Settings</h2>
+            
+            <div className="menu-setting-group">
+              <label className="menu-setting-label" data-i18n="menu.size">Grid Size</label>
+              <select 
+                className="menu-setting-control"
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(Number(e.target.value))}
+              >
+                {availableGridSizes.map(size => (
+                  <option key={size} value={size}>{size}x{size}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="menu-setting-group">
+              <label className="menu-setting-label" data-i18n="menu.difficulty">Difficulty</label>
+              <select 
+                className="menu-setting-control"
+                value={selectedDifficulty}
+                onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyLevel)}
+              >
+                {(Object.keys(DIFFICULTY_CONFIG) as DifficultyLevel[]).map((key) => (
+                  <option key={key} value={key}>{DIFFICULTY_CONFIG[key].label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="menu-setting-group">
+              <label className="menu-setting-label" data-i18n="menu.language">Language</label>
+              <select 
+                className="menu-setting-control"
+                value={(window as any).i18n?.currentLang || 'en'}
+                onChange={(e) => (window as any).i18n?.loadLanguage(e.target.value)}
+              >
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="it">Italiano</option>
+              </select>
+            </div>
+
+            <button 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="menu-setting-control flex justify-between items-center"
+            >
+              <span data-i18n="menu.theme">Theme</span>
+              <span>{theme === 'dark' ? '🌙' : '☀️'}</span>
+            </button>
+
+            <button 
+              onClick={() => setIsMenuOpen(false)}
+              className="menu-close-btn"
+              data-i18n="menu.close"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Portrait Lock Overlay */}
+      {isMobile && !isPortrait && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-900 text-white p-8 text-center backdrop-blur-md">
+          <div className="w-24 h-24 mb-6 animate-bounce">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+              <line x1="12" y1="18" x2="12.01" y2="18" />
+              <path d="M17 2.1L12 2L7 2.1" />
+              <path d="M7 21.9L12 22L17 21.9" />
+              <circle cx="12" cy="12" r="3" className="animate-pulse" />
+              <path d="M15 12a3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold mb-4" data-i18n="mobile.portrait_required">Portrait Mode Required</h2>
+          <p className="text-slate-400 max-w-xs leading-relaxed" data-i18n="mobile.portrait_desc">
+            Please rotate your device to portrait orientation for the best experience.
+          </p>
+          <div className="mt-8 flex gap-2">
+            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></div>
+            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-ping [animation-delay:200ms]"></div>
+            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-ping [animation-delay:400ms]"></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

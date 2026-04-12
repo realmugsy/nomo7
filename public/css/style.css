@@ -687,6 +687,23 @@ html.dark .lang-select:hover {
     vertical-align: middle;
 }
 
+@media (max-width: 768px) {
+    header nav, 
+    .header-actions, 
+    #lang-switcher-root,
+    #game-selectors-root {
+        display: none !important;
+    }
+
+    .logo span {
+        display: none;
+    }
+    
+    header {
+        justify-content: center; /* Center the logo icon on mobile */
+    }
+}
+
 .dark .daily-badge {
     box-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
 }
