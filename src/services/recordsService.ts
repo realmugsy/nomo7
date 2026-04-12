@@ -95,3 +95,61 @@ export const updateRecordName = async (
         return { ok: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
 };
+
+/**
+ * Log a new game start activity.
+ */
+export const startActivity = async (
+    puzzleId: string,
+    gameMode: string,
+    difficulty: string
+): Promise<{ ok: boolean; id?: string }> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/activity/start`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                puzzleId,
+                gameMode,
+                difficulty,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Failed to log activity start:', error);
+        return { ok: false };
+    }
+};
+
+/**
+ * Update an existing activity with an event (win/fail).
+ */
+export const updateActivity = async (
+    activityId: string,
+    status: 'won' | 'failed'
+): Promise<boolean> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/activity/event`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                activityId,
+                status,
+            }),
+        });
+
+        return response.ok;
+    } catch (error) {
+        console.error('Failed to log activity event:', error);
+        return false;
+    }
+};

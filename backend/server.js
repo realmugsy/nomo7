@@ -34,6 +34,17 @@ recordSchema.index({ puzzleId: 1, timeMs: 1 });
 
 const Record = mongoose.model('Record', recordSchema);
 
+const activitySchema = new mongoose.Schema({
+    puzzleId: { type: String, required: true },
+    gameMode: { type: String, required: true },
+    difficulty: { type: String, required: true },
+    status: { type: String, default: 'started' }, // 'started', 'won', 'failed'
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+
+const Activity = mongoose.model('Activity', activitySchema);
+
 // GET /api/health - Check if server is alive
 app.get('/api/health', (req, res) => {
     res.json({ ok: true, message: 'Server is running', timestamp: new Date() });
@@ -104,15 +115,86 @@ app.get('/api/admin/records', async (req, res) => {
             return res.status(403).json({ ok: false, error: 'Unauthorized or missing token' });
         }
 
-        // Fetch all verified records without their history field
-        const records = await Record.find({ verified: true })
+        const { startDate, endDate } = req.query;
+        const query = { verified: true };
+
+        if (startDate || endDate) {
+            query.createdAt = {};
+            if (startDate) query.createdAt.$gte = new Date(startDate);
+            if (endDate) {
+                const end = new Date(endDate);
+                end.setHours(23, 59, 59, 999); // Include the whole end day
+                query.createdAt.$lte = end;
+            }
+        } else {
+            // Default to last 7 days if no dates provided
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            sevenDaysAgo.setHours(0, 0, 0, 0);
+            query.createdAt = { $gte: sevenDaysAgo };
+        }
+
+        // Fetch verified records within range without their history field
+        const records = await Record.find(query)
             .select('-history')
             .sort({ createdAt: -1 });
 
-        res.json({ ok: true, count: records.length, records });
+        // Fetch activity records within the same range (without the verified: true filter)
+        const activityQuery = { ...query };
+        delete activityQuery.verified;
+        const activities = await Activity.find(activityQuery)
+            .sort({ createdAt: -1 });
+
+        res.json({ ok: true, count: records.length, records, activities });
     } catch (error) {
         console.error('Error fetching admin records:', error);
         res.status(500).json({ ok: false, error: 'Internal Server Error', message: error.message });
+    }
+});
+
+// POST /api/activity/start - Log a new game start
+app.post('/api/activity/start', async (req, res) => {
+    try {
+        const { puzzleId, gameMode, difficulty } = req.body;
+        if (!puzzleId || !gameMode || !difficulty) {
+            return res.status(400).json({ ok: false, error: 'Missing required fields' });
+        }
+
+        const newActivity = new Activity({
+            puzzleId,
+            gameMode,
+            difficulty: difficulty.toUpperCase()
+        });
+
+        const saved = await newActivity.save();
+        res.status(201).json({ ok: true, id: saved._id });
+    } catch (error) {
+        console.error('Error logging activity start:', error);
+        res.status(500).json({ ok: false, error: 'Internal Server Error' });
+    }
+});
+
+// POST /api/activity/event - Log a game event (win/fail)
+app.post('/api/activity/event', async (req, res) => {
+    try {
+        const { activityId, status } = req.body;
+        if (!activityId || !status) {
+            return res.status(400).json({ ok: false, error: 'Missing required fields' });
+        }
+
+        const activity = await Activity.findById(activityId);
+        if (!activity) {
+            return res.status(404).json({ ok: false, error: 'Activity not found' });
+        }
+
+        activity.status = status;
+        activity.updatedAt = Date.now();
+        await activity.save();
+
+        res.json({ ok: true });
+    } catch (error) {
+        console.error('Error logging activity event:', error);
+        res.status(500).json({ ok: false, error: 'Internal Server Error' });
     }
 });
 

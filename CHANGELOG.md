@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.1.035] - 2026-04-10
+### Fixed
+- Backend: Fixed a bug where activity records were not being fetched correctly due to an incorrect filter (`verified: true`) which doesn't exist in the Activity schema. This was causing the Win Rate charts to appear empty.
+
+## [0.1.034] - 2026-04-10
+### Added
+- Analytics: Implemented advanced game activity tracking (Starts vs Completion).
+- Analytics: Added "Win Rate by Mode" and "Win Rate by Difficulty" charts to the dashboard.
+- Analytics: Logic to track "Abandonment" in Classic mode (not finished within 30 minutes).
+- Backend: New `Activity` collection and endpoints (`/api/activity/start`, `/api/activity/event`) for volume tracking.
+
+## [0.1.033] - 2026-04-10
+### Added
+- Analytics Dashboard: Added a "Today" button to the quick select options to quickly view game statistics for the current day.
+
+## [0.1.032] - 2026-04-10
+### Fixed
+- Analytics Dashboard: Fixed an issue where the charts would not automatically update when a "Quick Select" date range (7 or 30 days) was chosen. Data now refreshes immediately upon selection.
+
+## [0.1.031] - 2026-04-10
+### Added
+- Analytics Dashboard: Added date range filtering with manual "Start Date" and "End Date" inputs.
+- Analytics Dashboard: Added "Quick Select" buttons (7 Days, 30 Days) and a "Reset" button for faster filtering.
+- Analytics Dashboard: Charts now dynamically update based on the selected date range and reflect selected dates in their titles.
+
+## [0.1.030] - 2026-04-10
+### Changed
+- Backend API (`/api/admin/records`) now supports date filtering via `startDate` and `endDate` parameters.
+- Default view for analytics changed to the last 7 days.
+
 ## [0.1.029] - 2026-04-10
 ### Added
 - Created a locally-run Analytics Dashboard (`/dashboard`) using Vite, React, Recharts, and TailwindCSS.

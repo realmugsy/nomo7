@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { generatePuzzle } from '../services/geminiService';
+import { startActivity, updateActivity, getPuzzleId } from '../services/recordsService';
 import { CellState, GameState, PuzzleData, ToolType, DifficultyLevel, Move, GameMode } from '../types';
 import {
     DIFFICULTY_CONFIG,
@@ -108,6 +109,7 @@ export const useGameLogic = () => {
     const [winCorner, setWinCorner] = useState<number | null>(null); // 0:TL, 1:TR, 2:BL, 3:BR
     const [lastCorrectCell, setLastCorrectCell] = useState<{ r: number, c: number } | null>(null); // Track last correctly placed cell
     const [isErrorFlashing, setIsErrorFlashing] = useState<boolean>(false);
+    const [currentActivityId, setCurrentActivityId] = useState<string | null>(null);
 
     const [grindState, setGrindState] = useState(INITIAL_GRIND_STATE); // Grind system state
     // const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null); // Unused in logic but kept if needed
@@ -318,6 +320,16 @@ export const useGameLogic = () => {
                 setHiddenHintsMap(map);
             }
 
+            // Log activity start
+            const activity = await startActivity(
+                getPuzzleId(finalSize, finalDiff, finalSeed),
+                gameMode,
+                finalDiff
+            );
+            if (activity.ok && activity.id) {
+                setCurrentActivityId(activity.id);
+            }
+
         } catch (e) {
             setGameState({ status: 'error', errorMessage: 'Failed to generate puzzle.' });
         }
@@ -370,6 +382,11 @@ export const useGameLogic = () => {
             setGameState({ status: 'won' });
             setIsDebugVisible(false); // Ensure debug is off so we see the official win state colors
             setIsCheckHintsActive(true); // Reveal all green hints on win
+
+            // Log activity win
+            if (currentActivityId) {
+                updateActivity(currentActivityId, 'won');
+            }
         }
     }, [playerGrid, puzzle, gameState.status]);
 
@@ -396,6 +413,9 @@ export const useGameLogic = () => {
                             const newLives = prev - 1;
                             if (newLives <= 0) {
                                 setGameState({ status: 'game_over' });
+                                if (currentActivityId) {
+                                    updateActivity(currentActivityId, 'failed');
+                                }
                             }
                             return newLives;
                         });
