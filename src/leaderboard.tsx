@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { HelmetProvider, Helmet } from 'react-helmet-async';
 import DailyLeaderboardPage from './components/DailyLeaderboardPage';
 import './index.css';
 
@@ -11,8 +12,13 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
     <React.StrictMode>
-        <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
-            <DailyLeaderboardPage onBack={() => { window.location.href = '/'; }} />
-        </div>
+        <HelmetProvider>
+            <Helmet>
+                <link rel="canonical" href={`https://nonogramworld.com${window.location.pathname}`} />
+            </Helmet>
+            <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
+                <DailyLeaderboardPage onBack={() => { window.location.href = '/'; }} />
+            </div>
+        </HelmetProvider>
     </React.StrictMode>
 );

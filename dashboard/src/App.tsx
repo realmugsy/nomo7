@@ -3,7 +3,8 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, 
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
-import { Activity, Clock, LayoutGrid, AlertCircle, RefreshCw, Calendar, X } from 'lucide-react';
+import { Activity, Clock, LayoutGrid, AlertCircle, RefreshCw, X } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 interface ActivityData {
   _id: string;
@@ -189,6 +190,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 p-8">
+      <Helmet>
+        <link rel="canonical" href={`https://nonogramworld.com${window.location.pathname}`} />
+      </Helmet>
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}
@@ -343,7 +347,7 @@ export default function App() {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {gameModeData.map((entry, index) => (
+                      {gameModeData.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Helmet } from 'react-helmet-async';
 import { ToolType, DifficultyLevel } from './types';
 import {
   DIFFICULTY_CONFIG,
@@ -103,6 +104,9 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
+      <Helmet>
+        <link rel="canonical" href={`https://nonogramworld.com${window.location.pathname}`} />
+      </Helmet>
 
       {/* Debug Info - Only in DEV */}
       {import.meta.env.DEV && puzzle && (gameState.status === 'playing' || gameState.status === 'won') && isDebugVisible && (
