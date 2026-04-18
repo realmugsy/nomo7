@@ -504,8 +504,8 @@ footer a {
     }
 
     .game-wrapper {
-        padding-bottom: 56.25%;
-        /* 16:9 на мобильных */
+        height: auto;
+        min-height: 60vh;
     }
 
     .sidebar {
@@ -701,6 +701,17 @@ html.dark .lang-select:hover {
     
     header {
         justify-content: center; /* Center the logo icon on mobile */
+    }
+
+    .main-container {
+        padding: 0 !important;
+        margin-top: 10px;
+    }
+
+    .game-section {
+        padding: 8px 0 !important;
+        width: 100% !important;
+        border-radius: 8px !important;
     }
 }
 

@@ -152,7 +152,7 @@ const App: React.FC = () => {
       )}
 
 
-      <div className="w-full bg-white/70 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm shadow-none flex flex-col items-center">
+      <div className="w-full bg-white/70 dark:bg-slate-800/50 p-1 sm:p-4 rounded-xl border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm shadow-none flex flex-col items-center">
 
         {/* Top Controls Area - Only shown during gameplay */}
         {(gameState.status === 'playing' || gameState.status === 'won') && (
@@ -332,12 +332,13 @@ const App: React.FC = () => {
 
         {/* The Grid Container */}
         {puzzle && (gameState.status === 'playing' || gameState.status === 'won') && (
-          <div className="max-w-full overflow-auto p-1">
+          <div className="w-full max-w-full overflow-auto p-0 sm:p-1">
 
             <div
-              className={`grid gap-0 select-none bg-slate-300 dark:bg-slate-900 p-2 rounded-xl border border-slate-300 dark:border-slate-800 touch-none mx-auto transition-all duration-150 ${isErrorFlashing ? ERROR_FLASH_CLASSES : ''}`}
+              className={`grid gap-0 select-none bg-slate-300 dark:bg-slate-900 ${isMobile ? 'p-1' : 'p-2'} rounded-xl border border-slate-300 dark:border-slate-800 touch-none mx-auto transition-all duration-150 ${isErrorFlashing ? ERROR_FLASH_CLASSES : ''}`}
               style={{
-                gridTemplateColumns: `auto repeat(${puzzle.size}, min-content)`,
+                gridTemplateColumns: isMobile ? `auto repeat(${puzzle.size}, 1fr)` : `auto repeat(${puzzle.size}, min-content)`,
+                width: isMobile ? '100%' : 'max-content',
               }}
               onContextMenu={(e) => e.preventDefault()}
             >
@@ -395,7 +396,10 @@ const App: React.FC = () => {
                       }
 
                       return (
-                        <div key={`cell-${r}-${c}`} className={`aspect-square ${getCellSizeClass(puzzle.size)}`}>
+                        <div
+                          key={`cell-${r}-${c}`}
+                          className={`${isMobile ? 'w-full aspect-square' : `aspect-square ${getCellSizeClass(puzzle.size)}`}`}
+                        >
                           <GridCell
                             state={cellState}
                             isRevealed={gameState.status === 'won'}

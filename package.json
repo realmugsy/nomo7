@@ -1,7 +1,7 @@
 {
   "name": "nonogram-puzzle",
   "private": true,
-  "version": "0.1.038",
+  "version": "0.1.042",
   "type": "module",
   "scripts": {
     "dev": "vite",

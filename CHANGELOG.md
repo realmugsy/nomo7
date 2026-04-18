@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.1.042] - 2026-04-12
+### Fixed
+- Horizontal Scroll: Completely eliminated horizontal scrolling on mobile devices by switching to a fluid `1fr` grid layout.
+- Mobile Layout: The grid now perfectly fits the screen width (98%) without manual pixel calculations, ensuring compatibility with all phone models (iPhone SE, Pro Max, etc.).
+
+### Improved
+- Fluid Grid: Cells now automatically resize to fill available space while maintaining a perfect square aspect ratio using the `aspect-ratio` CSS property.
+- UX: Removed unnecessary side paddings on mobile to maximize space for the game board.
+
+## [0.1.041] - 2026-04-12
+### Fixed
+- Mobile Support: Added missing `<meta name="viewport">` tag to all HTML pages (index, map, rules, leaderboard, etc.). This fixed the "desktop scaling" issue where the site looked like a tiny desktop version on mobile devices.
+- Mobile Support: Resolved an issue where the hamburger menu and responsive styles were not triggering on physical phones.
+
+### Improved
+- Ultra-Wide Scaling: Implemented dynamic cell sizing using `vw` units. The logic puzzle grid now automatically expands to cover exactly **98%** of the screen width on any mobile device or tablet.
+- UI: Minimized container paddings (to 4px/1px) on small screens to avoid horizontal overflow while keeping the grid readable.
+
+## [0.1.040] - 2026-04-12
+### Added
+- Mobile Optimization: Implemented adaptive cell sizing. Cells now intelligently upscale on small screens (e.g., 28px for 10x10, 48px for 5x5) to maximize readability and touch precision.
+- UI: Refined mobile container paddings to preserve the "card" aesthetic while maximizing usable width.
+- UI: Centered the logo icon and adjusted the burger menu for better mobile spacing.
+
 ## [0.1.038] - 2026-04-12
 ### Fixed
 - Mobile Support: Fixed an issue where the hamburger menu was obstructed by desktop header elements.
