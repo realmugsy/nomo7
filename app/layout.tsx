@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Script from 'next/script';
+import packageJson from '../package.json';
 import './globals.css';
 
 const SITE_URL = 'https://nonogramworld.com';
+const APP_VERSION = packageJson.version;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -41,22 +44,22 @@ export default function RootLayout({
       </head>
       <body>
         <header>
-          <a href="/" className="logo">
+          <Link href="/" className="logo">
             <img src="/favicon.png" className="logo-icon" alt="Nonogram World Logo" />
             <span data-i18n="header.logo">Nonogram World</span>
-          </a>
+          </Link>
           <nav>
             <ul>
+              <li><Link href="/" data-nav="play" data-i18n="nav.play">Play</Link></li>
               <li>
-                <a href="/daily" data-nav="daily">
+                <Link href="/daily" data-nav="daily">
                   <span data-i18n="nav.daily">Daily Puzzle</span>
                   <span className="daily-badge">NEW</span>
-                </a>
+                </Link>
               </li>
-              <li><a href="/" data-nav="play" data-i18n="nav.play">Play</a></li>
-              <li><a href="/map" data-nav="map" data-i18n="nav.map">Map</a></li>
-              <li><a href="/rules" data-nav="rules" data-i18n="nav.rules">Rules</a></li>
-              <li><a href="/leaderboard" data-nav="leaderboard" data-i18n="nav.leaderboard">Leaderboard</a></li>
+              <li><Link href="/map" data-nav="map" data-i18n="nav.map">Map</Link></li>
+              <li><Link href="/rules" data-nav="rules" data-i18n="nav.rules">Rules</Link></li>
+              <li><Link href="/leaderboard" data-nav="leaderboard" data-i18n="nav.leaderboard">Leaderboard</Link></li>
             </ul>
           </nav>
           <div className="header-actions">
@@ -71,11 +74,16 @@ export default function RootLayout({
         <footer>
           <p data-i18n="footer.copy">&copy; 2026 Nonogram World. All rights reserved.</p>
           <p style={{ marginTop: 5 }}>
-            <a href="/privacy" data-i18n="footer.privacy">Privacy Policy</a> |{' '}
-            <a href="/terms" data-i18n="footer.terms">Terms of Use</a> |{' '}
-            <a href="/contacts" data-i18n="footer.contacts">Contacts</a>
+            <Link href="/privacy" data-i18n="footer.privacy">Privacy Policy</Link> |{' '}
+            <Link href="/terms" data-i18n="footer.terms">Terms of Use</Link> |{' '}
+            <Link href="/contacts" data-i18n="footer.contacts">Contacts</Link>
           </p>
-          <p className="version-display" style={{ marginTop: 10, fontSize: '0.8rem', opacity: 0.6, fontFamily: 'monospace' }} data-i18n="footer.version" />
+          <p
+            className="version-display"
+            style={{ marginTop: 10, fontSize: '0.8rem', opacity: 0.6, fontFamily: 'monospace' }}
+          >
+            v{APP_VERSION}
+          </p>
         </footer>
 
         <Script id="clarity" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: ClarityScript }} />

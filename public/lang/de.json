@@ -25,6 +25,14 @@
         "like_game": "Gefällt dir das Spiel?",
         "share": "Mit Freunden teilen"
     },
+    "home_intro": {
+        "title": "Willkommen bei Nonogram World",
+        "p1": "Nonogram World ist ein kostenloses Online-Puzzlespiel, bei dem Logik dein einziges Werkzeug ist. Jeden Tag gibt es ein neues Nonogramm — ein bildbasiertes Gitterrätsel, das durch reine Deduktion gelöst wird, ganz ohne Raten.",
+        "p2": "Wähle deine Herausforderung: Spiele das tägliche Puzzle, das alle 24 Stunden für Spieler weltweit zurückgesetzt wird, oder starte jederzeit ein neues Zufallsspiel. Die Rätsel reichen von kompakten 10×10-Gittern bis zu anspruchsvollen 20×20-Herausforderungen.",
+        "p3_prefix": "Neu bei Nonogrammen? Lies unseren",
+        "rules_link": "Regel- und Strategieleitfaden",
+        "p3_suffix": "um zu lernen, wie du Hinweise liest, die Überlappungsmethode anwendest und jedes Rätsel Schritt für Schritt löst."
+    },
     "stats": {
         "time": "Zeit",
         "lives": "Leben",

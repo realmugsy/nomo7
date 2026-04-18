@@ -25,6 +25,14 @@
         "like_game": "¿Te gusta el juego?",
         "share": "Compartir con amigos"
     },
+    "home_intro": {
+        "title": "Bienvenido a Nonogram World",
+        "p1": "Nonogram World es un juego de puzles online gratuito donde la lógica es tu única herramienta. Cada día trae un nuevo nonograma: un puzle de imagen basado en una cuadrícula que se resuelve con pura deducción, sin adivinar.",
+        "p2": "Elige tu desafío: juega el puzle diario que se reinicia cada 24 horas para jugadores de todo el mundo, o empieza una nueva partida aleatoria cuando quieras. Los puzles van desde cuadrículas compactas de 10×10 hasta retos exigentes de 20×20.",
+        "p3_prefix": "¿Eres nuevo en los nonogramas? Consulta nuestra",
+        "rules_link": "guía de reglas y estrategia",
+        "p3_suffix": "para aprender a leer pistas, aplicar el método de superposición y resolver cualquier puzle paso a paso."
+    },
     "stats": {
         "time": "Tiempo",
         "lives": "Vidas",

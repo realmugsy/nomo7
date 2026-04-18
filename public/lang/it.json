@@ -25,6 +25,14 @@
         "like_game": "Ti piace il gioco?",
         "share": "Condividi con gli amici"
     },
+    "home_intro": {
+        "title": "Benvenuto in Nonogram World",
+        "p1": "Nonogram World è un gioco di puzzle online gratuito in cui la logica è il tuo unico strumento. Ogni giorno arriva un nuovo nonogramma: un puzzle illustrato su griglia risolto con pura deduzione, senza tirare a indovinare.",
+        "p2": "Scegli la tua sfida: gioca al puzzle giornaliero che si azzera ogni 24 ore per i giocatori di tutto il mondo, oppure avvia una nuova partita casuale in qualsiasi momento. I puzzle vanno da griglie compatte 10×10 a impegnative sfide 20×20.",
+        "p3_prefix": "Non conosci ancora i nonogrammi? Consulta la nostra",
+        "rules_link": "guida alle regole e strategie",
+        "p3_suffix": "per imparare a leggere gli indizi, applicare il metodo della sovrapposizione e risolvere ogni puzzle passo dopo passo."
+    },
     "stats": {
         "time": "Tempo",
         "lives": "Vite",

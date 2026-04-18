@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function RulesContent({ showBack = true }: { showBack?: boolean }) {
   return (
     <>
@@ -58,7 +60,7 @@ export default function RulesContent({ showBack = true }: { showBack?: boolean }
 
       {showBack && (
         <div style={{ marginTop: 40, textAlign: 'center' }}>
-          <a href="/" className="btn" data-i18n="rules_detail.back">Return to the game</a>
+          <Link href="/" className="btn" data-i18n="rules_detail.back">Return to the game</Link>
         </div>
       )}
     </>

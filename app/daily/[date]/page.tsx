@@ -40,8 +40,8 @@ export function generateMetadata({ params }: DailyPageProps): Metadata {
   const formattedDate = formatDailyDate(dailyDate);
 
   return {
-    title: `Nonogram World - Daily Puzzle ${formattedDate}`,
-    description: `Play the ${config.size}x${config.size} Nonogram World daily puzzle for ${formattedDate}.`,
+    title: `Daily Nonogram — ${formattedDate} — Nonogram World`,
+    description: `Play the daily nonogram puzzle for ${formattedDate}. A ${config.size}×${config.size} grid logic puzzle. Free to play, no registration required.`,
     alternates: {
       canonical: `https://nonogramworld.com/daily/${params.date}`,
     },

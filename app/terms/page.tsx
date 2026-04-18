@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Terms of Use - Nonogram World',
@@ -40,7 +41,7 @@ export default function TermsPage() {
         </p>
 
         <div style={{ marginTop: 40, textAlign: 'center' }}>
-          <a href="/" className="btn" data-i18n="nav.play">Back to Game</a>
+          <Link href="/" className="btn" data-i18n="nav.play">Back to Game</Link>
         </div>
       </section>
     </main>

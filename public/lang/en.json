@@ -26,6 +26,14 @@
         "like_game": "Enjoying the game?",
         "share": "Share with friends"
     },
+    "home_intro": {
+        "title": "Welcome to Nonogram World",
+        "p1": "Nonogram World is a free online puzzle game where logic is your only tool. Each day brings a new nonogram — a grid-based picture puzzle solved through pure deduction, no guessing required.",
+        "p2": "Choose your challenge: play the Daily Puzzle that resets every 24 hours for players worldwide, or start a new random game anytime. Puzzles range from compact 10×10 grids to demanding 20×20 challenges.",
+        "p3_prefix": "New to nonograms? Check out our",
+        "rules_link": "Rules & Strategy guide",
+        "p3_suffix": "to learn how to read clues, apply the overlap method, and solve any puzzle step by step."
+    },
     "stats": {
         "time": "Time",
         "lives": "Lives",
