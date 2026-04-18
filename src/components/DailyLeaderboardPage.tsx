@@ -78,7 +78,7 @@ const LeaderboardModal: React.FC<{ puzzleId: string, date: Date, onClose: () => 
                     <button
                         onClick={() => {
                             const dateStr = date.toISOString().split('T')[0];
-                            window.location.href = `/?mode=daily&date=${dateStr}`;
+                            window.location.href = `/daily/${dateStr}`;
                         }}
                         className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold transition-all shadow-md"
                     >

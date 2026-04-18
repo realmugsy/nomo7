@@ -1,6 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Helmet } from 'react-helmet-async';
 import { ToolType, DifficultyLevel } from './types';
 import {
   DIFFICULTY_CONFIG,
@@ -16,7 +17,11 @@ import Leaderboard from './components/Leaderboard';
 import { useGameLogic } from './hooks/useGameLogic';
 import { formatTime } from './utils/time';
 
-const App: React.FC = () => {
+interface AppProps {
+  dailyDate?: string;
+}
+
+const App: React.FC<AppProps> = ({ dailyDate }) => {
   const {
     puzzle,
     playerGrid,
@@ -57,9 +62,15 @@ const App: React.FC = () => {
     isRowComplete,
     isColComplete,
     history,
-  } = useGameLogic();
+  } = useGameLogic({ dailyDate });
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+  const canUseDom = hasMounted && typeof document !== 'undefined';
+
+  React.useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
 
   // Dynamic sizing for cells based on difficulty
@@ -72,7 +83,10 @@ const App: React.FC = () => {
   };
 
   // Detect portrait mode
-  const [isPortrait, setIsPortrait] = useState<boolean>(window.innerHeight > window.innerWidth);
+  const [isPortrait, setIsPortrait] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    return window.innerHeight > window.innerWidth;
+  });
   React.useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth);
     window.addEventListener('resize', handleResize);
@@ -82,6 +96,7 @@ const App: React.FC = () => {
   const availableGridSizes = isMobile
     ? GRID_SIZES.filter(size => size <= 10)
     : GRID_SIZES;
+  const isDailyMode = Boolean(dailyDate) || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'daily');
 
   const colHints = puzzle ? Array(puzzle.size).fill(0).map((_, c) => puzzle.grid.map(row => row[c])) : [];
   const rowHints = puzzle ? puzzle.grid : [];
@@ -89,7 +104,7 @@ const App: React.FC = () => {
   const headerPortals = (
     <>
 
-      {!isMobile && document.getElementById('theme-toggle-root') && createPortal(
+      {!isMobile && canUseDom && document.getElementById('theme-toggle-root') && createPortal(
         <button
           onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
           className="theme-toggle-btn"
@@ -104,12 +119,10 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-2 gap-4 relative overflow-hidden bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
-      <Helmet>
-        <link rel="canonical" href={`https://nonogramworld.com${window.location.pathname}`} />
-      </Helmet>
+      {headerPortals}
 
       {/* Debug Info - Only in DEV */}
-      {import.meta.env.DEV && puzzle && (gameState.status === 'playing' || gameState.status === 'won') && isDebugVisible && (
+      {process.env.NODE_ENV === 'development' && puzzle && (gameState.status === 'playing' || gameState.status === 'won') && isDebugVisible && (
         <div className="absolute top-3 right-3 text-[10px] text-slate-500 font-mono opacity-100 transition-opacity z-50 flex flex-col items-end gap-1 bg-slate-100/80 dark:bg-slate-900/80 p-2 rounded border border-slate-300 dark:border-slate-800 backdrop-blur-sm">
           <div className="text-right">
             Density: <span className="font-bold text-indigo-400">{stats.percent}%</span><br />
@@ -163,7 +176,7 @@ const App: React.FC = () => {
           <div className="flex flex-col items-center gap-4 w-full mb-4">
 
             {/* Settings Row - Moved to Portal - Only on Desktop */}
-            {!isMobile && document.getElementById('game-selectors-root') && createPortal(
+            {!isMobile && canUseDom && document.getElementById('game-selectors-root') && createPortal(
               <div className="flex gap-2">
                 {/* ... existing selectors ... */}
                 <select
@@ -187,7 +200,7 @@ const App: React.FC = () => {
                 )}
 
                 <select
-                  value={new URLSearchParams(window.location.search).get('mode') === 'daily' ? DAILY_PUZZLE_CONFIG.get(new Date()).size : selectedSize}
+                  value={isDailyMode ? DAILY_PUZZLE_CONFIG.get(dailyDate ? new Date(dailyDate) : new Date()).size : selectedSize}
                   onChange={(e) => {
                     const val = Number(e.target.value);
                     const url = new URL(window.location.href);
@@ -204,7 +217,7 @@ const App: React.FC = () => {
                 </select>
 
                 <select
-                  value={new URLSearchParams(window.location.search).get('mode') === 'daily' ? DAILY_PUZZLE_CONFIG.DIFFICULTY : selectedDifficulty}
+                  value={isDailyMode ? DAILY_PUZZLE_CONFIG.DIFFICULTY : selectedDifficulty}
                   onChange={(e) => {
                     const val = e.target.value as DifficultyLevel;
                     const url = new URL(window.location.href);
@@ -226,7 +239,7 @@ const App: React.FC = () => {
 
             <div className="flex gap-4">
               {/* Daily Title if applicable */}
-              {new URLSearchParams(window.location.search).get('mode') === 'daily' && (
+              {isDailyMode && (
                 <div className="bg-amber-100 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700/50 px-4 py-2 rounded-lg text-amber-800 dark:text-amber-200 font-bold flex items-center gap-2 mb-2">
                   <span>📅</span>
                   <span>
@@ -252,9 +265,9 @@ const App: React.FC = () => {
                 >
                   <span>+</span> New Game
                 </button>
-                {import.meta.env.DEV && (
+                {process.env.NODE_ENV === 'development' && (
                   <div className="flex gap-2">
-                    {new URLSearchParams(window.location.search).get('mode') === 'daily' && (
+                    {isDailyMode && (
                       <button
                         onClick={resetDaily}
                         className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-full font-bold shadow-lg shadow-rose-900/50 transition-all hover:scale-105 text-sm flex items-center gap-2"

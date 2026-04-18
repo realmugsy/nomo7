@@ -92,7 +92,11 @@ const getChallengeFromUrl = () => {
     return c ? decodeChallenge(c) : null;
 };
 
-export const useGameLogic = () => {
+interface UseGameLogicOptions {
+    dailyDate?: string;
+}
+
+export const useGameLogic = (options: UseGameLogicOptions = {}) => {
     // Challenge Loading (Synchronous on mount)
     const challengeData = useRef(getChallengeFromUrl());
 
@@ -116,6 +120,7 @@ export const useGameLogic = () => {
     const [revealingCells, setRevealingCells] = useState<Set<string>>(new Set());
     const [coins, setCoins] = useState(INITIAL_COINS); // Track available coins
     const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+        if (typeof window === 'undefined') return 'dark';
         return (localStorage.getItem('nomo7-theme') as 'dark' | 'light') || 'dark';
     }); // Theme state
 
@@ -130,12 +135,14 @@ export const useGameLogic = () => {
     // Settings
     const [selectedSize, setSelectedSize] = useState<number>(() => {
         if (challengeData.current) return challengeData.current.size;
+        if (typeof window === 'undefined') return 10;
         const params = new URLSearchParams(window.location.search);
         const size = parseInt(params.get('size') || '', 10);
         return !isNaN(size) ? size : 10;
     });
     const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>(() => {
         if (challengeData.current) return challengeData.current.difficulty;
+        if (typeof window === 'undefined') return 'MEDIUM';
         const params = new URLSearchParams(window.location.search);
         const diff = params.get('difficulty') as DifficultyLevel;
         return (diff && DIFFICULTY_LEVELS.includes(diff)) ? diff : 'MEDIUM';
@@ -175,7 +182,9 @@ export const useGameLogic = () => {
         } else {
             document.documentElement.classList.remove('dark');
         }
-        localStorage.setItem('nomo7-theme', theme);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('nomo7-theme', theme);
+        }
     }, [theme]);
 
     // Check viewport for mobile helper
@@ -216,11 +225,12 @@ export const useGameLogic = () => {
         setHistory([]); // Reset history
 
         // Direct Access Prevention: If daily already solved, redirect to normal random game (Skip in DEV)
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('mode') === 'daily' && !import.meta.env.DEV) {
+        const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+        const isDailyRoute = Boolean(options.dailyDate);
+        if ((params.get('mode') === 'daily' || isDailyRoute) && process.env.NODE_ENV !== 'development') {
             const dateParam = params.get('date');
             // If they are explicitly specifying a date (e.g. from archive), let them play. Otherwise prevent replay of today.
-            if (!dateParam) {
+            if (!dateParam && !options.dailyDate) {
                 const today = new Date().getUTCFullYear() + '-' + (new Date().getUTCMonth() + 1) + '-' + new Date().getUTCDate();
                 if (localStorage.getItem('lastDailySolved') === today) {
                     params.delete('mode');
@@ -235,8 +245,8 @@ export const useGameLogic = () => {
             let finalSize: number;
             let finalDiff: DifficultyLevel;
 
-            const params = new URLSearchParams(window.location.search);
-            const isDaily = params.get('mode') === 'daily';
+            const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+            const isDaily = params.get('mode') === 'daily' || isDailyRoute;
 
             // Priority 1: Direct seed input (dev/debug)
             if (seedVal && seedVal.trim().length > 0) {
@@ -250,7 +260,7 @@ export const useGameLogic = () => {
             }
             // Priority 2: Daily mode (Deterministic)
             else if (isDaily) {
-                const dateParam = params.get('date');
+                const dateParam = options.dailyDate || params.get('date');
                 const targetDate = dateParam ? new Date(dateParam) : new Date();
                 const dailyConfig = DAILY_PUZZLE_CONFIG.get(targetDate);
                 finalSeed = dailyConfig.seed;
@@ -340,7 +350,7 @@ export const useGameLogic = () => {
         } catch (e) {
             setGameState({ status: 'error', errorMessage: 'Failed to generate puzzle.' });
         }
-    }, [selectedSize, selectedDifficulty, gameMode, mysteryHintsCount]);
+    }, [selectedSize, selectedDifficulty, gameMode, mysteryHintsCount, options.dailyDate]);
 
     // Update unlocked markers and award daily coins when a game is won
     useEffect(() => {
@@ -349,7 +359,7 @@ export const useGameLogic = () => {
             setGrindState(prev => completeLevel(prev));
 
             // Handle daily奖励
-            const isDaily = new URLSearchParams(window.location.search).get('mode') === 'daily';
+            const isDaily = Boolean(options.dailyDate) || new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') === 'daily';
             if (isDaily) {
                 const today = new Date().getUTCFullYear() + '-' + (new Date().getUTCMonth() + 1) + '-' + new Date().getUTCDate();
                 const lastDaily = localStorage.getItem('lastDailySolved');
