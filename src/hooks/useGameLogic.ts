@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { generatePuzzle } from '../services/geminiService';
+import { generatePuzzle } from '../services/puzzleGeneratorService';
 import { startActivity, updateActivity, getPuzzleId } from '../services/recordsService';
 import { CellState, GameState, PuzzleData, ToolType, DifficultyLevel, Move, GameMode } from '../types';
 import {
