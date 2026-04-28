@@ -78,6 +78,31 @@
         },
         "back": "Zurück zum Spiel"
     },
+    "rules_faq": {
+        "title": "Nonogramm-FAQ",
+        "items": {
+            "q1": {
+                "question": "Was sind die Regeln von Nonogrammen?",
+                "answer": "Nonogramme sind Bild-Logikrätsel. Die Zahlen neben jeder Zeile und Spalte zeigen, wie viele aufeinanderfolgende Felder gefüllt werden müssen. Zwischen getrennten Zahlengruppen muss immer mindestens ein leeres Feld liegen."
+            },
+            "q2": {
+                "question": "Wie löse ich ein Nonogramm?",
+                "answer": "Beginne mit den größten Hinweisen und nutze Überlappungen. Wenn ein Block an mehreren Positionen passen kann, sind die Felder, die in jeder möglichen Position vorkommen, garantiert gefüllt."
+            },
+            "q3": {
+                "question": "Muss man bei Nonogrammen raten?",
+                "answer": "Gute Nonogramme erfordern kein Raten. Jeder Zug sollte aus den Zeilen- und Spaltenhinweisen durch Deduktion, Ausschluss und bestätigte leere Felder folgen."
+            },
+            "q4": {
+                "question": "Einfache vs. schwierige Nonogramme?",
+                "answer": "Einfache Nonogramme nutzen kleinere Gitter und offensichtlichere Hinweise. Schwierige Nonogramme haben größere Gitter, mehr mögliche Platzierungen und erfordern längere logische Schlussketten."
+            },
+            "q5": {
+                "question": "Wie lange dauert ein Nonogramm?",
+                "answer": "Die Lösungszeit hängt von Größe und Schwierigkeit ab. Ein 10×10-Rätsel kann nur wenige Minuten dauern, während ein 20×20-Rätsel 20–40 Minuten oder länger dauern kann."
+            }
+        }
+    },
     "privacy_detail": {
         "title": "Datenschutzrichtlinie",
         "intro": "Wir respektieren Ihre Privatsphäre und verpflichten uns zum Schutz Ihrer personenbezogenen Daten.",

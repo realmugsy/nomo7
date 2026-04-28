@@ -107,6 +107,31 @@
         },
         "back": "Return to the game"
     },
+    "rules_faq": {
+        "title": "Nonogram FAQ",
+        "items": {
+            "q1": {
+                "question": "What are the rules of nonograms?",
+                "answer": "Nonograms are picture logic puzzles. The numbers beside each row and column tell you how many consecutive cells must be filled. Separate number groups always need at least one empty cell between them."
+            },
+            "q2": {
+                "question": "How do I solve a nonogram?",
+                "answer": "Start with the largest clues and use overlap. If a block can fit in several positions, the cells shared by every possible position are guaranteed to be filled."
+            },
+            "q3": {
+                "question": "Do nonograms require guessing?",
+                "answer": "Good nonograms do not require guessing. Each move should follow from the row and column clues, using deduction, elimination, and confirmed empty cells."
+            },
+            "q4": {
+                "question": "Easy vs Hard nonograms?",
+                "answer": "Easy nonograms use smaller grids and more obvious clues. Hard nonograms have larger grids, more possible placements, and require longer chains of logical deductions."
+            },
+            "q5": {
+                "question": "How long does it take?",
+                "answer": "Solve time depends on size and difficulty. A 10×10 puzzle can take a few minutes, while a 20×20 puzzle can take 20–40 minutes or more."
+            }
+        }
+    },
     "privacy_detail": {
         "title": "Privacy Policy",
         "intro": "We respect your privacy and are committed to protecting your personal data. This policy explains how we process information.",

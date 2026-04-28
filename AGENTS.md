@@ -6,11 +6,11 @@ Nomo7 (formerly Nonogram World) is a procedurally generated nonogram puzzle game
 
 ## Build Commands
 
-### Frontend (Root)
+### Frontend (Root, Next.js App Router)
 ```bash
-npm run dev           # Start Vite dev server on port 5173
-npm run build         # Type-check and build production bundle
-npm run preview       # Preview production build
+npm run dev -- -p 3000 # Start Next.js dev server on port 3000
+npm run build          # Build production bundle
+npm run start          # Start production Next.js server
 ```
 
 ### Backend (backend/)
@@ -109,8 +109,9 @@ import { RecordData, Move } from '../types';
 1. Define types in `src/types.ts` if needed
 2. Create component in `src/components/` or service in `src/services/`
 3. Update `App.tsx` to integrate new feature
-4. Test in dev mode with hot reload
+4. Increment the root app version using the project version rule below
 5. Build for production: `npm run build`
+6. After the production build succeeds, start dev mode: `npm run dev -- -p 3000`
 
 ### Backend Changes
 1. Update backend code in `backend/` directory
@@ -120,10 +121,23 @@ import { RecordData, Move } from '../types';
 5. Restart backend server with `npm run dev`
 
 ### Deployment
-- Frontend builds to `dist/` directory
-- Deploy `dist/` to static hosting (GitHub Pages, Vercel, Netlify)
+- Frontend builds to `.next/` with `output: standalone`
+- Deploy `.next/standalone/`, `.next/static/`, and `public/`
 - Backend runs as Node.js process, needs MongoDB instance
 - Use existing deployment scripts: `deploy.bat`, `deploy-ec2.sh`
+
+## Project Change Rules
+
+### Versioning
+- Any project file change must increment the root app version in `package.json` and `package-lock.json`.
+- Version format is `v0.1.04x`; increment `x` by 1 for each change.
+- Example: `0.1.043` -> `0.1.044`.
+- Keep the leading zero in the patch segment.
+
+### Verification Workflow
+- After making changes, run the production build with `npm run build`.
+- Only after the production build succeeds, start the local dev server with `npm run dev -- -p 3000`.
+- If port 3000 is already occupied by an old dev process, stop that process before starting a fresh dev server.
 
 ## Code Review Checklist
 - [ ] TypeScript types are correct and used consistently

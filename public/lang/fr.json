@@ -78,6 +78,31 @@
         },
         "back": "Retour au jeu"
     },
+    "rules_faq": {
+        "title": "FAQ des nonogrammes",
+        "items": {
+            "q1": {
+                "question": "Quelles sont les règles des nonogrammes ?",
+                "answer": "Les nonogrammes sont des puzzles logiques d'images. Les nombres à côté de chaque ligne et colonne indiquent combien de cases consécutives doivent être remplies. Des groupes de nombres séparés doivent toujours être séparés par au moins une case vide."
+            },
+            "q2": {
+                "question": "Comment résoudre un nonogramme ?",
+                "answer": "Commencez par les plus grands indices et utilisez le chevauchement. Si un bloc peut tenir à plusieurs positions, les cases communes à toutes les positions possibles sont garanties remplies."
+            },
+            "q3": {
+                "question": "Faut-il deviner dans les nonogrammes ?",
+                "answer": "Les bons nonogrammes ne demandent pas de deviner. Chaque coup doit découler des indices de lignes et de colonnes grâce à la déduction, l'élimination et les cases vides confirmées."
+            },
+            "q4": {
+                "question": "Nonogrammes faciles ou difficiles ?",
+                "answer": "Les nonogrammes faciles utilisent de petites grilles et des indices plus évidents. Les difficiles ont de plus grandes grilles, davantage de placements possibles et exigent des chaînes de raisonnement plus longues."
+            },
+            "q5": {
+                "question": "Combien de temps faut-il ?",
+                "answer": "Le temps de résolution dépend de la taille et de la difficulté. Un puzzle 10×10 peut prendre quelques minutes, tandis qu'un 20×20 peut demander 20 à 40 minutes ou plus."
+            }
+        }
+    },
     "privacy_detail": {
         "title": "Politique de Confidentialité",
         "intro": "Nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles.",

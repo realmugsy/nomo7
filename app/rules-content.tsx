@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { RulesFaq } from './rules-faq';
 
 export default function RulesContent({ showBack = true }: { showBack?: boolean }) {
   return (
@@ -57,6 +58,8 @@ export default function RulesContent({ showBack = true }: { showBack?: boolean }
           </li>
         ))}
       </ul>
+
+      {showBack && <RulesFaq />}
 
       {showBack && (
         <div style={{ marginTop: 40, textAlign: 'center' }}>

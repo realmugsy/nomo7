@@ -78,6 +78,31 @@
         },
         "back": "Volver al juego"
     },
+    "rules_faq": {
+        "title": "Preguntas frecuentes sobre nonogramas",
+        "items": {
+            "q1": {
+                "question": "¿Cuáles son las reglas de los nonogramas?",
+                "answer": "Los nonogramas son puzles lógicos de imágenes. Los números junto a cada fila y columna indican cuántas celdas consecutivas deben rellenarse. Entre grupos de números separados siempre debe haber al menos una celda vacía."
+            },
+            "q2": {
+                "question": "¿Cómo resuelvo un nonograma?",
+                "answer": "Empieza por las pistas más grandes y usa la superposición. Si un bloque puede encajar en varias posiciones, las celdas compartidas por todas las posiciones posibles están garantizadas."
+            },
+            "q3": {
+                "question": "¿Los nonogramas requieren adivinar?",
+                "answer": "Los buenos nonogramas no requieren adivinar. Cada movimiento debe derivarse de las pistas de filas y columnas usando deducción, eliminación y celdas vacías confirmadas."
+            },
+            "q4": {
+                "question": "¿Nonogramas fáciles vs. difíciles?",
+                "answer": "Los nonogramas fáciles usan cuadrículas más pequeñas y pistas más evidentes. Los difíciles tienen cuadrículas más grandes, más posiciones posibles y requieren cadenas de deducción más largas."
+            },
+            "q5": {
+                "question": "¿Cuánto tiempo se tarda?",
+                "answer": "El tiempo de resolución depende del tamaño y la dificultad. Un puzle 10×10 puede tomar unos minutos, mientras que uno 20×20 puede tomar 20–40 minutos o más."
+            }
+        }
+    },
     "privacy_detail": {
         "title": "Política de Privacidad",
         "intro": "Respetamos su privacidad y nos comprometemos a proteger sus datos personales.",

@@ -112,4 +112,8 @@ class I18n {
 
 // Global instance
 window.i18n = new I18n();
-document.addEventListener('DOMContentLoaded', () => i18n.init());
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => i18n.init());
+} else {
+    i18n.init();
+}

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import RulesContent from '../rules-content';
+import { RULES_FAQ_ITEMS } from '../rules-faq';
 
 export const metadata: Metadata = {
   title: 'Rules - Nonogram World',
@@ -10,11 +11,30 @@ export const metadata: Metadata = {
 };
 
 export default function RulesPage() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: RULES_FAQ_ITEMS.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+
   return (
-    <main className="main-container">
-      <section className="game-section rules-content">
-        <RulesContent />
-      </section>
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <main className="main-container">
+        <section className="game-section rules-content">
+          <RulesContent />
+        </section>
+      </main>
+    </>
   );
 }

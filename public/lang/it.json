@@ -78,6 +78,31 @@
         },
         "back": "Torna al gioco"
     },
+    "rules_faq": {
+        "title": "FAQ sui nonogrammi",
+        "items": {
+            "q1": {
+                "question": "Quali sono le regole dei nonogrammi?",
+                "answer": "I nonogrammi sono puzzle logici illustrati. I numeri accanto a ogni riga e colonna indicano quante celle consecutive devono essere riempite. Tra gruppi di numeri separati deve esserci sempre almeno una cella vuota."
+            },
+            "q2": {
+                "question": "Come si risolve un nonogramma?",
+                "answer": "Inizia dagli indizi più grandi e usa la sovrapposizione. Se un blocco può stare in più posizioni, le celle comuni a tutte le posizioni possibili sono sicuramente da riempire."
+            },
+            "q3": {
+                "question": "I nonogrammi richiedono tentativi a caso?",
+                "answer": "I buoni nonogrammi non richiedono tentativi a caso. Ogni mossa dovrebbe derivare dagli indizi di righe e colonne tramite deduzione, eliminazione e celle vuote confermate."
+            },
+            "q4": {
+                "question": "Nonogrammi facili e difficili?",
+                "answer": "I nonogrammi facili usano griglie più piccole e indizi più evidenti. Quelli difficili hanno griglie più grandi, più posizioni possibili e richiedono catene logiche più lunghe."
+            },
+            "q5": {
+                "question": "Quanto tempo serve?",
+                "answer": "Il tempo di risoluzione dipende da dimensione e difficoltà. Un puzzle 10×10 può richiedere pochi minuti, mentre un 20×20 può richiedere 20–40 minuti o più."
+            }
+        }
+    },
     "privacy_detail": {
         "title": "Informativa sulla Privacy",
         "intro": "Rispettiamo la tua privacy e ci impegniamo a proteggere i tuoi dati personali.",
